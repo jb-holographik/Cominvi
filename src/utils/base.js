@@ -19,10 +19,10 @@ export const initializeNavbarTheme = {
     },
     black: {
       navbarColor: 'var(--white)',
-      logoBgFill: 'var(--white)',
+      logoBgFill: 'var(--black)',
       logoPathFill: 'var(--white)',
       menuIconBorder: 'var(--white)',
-      menuIconBg: 'var(--white)',
+      menuIconBg: 'var(--black)',
       menuIconBarsBg: 'var(--white)',
     },
     hero: {

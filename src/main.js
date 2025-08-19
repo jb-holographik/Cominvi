@@ -5,8 +5,10 @@ import { initMinerals } from './animation/minerals.js'
 import { initializeNav2 } from './animation/nav.js'
 import { initializePageTransitionNav } from './animation/page-transition-nav.js'
 import { initParallax } from './animation/parallax.js'
+import { initScrollList } from './animation/scroll-list.js'
 import { initLenis } from './animation/scroll.js'
 import { initServiceCards } from './animation/service-cards.js'
+import { initTestimonials } from './animation/testimonials.js'
 import { initTextReveal } from './animation/text-reveal.js'
 // (deduped)
 
@@ -20,4 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
   heroAnimation()
   initTextReveal()
   initMinerals()
+  initScrollList()
+  initTestimonials()
 })

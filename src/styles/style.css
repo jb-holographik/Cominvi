@@ -15,3 +15,29 @@
 .navlink_label {
   white-space: nowrap;
 }
+
+.scroll-item>.body-xl {
+  transition: all 0.1s ease-in-out;
+}
+
+.eyebrows.is-white .is-eyebrow {
+  border-color: var(--white);
+  color: var(--white);
+}
+
+.eyebrows.is-white .is-eyebrow:nth-of-type(2) {
+  background-color: var(--white);
+  color: var(--black);
+}
+
+.button-xxl.is-white>.button-md_label {
+  color: var(--accent) !important;
+}
+
+.button-xxl.is-white>.is-arrow-square.is-button-bg {
+  color: var(--black);
+}
+
+.button-xxl.is-white>.is-arrow-square.is-button-arrow {
+  color: var(--white);
+}

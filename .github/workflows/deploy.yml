@@ -1,0 +1,34 @@
+name: Deploy dist to release
+
+on:
+  push:
+    branches:
+      - main   # déclenchement quand tu pushes sur main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Copy dist to release branch
+        run: |
+          # On clone la branche release dans un dossier séparé
+          git fetch origin release:release || echo "No release branch yet"
+          git worktree add ../release release || git checkout --orphan release
+
+          # Copie du contenu de dist vers le dossier release
+          rsync -av --delete dist/ ../release/
+
+          cd ../release
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "Deploy dist from main: $GITHUB_SHA"
+            git push origin release
+          fi

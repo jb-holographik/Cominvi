@@ -76,7 +76,7 @@ export function serviceCardsHover(root = document) {
 
   const images = Array.from(viewer.querySelectorAll('.service-image'))
   const OPACITY_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)'
-  const viewerButton = viewer.querySelector('.button-md')
+  const viewerButton = viewer.querySelector('.button-lg')
   // Ensure base state
   images.forEach((img) => {
     img.style.transition = `opacity 0.5s ${OPACITY_EASING}`

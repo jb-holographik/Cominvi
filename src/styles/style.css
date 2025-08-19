@@ -11,3 +11,7 @@
 .icon-wrap {
   mix-blend-mode: multiply;
 }
+
+.navlink_label {
+  white-space: nowrap;
+}

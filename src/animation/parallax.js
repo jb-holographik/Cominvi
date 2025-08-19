@@ -19,6 +19,10 @@ export function initParallax(root = document) {
         }
       })
     }
+    // Detach previous resize handler if any
+    if (window.__parallaxResizeHandler) {
+      window.removeEventListener('resize', window.__parallaxResizeHandler)
+    }
   } catch (err) {
     // ignore
   }
@@ -33,9 +37,74 @@ export function initParallax(root = document) {
   const scroller = window.__lenisWrapper || undefined
   const tweens = []
 
+  const layoutImage = (img) => {
+    try {
+      const container =
+        img.closest('.image-wrapper, .machine-card_bg') || img.parentElement
+      if (!container) return null
+
+      // Ensure container can clip the parallax overflow
+      const cs = window.getComputedStyle(container)
+      if (cs.position === 'static') container.style.position = 'relative'
+      container.style.overflow = 'hidden'
+
+      // Compute container height from image intrinsic ratio
+      const containerWidth = container.clientWidth || img.clientWidth
+      let ratio = 0
+      if (img.naturalWidth && img.naturalHeight) {
+        ratio = img.naturalHeight / img.naturalWidth
+      } else if (img.clientWidth && img.clientHeight) {
+        ratio = img.clientHeight / img.clientWidth
+      } else {
+        ratio = 9 / 16
+      }
+      if (containerWidth) {
+        container.style.height = `${Math.round(containerWidth * ratio)}px`
+      }
+
+      // Image should be larger than container to avoid gaps during travel
+      // Use absolute positioning + calibrated top offset so that at the
+      // extreme (+A) there is no top gap. With amplitude A=10%, height is
+      // (1 + 2A) and top is -(A * (1 + 2A)). For A=0.10 → height:120%, top:-12%.
+      const amplitude = 10 // percent used in tween below
+      const overscanFactor = 1 + (2 * amplitude) / 100 // 1.2 when A=10
+      const topCompPercent = -((amplitude / 100) * overscanFactor * 100) // -12 when A=10
+
+      img.style.position = 'absolute'
+      img.style.left = '0'
+      img.style.right = '0'
+      img.style.top = `${topCompPercent}%`
+      img.style.width = '100%'
+      img.style.height = `${overscanFactor * 100}%`
+      img.style.objectFit = 'cover'
+      img.style.willChange = 'transform'
+
+      return container
+    } catch (e) {
+      return null
+    }
+  }
+
+  const ensureLaidOut = (img) => {
+    if (img.complete && img.naturalWidth) {
+      return layoutImage(img)
+    }
+    // If not loaded yet, layout once it loads
+    let laidOutContainer = null
+    const onLoad = () => {
+      laidOutContainer = layoutImage(img)
+      img.removeEventListener('load', onLoad)
+      ScrollTrigger.refresh()
+    }
+    img.addEventListener('load', onLoad)
+    return laidOutContainer
+  }
+
   images.forEach((img) => {
     try {
       gsap.set(img, { willChange: 'transform' })
+
+      const triggerEl = ensureLaidOut(img) || img
       const tween = gsap.fromTo(
         img,
         { yPercent: -10 },
@@ -43,7 +112,7 @@ export function initParallax(root = document) {
           yPercent: 10,
           ease: 'none',
           scrollTrigger: {
-            trigger: img,
+            trigger: triggerEl,
             start: 'top bottom',
             end: 'bottom top',
             scrub: true,
@@ -56,6 +125,19 @@ export function initParallax(root = document) {
       // ignore per-image failure
     }
   })
+
+  // Handle resize: re-layout containers and refresh triggers
+  const resizeHandler = () => {
+    images.forEach((img) => layoutImage(img))
+    ScrollTrigger.refresh()
+  }
+  // Debounce a bit to avoid thrashing
+  let resizeTimer
+  window.__parallaxResizeHandler = () => {
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(resizeHandler, 100)
+  }
+  window.addEventListener('resize', window.__parallaxResizeHandler)
 
   window.__parallaxTweens = tweens
   ScrollTrigger.refresh()

@@ -17,5 +17,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: release   # branche cible
-          publish_dir: ./dist       # dossier à publier
+          publish_dir: ./dist       
           keep_files: false         # supprime l'ancien contenu avant de copier

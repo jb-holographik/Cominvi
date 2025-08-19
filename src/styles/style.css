@@ -30,9 +30,9 @@
   color: var(--black);
 }
 
-.button-xxl.is-white>.button-md_label {
+/* .button-xxl.is-white>.button-md_label {
   color: var(--accent) !important;
-}
+} */
 
 .button-xxl.is-white>.is-arrow-square.is-button-bg {
   color: var(--black);

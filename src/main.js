@@ -1,5 +1,6 @@
 import './styles/style.css'
 import { initLoader } from './animation/loader.js'
+import { initMap } from './animation/map.js'
 import { initMinerals } from './animation/minerals.js'
 import { initializeNav2 } from './animation/nav.js'
 import { initializePageTransitionNav } from './animation/page-transition-nav.js'
@@ -28,6 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollList()
   initTestimonials()
   initTextDisplayReveal()
+  // Initialize map interactions on first load
+  try {
+    initMap(document)
+  } catch (e) {
+    // ignore
+  }
   // Pre-instantiate mask overlay in DOM (hidden) so it exists before any transition
   try {
     const { tl } = createViewportClipOverlay({})

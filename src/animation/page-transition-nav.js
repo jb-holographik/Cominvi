@@ -1,6 +1,7 @@
 import barba from '@barba/core'
 
 import { reinitializeWebflowAnimations } from '../utils/base.js'
+import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
 import { initializeNav2 } from './nav.js'
 import { initParallax } from './parallax.js'
@@ -173,6 +174,11 @@ export function initializePageTransitionNav() {
           initScrollList()
           initTestimonials()
           initTextDisplayReveal()
+          try {
+            initMap(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
         },
       },
       {
@@ -200,6 +206,11 @@ export function initializePageTransitionNav() {
           initScrollList()
           initTestimonials()
           initTextDisplayReveal()
+          try {
+            initMap(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
         },
       },
     ],
@@ -221,5 +232,10 @@ export function initializePageTransitionNav() {
     initServiceCards(next && next.container)
     initTextReveal()
     initMinerals()
+    try {
+      initMap(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
   })
 }

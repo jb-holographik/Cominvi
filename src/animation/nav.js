@@ -350,6 +350,7 @@ export function initializeNavbarScroll(root = document) {
         duration: 0.5,
         left: '-8em',
         right: '-8em',
+        pointerEvents: 'none',
         overwrite: 'auto',
       })
     } else if (delta < -2) {
@@ -357,6 +358,7 @@ export function initializeNavbarScroll(root = document) {
         duration: 0.5,
         left: '2rem',
         right: '2rem',
+        pointerEvents: 'auto',
         overwrite: 'auto',
       })
     }

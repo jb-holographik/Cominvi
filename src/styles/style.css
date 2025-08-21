@@ -56,3 +56,52 @@
 .mask-overlay.is-active {
   display: none !important
 }
+
+/* Map */
+/* .region {
+  fill: none;
+  stroke: #444;
+  transition: fill 0.3s, stroke 0.3s;
+} */
+
+.region,
+.region.highlight {
+  transition: all 0.5s ease-out;
+}
+
+.region.highlight {
+  fill: rgba(244, 121, 32, 0.05);
+  stroke: rgba(244, 121, 32, 0.50);
+  z-index: 2;
+}
+
+.marker .dot {
+  transition: fill 0.3s, r 0.3s;
+}
+
+.marker.highlight circle {
+  fill: #FF9345;
+  filter:
+    drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 5px #FF8832) drop-shadow(0 0 12px #FF8832);
+  r: 6;
+}
+
+.marker.highlight rect {
+  fill-opacity: 0;
+}
+
+.marker,
+.marker.highlight,
+.marker.dimmed,
+.marker.highlight rect {
+  transition: all 0.5s ease-out;
+  opacity: 1;
+}
+
+.marker.dimmed {
+  opacity: 0;
+}
+
+.marker.highlight {
+  opacity: 1;
+}

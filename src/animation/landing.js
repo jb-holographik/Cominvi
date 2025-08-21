@@ -19,6 +19,24 @@ export function heroAnimation(root = document, opts = {}) {
 
   // Timeline par élément pour remonter l'opacité à 1 juste au démarrage, puis slider
   const tl = gsap.timeline()
+  // Si la navbar a été écartée par le scroll, on la ramène à sa position d'origine
+  try {
+    const navbar =
+      scope.querySelector('.navbar') || document.querySelector('.navbar')
+    if (navbar) {
+      const cs = getComputedStyle(navbar)
+      const isOffset = cs.left !== '2rem' || cs.right !== '2rem'
+      if (isOffset) {
+        tl.to(
+          navbar,
+          { left: '2rem', right: '2rem', duration, ease, overwrite: 'auto' },
+          0
+        )
+      }
+    }
+  } catch (err) {
+    // ignore
+  }
   const each = 0.03
   elements.forEach((el, index) => {
     const position = index * each

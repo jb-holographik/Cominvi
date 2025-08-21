@@ -30,14 +30,24 @@
   color: var(--black);
 }
 
-/* .button-xxl.is-white>.button-md_label {
-  color: var(--accent) !important;
-} */
-
-.button-xxl.is-white>.is-arrow-square.is-button-bg {
-  color: var(--black);
+/* Transition mask overlay */
+.mask-overlay {
+  position: absolute;
+  z-index: -1;
+  height: 100vh;
+  width: 200vw;
+  background: transparent;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+  display: none;
 }
 
-.button-xxl.is-white>.is-arrow-square.is-button-arrow {
-  color: var(--white);
+.mask-overlay.is-active {
+  display: block !important;
+  z-index: 2 !important;
+}
+
+.mask-overlay_wrap {
+  align-items: flex-start;
 }

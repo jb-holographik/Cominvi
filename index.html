@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Tue Aug 19 2025 12:51:38 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Wed Aug 20 2025 14:03:43 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="6899a2f3f7995d5e3e31b7cd" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -12,10 +12,6 @@
   <link href="css/cominvi-staging.webflow.css" rel="stylesheet" type="text/css">
   <style>
     @media (min-width:992px) {
-      html.w-mod-js:not(.w-mod-ix) [data-w-id="0d21a21e-f94a-e2b1-9f77-5e208f096ec1"] {
-        color: rgb(255, 255, 255);
-      }
-
       html.w-mod-js:not(.w-mod-ix) [data-w-id="3a9fdc31-a60b-ca51-c9cb-25a21dd5de43"] {
         -webkit-transform: translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
         -moz-transform: translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
@@ -27,15 +23,8 @@
         color: rgb(255, 255, 255);
       }
 
-      html.w-mod-js:not(.w-mod-ix) [data-w-id="7b77ccc8-8adc-cce6-b277-0cfc54c2cb2f"] {
-        -webkit-transform: translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-        -moz-transform: translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-        -ms-transform: translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-        transform: translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-      }
-
-      html.w-mod-js:not(.w-mod-ix) [data-w-id="7b77ccc8-8adc-cce6-b277-0cfc54c2cb33"] {
-        color: rgb(255, 255, 255);
+      html.w-mod-js:not(.w-mod-ix) [data-w-id="3a9fdc31-a60b-ca51-c9cb-25a21dd5de41"] {
+        background-color: rgb(21, 21, 21);
       }
     }
   </style>
@@ -199,6 +188,11 @@
         text-decoration: none;
       }
 
+      a,
+      button {
+        cursor: pointer;
+      }
+
       textarea {
         resize: none;
       }
@@ -218,6 +212,11 @@
       .section_safety>.intro,
       .section_technology>.intro {
         padding-right: 0;
+      }
+
+      .svg-text {
+        width: 100%;
+        height: 100%;
       }
     </style>
   </div>
@@ -358,6 +357,12 @@
       </li>
     </ul>
   </div>
+  <div class="page-info">
+    <div class="page-info_wrap">
+      <div class="page-info_inner"><span id="page-from" class="body-xl is-black">Home</span><span id="page-to"
+          class="body-xl is-black">Home</span></div>
+    </div>
+  </div>
   <div data-barba-namespace="home" data-barba="container" class="page-wrap">
     <div class="content-wrap">
       <div bg="hero" class="section_hero">
@@ -449,8 +454,7 @@
         </div>
         <div class="content">
           <div class="content_column">
-            <div class="image-wrapper"><img src="images/image-about-section_1.avif" loading="lazy"
-                sizes="(max-width: 1360px) 100vw, 1360px"
+            <div class="image-wrapper"><img src="images/image-about-section_1.avif" loading="lazy" sizes="100vw"
                 srcset="images/image-about-section_1image-about-section.avif 500w, images/image-about-section_1image-about-section.avif 800w, images/image-about-section_1image-about-section.avif 1080w, images/image-about-section_1.avif 1360w"
                 alt="" class="image-p"></div>
           </div>
@@ -605,27 +609,26 @@
             <div class="text-cta">
               <p class="body-m">We combine a strong safety culture, advanced technology, and a deep commitment to
                 quality to deliver consistent, high-performance results.</p>
-              <div data-w-id="8f79a260-a363-b6a3-d7a5-a57cf4a77e52" class="button-md">
-                <div class="button-md_inner">
-                  <div
-                    style="-webkit-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)"
-                    class="w-layout-hflex button-md_inner-left"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+              <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
+                class="button w-inline-block">
+                <div class="button_inner">
+                  <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
                       viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
-                      <rect data-w-id="0d21a21e-f94a-e2b1-9f77-5e208f096ec1" style="color:rgb(255,255,255)"
-                        x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
+                      <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg">
+                      </rect>
                       <path
                         d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                        fill="currentColor"></path>
-                    </svg><span style="color:rgb(255,255,255)" class="button-md_label">About us</span><svg
-                      xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none"
-                      class="is-arrow-square">
-                      <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="white"></rect>
+                        fill="currentColor" class="arrow-white-1_arrow"></path>
+                    </svg><span class="button_label">About us</span><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 34 34" fill="none" class="is-arrow-square">
+                      <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-bg"></rect>
                       <path
                         d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                        fill="#151515"></path>
+                        fill="currentColor" class="arrow-arrow"></path>
                     </svg></div>
                 </div>
-              </div>
+              </a>
+              <link rel="prefetch" href="/our-services">
             </div>
           </div>
         </div>
@@ -778,16 +781,36 @@
               </div>
             </button>
             <div class="services-viewer">
+              <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
+                class="button w-inline-block">
+                <div class="button_inner">
+                  <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
+                      <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg">
+                      </rect>
+                      <path
+                        d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
+                        fill="currentColor" class="arrow-white-1_arrow"></path>
+                    </svg><span class="button_label">See More</span><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 34 34" fill="none" class="is-arrow-square">
+                      <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-bg"></rect>
+                      <path
+                        d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
+                        fill="currentColor" class="arrow-arrow"></path>
+                    </svg></div>
+                </div>
+              </a>
+              <link rel="prefetch" href="/our-services">
               <div data-w-id="3a9fdc31-a60b-ca51-c9cb-25a21dd5de41" class="button-lg">
-                <div class="button-md_inner">
-                  <div data-w-id="3a9fdc31-a60b-ca51-c9cb-25a21dd5de43" class="w-layout-hflex button-md_inner-left"><svg
+                <div class="button_inner">
+                  <div data-w-id="3a9fdc31-a60b-ca51-c9cb-25a21dd5de43" class="w-layout-hflex button-inner_content"><svg
                       xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none"
                       class="is-arrow-square is-left">
                       <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="var(--accent)"></rect>
                       <path
                         d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
                         fill="currentColor"></path>
-                    </svg><span data-w-id="3a9fdc31-a60b-ca51-c9cb-25a21dd5de47" class="button-md_label">See
+                    </svg><span data-w-id="3a9fdc31-a60b-ca51-c9cb-25a21dd5de47" class="button_label">See
                       More</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none"
                       class="is-arrow-square">
                       <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="white"></rect>
@@ -1221,24 +1244,26 @@
             </div>
             <div id="w-node-_0717a256-7463-77c0-e26d-39c854e08d2c-3e31b7cd" class="col-3">
               <div class="minerals_right">
-                <div class="button-md">
-                  <div class="button-md_inner">
-                    <div class="w-layout-hflex button-md_inner-left"><svg xmlns="http://www.w3.org/2000/svg"
+                <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
+                  class="button w-inline-block">
+                  <div class="button_inner">
+                    <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg"
                         width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
-                        <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="var(--accent)"
-                          class="is-button-bg"></rect>
+                        <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg">
+                        </rect>
                         <path
                           d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                          fill="currentColor" class="is-button-arrow"></path>
-                      </svg><span class="button-md_label">See More</span><svg xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor" class="arrow-white-1_arrow"></path>
+                      </svg><span class="button_label">See More</span><svg xmlns="http://www.w3.org/2000/svg"
                         width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square">
-                        <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="white"></rect>
+                        <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-bg"></rect>
                         <path
                           d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                          fill="#151515"></path>
+                          fill="currentColor" class="arrow-arrow"></path>
                       </svg></div>
                   </div>
-                </div>
+                </a>
+                <link rel="prefetch" href="/our-services">
                 <div class="eyebrow-wrapper is-a">
                   <div class="eyebrow-line">
                     <div class="eyebrow-slider"><span class="eyebrow-m o-60">600</span><span
@@ -1270,8 +1295,7 @@
         </div>
         <div class="content">
           <div class="content_column">
-            <div class="image-wrapper"><img src="images/safety_1.avif" loading="lazy"
-                sizes="(max-width: 1360px) 100vw, 1360px"
+            <div class="image-wrapper"><img src="images/safety_1.avif" loading="lazy" sizes="100vw"
                 srcset="images/safety_1safety.avif 500w, images/safety_1.avif 1360w" alt="" class="image-p is-square">
             </div>
           </div>
@@ -1279,27 +1303,26 @@
             <div class="text-cta h100">
               <p class="body-m">To this end, we are committed to providing our collaborators with a safe and healthy
                 workplace.</p>
-              <div data-w-id="0963d70a-1d4b-a6f4-7ae7-322d347ad084" class="button-md">
-                <div class="button-md_inner">
-                  <div
-                    style="-webkit-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)"
-                    class="w-layout-hflex button-md_inner-left"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+              <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
+                class="button w-inline-block">
+                <div class="button_inner">
+                  <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
                       viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
-                      <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="currentColor"
-                        class="is-button-bg"></rect>
+                      <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg">
+                      </rect>
                       <path
                         d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                        fill="currentColor" class="is-button-arrow"></path>
-                    </svg><span style="color:rgb(255,255,255)" class="button-md_label">Read more</span><svg
-                      xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none"
-                      class="is-arrow-square">
-                      <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="white"></rect>
+                        fill="currentColor" class="arrow-white-1_arrow"></path>
+                    </svg><span class="button_label">Read More</span><svg xmlns="http://www.w3.org/2000/svg"
+                      width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square">
+                      <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-bg"></rect>
                       <path
                         d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                        fill="#151515"></path>
+                        fill="currentColor" class="arrow-arrow"></path>
                     </svg></div>
                 </div>
-              </div>
+              </a>
+              <link rel="prefetch" href="/our-services">
             </div>
           </div>
         </div>
@@ -1314,15 +1337,65 @@
             key mining categories. Every unit is selected for durability, safety, and adaptability in confined,
             high-stakes environments.</p>
         </div>
-        <div class="title-big">
-          <p tr="1" class="body-xxl">Over 360<br>machines</p><span class="eyebrow-m">for underground performance</span>
+        <div class="w-layout-vflex display-text">
+          <div class="title-big">
+            <div class="w-layout-vflex display"><span class="body-xxl is-grey">Over 360</span><span
+                class="body-xxl is-grey">machines</span></div>
+            <div class="w-layout-vflex overlay-gradients">
+              <div class="overlay-gradient">
+                <div class="gradient-left"></div>
+                <div class="gradient-right"></div>
+              </div>
+              <div class="overlay-gradient is-2">
+                <div class="gradient-left"></div>
+                <div class="gradient-right"></div>
+              </div>
+            </div>
+            <div class="w-layout-hflex is-text-mask">
+              <div class="mask-fill"></div>
+              <div class="w-layout-vflex display is-test">
+                <div class="svgtext-mask w-embed"><svg class="svg-text" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <!--  Mask  -->
+                      <mask id="text-mask">
+                        <!--  Fond blanc : tout est visible  -->
+                        <rect width="100%" height="100%" fill="white"></rect>
+                        <!--  Texte en noir : zone masquée (donc trou)  -->
+                        <text text-anchor="middle" x="50%" y="50%" dy=".35em" class="body-xxl" fill="black">
+                          Over 360
+                        </text>
+                      </mask>
+                    </defs>
+                    <!--  Fond blanc avec un trou  -->
+                    <rect width="100%" height="100%" fill="#ebf0ed" mask="url(#text-mask)"></rect>
+                  </svg></div>
+                <div class="svgtext-mask is-2 w-embed"><svg class="svg-text" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <!--  Mask  -->
+                      <mask id="text-mask-2">
+                        <!--  Fond blanc : tout est visible  -->
+                        <rect width="100%" height="100%" fill="white"></rect>
+                        <!--  Texte en noir : zone masquée (donc trou)  -->
+                        <text text-anchor="middle" x="50%" y="50%" dy=".35em" font-size="8em" class="body-xxl"
+                          fill="black">
+                          machines
+                        </text>
+                      </mask>
+                    </defs>
+                    <!--  Fond blanc avec un trou  -->
+                    <rect width="100%" height="100%" fill="#ebf0ed" mask="url(#text-mask-2)"></rect>
+                  </svg></div>
+              </div>
+              <div class="mask-fill"></div>
+            </div>
+          </div>
+          <div class="eyebrow-wrapper-a"><span class="eyebrow-m">for underground performance</span></div>
         </div>
         <div class="content">
           <div class="content_column">
             <div class="machines-grid"><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card_1Machine-card.avif 500w, images/Machine-card_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1332,8 +1405,7 @@
                 </div><span class="body-m">Front loaders</span>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-1_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-1_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-1_1Machine-card-1.avif 500w, images/Machine-card-1_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1343,8 +1415,7 @@
                 </div><span class="body-m">Motor graders</span>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-2_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-2_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-2_1Machine-card-2.avif 500w, images/Machine-card-2_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1354,8 +1425,7 @@
                 </div><span class="body-m">Concrete launchers</span>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-3_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-3_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-3_1Machine-card-3.avif 500w, images/Machine-card-3_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1365,8 +1435,7 @@
                 </div><span class="body-m">Vibro-compactors</span>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-4_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-4_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-4_1Machine-card-4.avif 500w, images/Machine-card-4_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1376,8 +1445,7 @@
                 </div><span class="body-m">Anchorage jumbo machines</span>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-5_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-5_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-5_1Machine-card-5.avif 500w, images/Machine-card-5_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1391,26 +1459,27 @@
         <div class="w-layout-vflex text-button">
           <p tr="1" class="body-xl is-black is-center">We operate leading brands like Epiroc, Sandvik, Caterpillar,
             among others ensuring maximum uptime and productivity where it matters most.</p>
-          <div data-w-id="286c68d6-d49f-a947-ec56-0c64d9890cb5" class="button-md">
-            <div class="button-md_inner">
-              <div
-                style="-webkit-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)"
-                class="w-layout-hflex button-md_inner-left"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                  viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
-                  <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="currentColor" class="is-button-bg">
-                  </rect>
-                  <path
-                    d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                    fill="currentColor" class="is-button-arrow"></path>
-                </svg><span style="color:rgb(255,255,255)" class="button-md_label">Our fleet</span><svg
-                  xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none"
-                  class="is-arrow-square">
-                  <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="white"></rect>
-                  <path
-                    d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                    fill="#151515"></path>
-                </svg></div>
-            </div>
+          <div class="button-wrap-md">
+            <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
+              class="button w-inline-block">
+              <div class="button_inner">
+                <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                    viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
+                    <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg">
+                    </rect>
+                    <path
+                      d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
+                      fill="currentColor" class="arrow-white-1_arrow"></path>
+                  </svg><span class="button_label">Our Fleet</span><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                    viewbox="0 0 34 34" fill="none" class="is-arrow-square">
+                    <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-bg"></rect>
+                    <path
+                      d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
+                      fill="currentColor" class="arrow-arrow"></path>
+                  </svg></div>
+              </div>
+            </a>
+            <link rel="prefetch" href="/our-services">
           </div>
         </div>
       </div>
@@ -1434,10 +1503,10 @@
                 for my personal and work life.”</p>
               <p tr="1" class="body-xl is-o-30 is-center">by Ivan Morgan</p>
             </div>
-            <div class="w-layout-vflex">
-              <p tr="1" class="body-xl is-black is-center">“A pride, great prestige and great growth in essential values
-                for my personal and work life.”</p>
-              <p tr="1" class="body-xl is-o-30 is-center">by Ivan Morgan</p>
+            <div class="w-layout-vflex testimonial">
+              <p tr="1" class="body-xl is-black is-center">“This is another testimonial from another happy person
+                working at CoMinVi”</p>
+              <p tr="1" class="body-xl is-o-30 is-center">by Josh Stuart</p>
             </div>
           </div>
         </div>
@@ -1514,25 +1583,27 @@
               <div class="w-layout-vflex card-inner"><span class="body-l">Administration &amp; ressources</span></div>
             </button>
             <div class="services-viewer">
-              <div data-w-id="7b77ccc8-8adc-cce6-b277-0cfc54c2cb2d" class="button-lg">
-                <div class="button-md_inner">
-                  <div data-w-id="7b77ccc8-8adc-cce6-b277-0cfc54c2cb2f" class="w-layout-hflex button-md_inner-left"><svg
-                      xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none"
-                      class="is-arrow-square is-left">
-                      <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="var(--accent)"></rect>
+              <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
+                class="button w-inline-block">
+                <div class="button_inner">
+                  <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
+                      <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg">
+                      </rect>
                       <path
                         d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                        fill="currentColor"></path>
-                    </svg><span data-w-id="7b77ccc8-8adc-cce6-b277-0cfc54c2cb33" class="button-md_label">Job
-                      Offers</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none"
-                      class="is-arrow-square">
-                      <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="white"></rect>
+                        fill="currentColor" class="arrow-white-1_arrow"></path>
+                    </svg><span class="button_label">Job offers</span><svg xmlns="http://www.w3.org/2000/svg"
+                      width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square">
+                      <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-bg"></rect>
                       <path
                         d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                        fill="#151515"></path>
+                        fill="currentColor" class="arrow-arrow"></path>
                     </svg></div>
                 </div>
-              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px"
+              </a>
+              <link rel="prefetch" href="/our-services"><img src="images/service-card-1_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt=""
                 class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy"
                 sizes="(max-width: 896px) 100vw, 896px"
@@ -1590,28 +1661,170 @@
             </div>
           </div>
         </div>
-        <div class="button-wrapper">
-          <div data-w-id="cd6d5609-46c2-da06-ad74-c8b55f223988" class="button-xl">
-            <div class="button-md_inner">
-              <div
-                style="-webkit-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0em, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)"
-                class="w-layout-hflex button-md_inner-left"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <div class="button-wrap-lg">
+          <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
+            class="button w-inline-block">
+            <div class="button_inner">
+              <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
                   viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
-                  <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="currentColor" class="is-button-bg">
-                  </rect>
+                  <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
                   <path
                     d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                    fill="currentColor" class="is-button-arrow"></path>
-                </svg><span style="color:rgb(255,255,255)" class="button-md_label">Let&#x27;s Collaborate</span><svg
-                  xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none"
-                  class="is-arrow-square">
-                  <rect x="0.0588379" width="33.9411" height="33.9411" rx="4" fill="white"></rect>
+                    fill="currentColor" class="arrow-white-1_arrow"></path>
+                </svg><span class="button_label">Let&#x27;s Collaborate</span><svg xmlns="http://www.w3.org/2000/svg"
+                  width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square">
+                  <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-bg"></rect>
                   <path
                     d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                    fill="#151515"></path>
+                    fill="currentColor" class="arrow-arrow"></path>
                 </svg></div>
             </div>
+          </a>
+          <link rel="prefetch" href="/our-services">
+        </div>
+      </div>
+      <div bg="black" class="section_next">
+        <div class="intro_next">
+          <div class="eyebrows is-white">
+            <div class="is-eyebrow"><span class="eyebrow-s">S.08</span></div>
+            <div class="is-eyebrow"><span class="eyebrow-s">Link</span></div>
           </div>
+          <p tr="1" class="body-next">Next page</p>
+        </div>
+        <div class="next-button-wrapper">
+          <a data-w-id="687c3d2f-385d-93aa-43fe-a460e90d552d" href="#" class="button-white w-inline-block">
+            <div class="button-white_inner">
+              <div class="w-layout-hflex button-white_inner-content"><svg xmlns="http://www.w3.org/2000/svg"
+                  width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
+                  <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
+                  <path
+                    d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
+                    fill="currentColor" class="arrow-white-1_arrow"></path>
+                </svg><span class="button-white_label">Our Services</span><svg xmlns="http://www.w3.org/2000/svg"
+                  width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square">
+                  <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-2_bg"></rect>
+                  <path
+                    d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
+                    fill="currentColor" class="arrow-white-2_arrow"></path>
+                </svg></div>
+            </div>
+          </a>
+        </div>
+        <div class="next_background"><img src="images/Our-services-bg_1.avif" loading="lazy" sizes="100vw"
+            srcset="images/Our-services-bg_1Our-services-bg.avif 500w, images/Our-services-bg_1Our-services-bg.avif 800w, images/Our-services-bg_1Our-services-bg.avif 1080w, images/Our-services-bg_1.avif 2880w"
+            alt="" class="background"></div>
+      </div>
+      <div class="footer">
+        <div class="footer-inner">
+          <div id="w-node-_4871ab60-6b13-0ced-da01-9668f8e7e5e8-3e31b7cd" class="footer_left"><svg
+              xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 145 39" fill="none" class="footer_logo">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M137.5 0.794922H7.1943C2.94273 1.00624 0.0825053 3.09766 0.00101183 7.65771V31.0307C-0.0685558 35.6243 2.28084 38.3142 7.19231 38.2885H137.502C142.422 38.3142 144.743 35.099 144.694 31.0287V7.94408C144.853 3.86392 141.75 0.850219 137.5 0.794922ZM16.5661 5.56037C18.2019 4.59661 19.0486 5.9435 19.2434 5.9751C23.4672 6.74136 23.2704 10.2843 23.2704 10.2843C24.0416 10.6951 24.4769 11.7734 24.6995 12.593C23.3081 13.5745 20.5274 13.9695 17.4406 13.4738C13.7635 12.8833 10.8257 11.2303 10.2513 9.5556C11.7579 7.67549 14.2345 5.52284 16.5661 5.55839V5.56037ZM9.46022 9.81826C9.48208 9.80246 9.50395 9.79259 9.52978 9.78074C9.65302 11.7221 12.9923 13.772 17.2717 14.4553C20.8554 15.03 24.0515 14.4771 25.3614 13.2151C25.5204 13.5706 25.586 13.93 25.5403 14.2815C25.254 16.3986 21.0919 17.5026 16.2719 16.7502C11.7559 16.0412 8.22192 13.9478 8.0311 11.9472L9.4622 9.81826H9.46022ZM21.891 22.0765C21.891 22.0765 21.6008 22.505 21.1774 22.823H20.7004L19.9669 22.6907L19.9331 22.6867L19.303 22.5584L18.7286 22.4261L18.2357 22.2898L17.8183 22.1594L17.4684 22.033L17.1842 21.9126L16.9596 21.8L16.7887 21.7013L16.6654 21.6163L16.58 21.5492L16.5323 21.4978L16.5144 21.4722L16.2759 20.8185L16.0214 20.3188C15.5086 19.6375 14.8189 19.5229 14.0358 19.2958L13.6045 19.1991L13.1453 19.122L12.6703 19.0608L12.1912 19.0114L11.7122 18.9719L11.2511 18.9423L10.8178 18.9245L10.4163 18.9068H10.2911L10.0645 18.9008H9.81601C9.76631 17.9213 9.69476 15.7983 9.96707 15.3045C9.96707 15.3045 14.169 17.8245 18.0429 17.7929C21.5332 17.7633 22.3958 17.1965 22.4892 17.082C22.4634 17.2597 22.6125 18.5888 22.7178 19.1971C22.7178 19.1971 22.4236 19.6632 21.7896 19.8843C21.7896 19.8843 21.9546 21.1305 21.891 22.0785V22.0765ZM20.9806 25.0329C19.2732 25.6471 16.8304 25.8604 15.7531 25.4358C14.6758 25.0112 14.0159 24.1798 13.7078 23.7966L13.6999 23.7196L13.676 23.6426L13.6402 23.5379L13.5826 23.3819L13.4991 23.1844L13.3918 22.9534L13.2566 22.6966L13.0936 22.4241L12.9008 22.1456L12.6762 21.8691L12.4158 21.6065L12.1197 21.3655L11.7818 21.1621L11.4061 21.0061L10.9907 20.9113L10.5415 20.8896L10.0724 20.9488L9.62122 21.0574L9.20779 21.1838L8.82218 21.326L8.44453 21.5215L8.42664 21.4959C8.92952 21.1404 9.44829 20.8817 9.74048 20.5203C10.0883 20.0897 10.1658 19.7599 10.1559 19.5368H10.295L10.6349 19.5447L11.0185 19.5585L11.4379 19.5782L11.8812 19.6059L12.3344 19.6434L12.7895 19.6908L13.2328 19.7481L13.6522 19.8212L14.0358 19.9061L14.3697 20.0028C15.3337 20.386 15.5722 20.5479 15.938 21.561L15.9459 21.5847L15.9777 21.6578L16.0334 21.7467L16.1129 21.8454L16.2202 21.9521L16.3593 22.0646L16.5343 22.1831L16.7509 22.3076L17.0153 22.4359L17.3333 22.5702L17.7109 22.7065L18.1522 22.8447L18.667 22.9849L19.2573 23.1232L19.9311 23.2614L20.5294 23.3661C20.6467 23.9645 20.8534 24.5945 20.9846 25.031L20.9806 25.0329ZM6.87827 23.9921L6.89615 23.9507L7.00746 23.767L7.14262 23.5636L7.29567 23.3444L7.47655 23.1173L7.67929 22.8803L7.90985 22.6393L8.16427 22.4004L8.44652 22.1594L8.75858 21.9264L9.09052 21.7072L9.41649 21.5393L9.72259 21.4425L10.0128 21.409L10.295 21.4228L10.5713 21.4801L10.8357 21.5749L11.0941 21.6993L11.3385 21.8494L11.5651 22.0153L11.7659 22.1831L11.9488 22.353L12.0978 22.509L12.2191 22.6453L12.3065 22.7559L12.3542 22.8171L12.5749 23.2871L12.8213 23.7552L13.0738 24.1778L13.3322 24.5589L13.6064 24.8986L13.8907 25.2008L14.1868 25.4654L14.4969 25.6965L14.8209 25.89L15.1588 26.0559L15.5066 26.1902L15.8704 26.3028L16.25 26.3917L16.6376 26.4608L17.0451 26.5121L17.4764 26.5595L17.9495 26.5734L18.4503 26.5378L18.9651 26.4667L19.4839 26.364L22.0957 25.6629C22.9901 27.2507 23.9581 28.9097 23.7255 30.9004C15.9817 37.9705 7.79656 33.1478 6.88224 23.9902L6.87827 23.9921ZM24.4471 32.6837C24.0257 32.5158 23.6142 32.2591 23.2227 31.8108L24.1946 30.9339C24.3815 31.635 24.4987 32.3697 24.4471 32.6837ZM33.0953 28.9571L32.9363 29.2533L32.0597 29.516L31.7517 29.2454L31.5728 28.9274L27.4623 29.4567L24.6498 32.7726C25.2501 30.4619 23.8249 27.626 22.4336 24.79L26.0749 23.7986L26.222 23.769L26.2499 23.7631L26.3095 23.7552L27.4742 23.1923L28.4482 22.2167L29.4997 22.0903L29.289 21.014L30.6525 20.5756L31.0977 21.6697L31.9127 21.3438L32.3718 22.669L31.3839 23.4767L32.6282 22.8546L32.988 24.0455L31.8411 25.1692L33.0893 24.4582L33.3378 25.7419L32.1055 26.8459L33.306 26.2277L33.4233 27.4463L32.9164 27.857L33.0973 28.961L33.0953 28.9571ZM34.5721 17.3644C33.2663 17.783 31.3005 18.5592 30.6962 19.043L30.8453 19.6059L30.7201 20.2695L29.0803 20.7711L28.5615 20.0325L28.4561 19.5881C27.516 19.5328 25.8126 20.224 25.1885 20.6862L24.9658 20.3366C26.5361 18.9917 27.9413 18.3123 28.156 18.105L28.4065 17.5974L29.6587 17.2182L30.2649 17.5638C30.7996 17.4789 32.2804 17.0622 34.4171 17.0425C34.8643 17.0741 34.8921 17.2617 34.5701 17.3663L34.5721 17.3644ZM142.118 31.3684C142.118 33.2939 140.774 35.3498 138.685 35.3498H43.5941C41.507 35.3498 40.1614 33.2939 40.1614 31.3684V7.59254C40.1614 5.66504 41.505 3.61114 43.5941 3.61114H138.683C140.772 3.61114 142.116 5.66701 142.116 7.59254V31.3684H142.118Z"
+                fill="#151515"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M54.3374 10.9668C53.2256 10.9668 52.1896 11.1538 51.2345 11.5328C50.276 11.9084 49.4287 12.4643 48.6876 13.1971C47.9464 13.9231 47.3838 14.7637 46.9913 15.7272C46.6021 16.6857 46.4067 17.7116 46.4067 18.8065C46.4067 19.9014 46.6021 20.929 46.9913 21.8959C47.3838 22.8628 47.9396 23.7033 48.6657 24.4159C49.3984 25.1419 50.2508 25.6911 51.216 26.0667C52.1863 26.439 53.2391 26.6259 54.3778 26.6259C55.274 26.6259 56.1044 26.5114 56.8726 26.2789C57.6373 26.0499 58.3499 25.7012 59.0001 25.2329V22.4939C58.2673 23.1256 57.5026 23.5955 56.7058 23.9088C55.9073 24.2222 55.0651 24.3788 54.1875 24.3788C52.6731 24.3788 51.4181 23.8566 50.4243 22.8122C49.4304 21.7662 48.9335 20.4388 48.9335 18.8301C48.9335 17.2214 49.4439 15.8131 50.4664 14.7687C51.4889 13.7226 52.8112 13.2021 54.4418 13.2021C55.2824 13.2021 56.0859 13.3487 56.8507 13.6401C57.6121 13.9315 58.3381 14.3695 59.022 14.954L59.1534 12.5081C58.4072 11.9943 57.6356 11.6086 56.8422 11.3542C56.0472 11.0999 55.2133 10.9719 54.3374 10.9719V10.9668Z"
+                fill="#151515"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M75.9416 15.7979C75.5424 14.8529 74.9663 14.0022 74.2049 13.2475C73.4435 12.5064 72.5861 11.9437 71.6226 11.558C70.6641 11.1722 69.6483 10.9785 68.5753 10.9785C67.5023 10.9785 66.473 11.1722 65.5095 11.558C64.546 11.9437 63.6852 12.5064 62.9238 13.2475C62.1624 13.9938 61.5863 14.8394 61.1938 15.7844C60.8013 16.726 60.6025 17.73 60.6025 18.7963C60.6025 19.8626 60.8013 20.875 61.1938 21.8099C61.5863 22.7482 62.1624 23.5853 62.9238 24.3248C63.67 25.0576 64.5291 25.6202 65.5061 26.0211C66.4798 26.417 67.5006 26.6158 68.5753 26.6158C69.65 26.6158 70.6456 26.417 71.6091 26.0245C72.5726 25.632 73.4368 25.066 74.2049 24.3248C74.9663 23.5853 75.5424 22.7431 75.9416 21.7981C76.3375 20.8565 76.5363 19.8559 76.5363 18.7963C76.5363 17.7367 76.3375 16.7463 75.9416 15.7979ZM73.5968 20.9306C73.3222 21.6077 72.9297 22.2091 72.4126 22.738C71.8921 23.2703 71.3008 23.6729 70.6472 23.9509C69.9937 24.2288 69.303 24.367 68.577 24.367C67.851 24.367 67.1384 24.2271 66.4815 23.9509C65.8211 23.6729 65.2332 23.2703 64.7195 22.738C64.2057 22.2091 63.8098 21.6094 63.5386 20.939C63.2674 20.2652 63.1327 19.5526 63.1327 18.798C63.1327 18.0433 63.2691 17.3207 63.5386 16.6401C63.8098 15.963 64.2057 15.3616 64.7195 14.8394C65.2332 14.3071 65.8245 13.9045 66.4848 13.6266C67.1452 13.3486 67.8425 13.2088 68.577 13.2088C69.3114 13.2088 70.0054 13.352 70.6691 13.6333C71.3295 13.9146 71.9123 14.3155 72.4143 14.8394C72.9314 15.3667 73.3239 15.9714 73.5985 16.6502C73.8731 17.3308 74.0129 18.0467 74.0129 18.798C74.0129 19.5493 73.8748 20.2568 73.5985 20.9323L73.5968 20.9306Z"
+                fill="#151515"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M86.5122 20.1264C86.4701 20.2241 86.4078 20.3588 86.3286 20.5323C86.0221 21.1927 85.7997 21.7351 85.6582 22.1613C85.4611 21.6542 85.2944 21.2264 85.1545 20.8793C85.0164 20.5323 84.912 20.2847 84.8412 20.1365L80.4463 10.7302L76.9224 26.2664H79.1543L80.7529 18.927C80.8405 18.5514 80.9062 18.1942 80.9517 17.8506C80.9938 17.5103 81.0208 17.1835 81.0275 16.8702C81.1151 17.1768 81.2178 17.4817 81.3374 17.795C81.4554 18.1083 81.5985 18.4301 81.7619 18.7653L85.6599 26.8678L89.5595 18.927C89.7263 18.5733 89.8695 18.2246 89.9806 17.8877C90.0918 17.5474 90.1794 17.2071 90.2417 16.8702C90.2839 17.1549 90.3293 17.5137 90.3849 17.9466C90.4439 18.4722 90.4894 18.7872 90.5163 18.9051L92.1671 26.2647H94.4159L90.8128 10.7285L86.5173 20.1247L86.5122 20.1264Z"
+                fill="#151515"></path>
+              <path d="M99.3544 11.3398H96.9321V26.2427H99.3544V11.3398Z" fill="#151515"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M113.343 21.6874C113.051 21.3185 112.773 20.9883 112.509 20.6969C112.245 20.4055 111.985 20.1309 111.724 19.8732L102.259 10.7617V26.2558H104.489V15.8927C104.705 16.1993 104.934 16.4874 105.178 16.7687C105.417 17.0466 105.668 17.3111 105.924 17.5604L115.585 26.8353V11.3513H113.343V21.6857V21.6874Z"
+                fill="#151515"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M124.502 18.9974C124.318 19.4168 124.158 19.8279 124.022 20.2305C123.885 20.6297 123.776 21.0154 123.685 21.3911C123.612 21.0373 123.508 20.6651 123.378 20.2759C123.25 19.8834 123.087 19.459 122.891 18.9974L119.551 11.0566H117.036L123.683 26.5406L130.33 11.0566H127.825L124.5 18.9974H124.502Z"
+                fill="#151515"></path>
+              <path d="M134.205 11.3398H131.782V26.2427H134.205V11.3398Z" fill="#151515"></path>
+            </svg>
+            <div class="footer_socials">
+              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                  viewbox="0 0 40 41" fill="none" class="social-logo">
+                  <g clip-path="url(#clip0_4279_2158)">
+                    <rect y="0.5" width="40" height="40" rx="10" fill="#F47920"></rect>
+                    <path
+                      d="M31.6667 0.5H8.33333C3.73167 0.5 0 4.23167 0 8.83333V32.1667C0 36.7683 3.73167 40.5 8.33333 40.5H31.6667C36.27 40.5 40 36.7683 40 32.1667V8.83333C40 4.23167 36.27 0.5 31.6667 0.5ZM13.3333 32.1667H8.33333V13.8333H13.3333V32.1667ZM10.8333 11.72C9.22333 11.72 7.91667 10.4033 7.91667 8.78C7.91667 7.15667 9.22333 5.84 10.8333 5.84C12.4433 5.84 13.75 7.15667 13.75 8.78C13.75 10.4033 12.445 11.72 10.8333 11.72ZM33.3333 32.1667H28.3333V22.8267C28.3333 17.2133 21.6667 17.6383 21.6667 22.8267V32.1667H16.6667V13.8333H21.6667V16.775C23.9933 12.465 33.3333 12.1467 33.3333 20.9017V32.1667Z"
+                      fill="#151515"></path>
+                  </g>
+                  <defs>
+                    <clippath id="clip0_4279_2158">
+                      <rect y="0.5" width="40" height="40" rx="10" fill="white"></rect>
+                    </clippath>
+                  </defs>
+                </svg></a>
+              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                  viewbox="0 0 41 41" fill="none" class="social-logo">
+                  <rect x="0.335938" y="0.5" width="40" height="40" rx="10" fill="#151515"></rect>
+                  <path
+                    d="M20.3672 11.2778C23.3709 11.2778 23.7272 11.2891 24.9141 11.3434C27.9628 11.4822 29.3869 12.9288 29.5256 15.955C29.58 17.1409 29.5903 17.4972 29.5903 20.5009C29.5903 23.5056 29.5791 23.8609 29.5256 25.0469C29.3859 28.0703 27.9656 29.5197 24.9141 29.6584C23.7272 29.7128 23.3728 29.7241 20.3672 29.7241C17.3634 29.7241 17.0072 29.7128 15.8212 29.6584C12.765 29.5187 11.3484 28.0656 11.2097 25.0459C11.1553 23.86 11.1441 23.5047 11.1441 20.5C11.1441 17.4963 11.1562 17.1409 11.2097 15.9541C11.3494 12.9288 12.7697 11.4813 15.8212 11.3425C17.0081 11.2891 17.3634 11.2778 20.3672 11.2778ZM20.3672 9.25C17.3119 9.25 16.9294 9.26312 15.7294 9.3175C11.6438 9.505 9.37313 11.7719 9.18563 15.8612C9.13031 17.0622 9.11719 17.4447 9.11719 20.5C9.11719 23.5553 9.13031 23.9388 9.18469 25.1388C9.37219 29.2244 11.6391 31.495 15.7284 31.6825C16.9294 31.7369 17.3119 31.75 20.3672 31.75C23.4225 31.75 23.8059 31.7369 25.0059 31.6825C29.0878 31.495 31.3641 29.2281 31.5487 25.1388C31.6041 23.9388 31.6172 23.5553 31.6172 20.5C31.6172 17.4447 31.6041 17.0622 31.5497 15.8622C31.3659 11.7803 29.0962 9.50594 25.0069 9.31844C23.8059 9.26312 23.4225 9.25 20.3672 9.25ZM20.3672 14.7231C17.1769 14.7231 14.5903 17.3097 14.5903 20.5C14.5903 23.6903 17.1769 26.2778 20.3672 26.2778C23.5575 26.2778 26.1441 23.6912 26.1441 20.5C26.1441 17.3097 23.5575 14.7231 20.3672 14.7231ZM20.3672 24.25C18.2963 24.25 16.6172 22.5719 16.6172 20.5C16.6172 18.4291 18.2963 16.75 20.3672 16.75C22.4381 16.75 24.1172 18.4291 24.1172 20.5C24.1172 22.5719 22.4381 24.25 20.3672 24.25ZM26.3728 13.1453C25.6266 13.1453 25.0219 13.75 25.0219 14.4953C25.0219 15.2406 25.6266 15.8453 26.3728 15.8453C27.1181 15.8453 27.7219 15.2406 27.7219 14.4953C27.7219 13.75 27.1181 13.1453 26.3728 13.1453Z"
+                    fill="#F47920"></path>
+                </svg></a>
+              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                  viewbox="0 0 41 41" fill="none" class="social-logo">
+                  <rect x="0.664062" y="0.5" width="40" height="40" rx="10" fill="#151515"></rect>
+                  <path
+                    d="M27.735 22.4662L28.6532 17.4663H23.3088V15.698C23.3088 13.0557 24.3454 12.0395 27.0283 12.0395C27.8616 12.0395 28.5323 12.0598 28.9185 12.1004V7.56802C28.1868 7.36474 26.3982 7.16146 25.3617 7.16146C19.8943 7.16146 17.3739 9.74277 17.3739 15.3118V17.4663H14V22.4662H17.3739V33.3463C18.6399 33.6603 19.9636 33.8281 21.3266 33.8281C21.9977 33.8281 22.659 33.7868 23.3088 33.7083V22.4662H27.735Z"
+                    fill="#F47920"></path>
+                </svg></a>
+            </div>
+          </div>
+          <div id="w-node-_71c83acb-8393-aa96-7ea5-a8032b4d2a16-3e31b7cd" class="footer_right">
+            <div class="footer-links_col">
+              <div class="is-eyebrow"><span class="eyebrow-s">Explore</span></div>
+              <ul role="list" class="footer-links w-list-unstyled">
+                <li>
+                  <a href="#" class="footer-link">Services</a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link">Projects</a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link">Technology</a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link">About us</a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link">Job Offers</a>
+                </li>
+              </ul>
+            </div>
+            <div class="footer-links_col">
+              <div class="is-eyebrow"><span class="eyebrow-s">Library</span></div>
+              <ul role="list" class="footer-links w-list-unstyled">
+                <li>
+                  <a href="#" class="footer-link">News</a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link">CoMinVi University</a>
+                </li>
+              </ul>
+            </div>
+            <div class="footer-links_col">
+              <div class="is-eyebrow"><span class="eyebrow-s">Legal</span></div>
+              <ul role="list" class="footer-links w-list-unstyled">
+                <li>
+                  <a href="#" class="footer-link">Notice of Privacy</a>
+                </li>
+              </ul>
+            </div>
+            <div class="footer-links_col">
+              <div class="is-eyebrow"><span class="eyebrow-s">Contact</span></div>
+              <ul role="list" class="footer-links w-list-unstyled">
+                <li>
+                  <a href="#" class="footer-link">info@cominvi.com</a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link">+52 477 690 4050</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="footer-p">2022 CoMinVi - Diseñado y desarrollado por Bambú Mobile</p>
         </div>
       </div>
     </div>
@@ -1623,7 +1836,7 @@
   <script type="module" src="http://localhost:3000/@vite/client"></script>
   <script type="module" src="http://localhost:3000/src/main.js"></script>
   <!-- 
-<script src="https://jb-holographik.github.io/Cominvi/dist/main.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/jb-holographik/Cominvi@release/main.js"></script>
  -->
 </body>
 

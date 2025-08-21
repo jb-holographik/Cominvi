@@ -45,6 +45,7 @@ export function initializeMenuClick(options = {}, root = document) {
   const pageWrapElement = root.querySelector('.page-wrap')
   const menuIconElement = root.querySelector('.menu-icon')
   const contentWrapElement = root.querySelector('.content-wrap')
+  const brandLink = root.querySelector('.navbar > a')
   const linkAnchors = root.querySelectorAll('.links .link-item a')
   linkBaseMarginsConfig = Array.isArray(options.linkBaseMargins)
     ? options.linkBaseMargins
@@ -126,6 +127,15 @@ export function initializeMenuClick(options = {}, root = document) {
 
   const handleMenuClick = () => {
     const wasOpen = isOpen
+    // Toggle pt-inner on the brand link depending on intended state
+    if (!wasOpen) {
+      // opening → disable inner transition on brand link
+      if (brandLink) brandLink.removeAttribute('pt-inner')
+    } else {
+      // closing → re-enable inner transition on brand link
+      if (brandLink) brandLink.setAttribute('pt-inner', '')
+    }
+
     const targetTop = isOpen ? originalTop : '24em'
     const targetOverflow = isOpen ? originalOverflow : 'hidden'
     const targetBodyOverflow = isOpen ? originalBodyOverflow : 'hidden'
@@ -181,6 +191,11 @@ export function initializeMenuClick(options = {}, root = document) {
           window.lenis.start()
         }
         isOpen = !isOpen
+        // Ensure pt-inner reflects final menu state
+        if (brandLink) {
+          if (isOpen) brandLink.removeAttribute('pt-inner')
+          else brandLink.setAttribute('pt-inner', '')
+        }
         document.documentElement.setAttribute(
           'data-menu-open',
           isOpen ? 'true' : 'false'
@@ -272,6 +287,8 @@ export function initializeMenuClick(options = {}, root = document) {
   })
 
   document.documentElement.setAttribute('data-menu-open', 'false')
+  // On init (menu closed), ensure the brand link triggers inner transition
+  if (brandLink) brandLink.setAttribute('pt-inner', '')
 }
 
 // Animation de scroll de la navbar

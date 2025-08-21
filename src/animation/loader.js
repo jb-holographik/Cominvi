@@ -1,6 +1,8 @@
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 
+import { heroAnimation } from './landing.js'
+
 /**
  * Loader animation sequence
  * Steps provided by user:
@@ -226,6 +228,14 @@ export function initLoader() {
         duration: 1.1,
         ease: loaderEase,
       })
+    }, '<')
+    // Lancer l'animation hero en même temps que le masque
+    tl.add(() => {
+      try {
+        heroAnimation()
+      } catch (err) {
+        // ignore
+      }
     }, '<')
     // Grow background videos in sync with the mask reveal
     if (bgVideos && bgVideos.length) {

@@ -131,6 +131,13 @@ export function initializeMenuClick(options = {}, root = document) {
     if (!wasOpen) {
       // opening → disable inner transition on brand link
       if (brandLink) brandLink.removeAttribute('pt-inner')
+      // Hide page-info immediately when opening the menu (before animation)
+      try {
+        const pageInfo = document.querySelector('.page-info')
+        if (pageInfo) pageInfo.style.display = 'none'
+      } catch (err) {
+        // ignore
+      }
     } else {
       // closing → re-enable inner transition on brand link
       if (brandLink) brandLink.setAttribute('pt-inner', '')
@@ -200,6 +207,15 @@ export function initializeMenuClick(options = {}, root = document) {
           'data-menu-open',
           isOpen ? 'true' : 'false'
         )
+        // When menu opens, hide page-info if visible
+        try {
+          if (isOpen) {
+            const pageInfo = document.querySelector('.page-info')
+            if (pageInfo) pageInfo.style.display = 'none'
+          }
+        } catch (err) {
+          // ignore
+        }
       },
     })
 
@@ -372,9 +388,9 @@ export function initializeNavbarScroll(root = document) {
   }
 }
 
-export function initializeNav2() {
-  initializeMenuClick()
-  initializeNavbarScroll()
+export function initializeNav2(root = document) {
+  initializeMenuClick({}, root)
+  initializeNavbarScroll(root)
   initializeThemeController()
 }
 

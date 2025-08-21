@@ -151,11 +151,10 @@ export function initializePageTransitionNav() {
             const pageInfo = document.querySelector('.page-info')
             if (flags.wasNavVisible && navInner) {
               navInner.style.display = 'flex'
-              if (pageInfo) pageInfo.style.display = 'none'
+              // Keep pageInfo visible until transition ends
             }
             if (flags.forcedPageInfoFlex && pageInfo) {
-              // Only shown temporarily during transition; hide it again
-              pageInfo.style.display = 'none'
+              // Keep pageInfo visible until transition ends
             }
             window.__ptInnerFlags = undefined
           } catch (err) {

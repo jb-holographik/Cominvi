@@ -5,10 +5,8 @@ import { heroAnimation } from './landing.js'
 import { addMenuLinksCloseToTimeline } from './nav.js'
 import {
   createViewportClipOverlay,
+  playOverlayClipOnceWithTop,
   resetOverlayClipBaseState,
-  createClipForHost,
-  resetHostClipBaseState,
-  tweenHostClipSlideX,
 } from './svg-clip-overlay.js'
 
 gsap.registerPlugin(CustomEase)
@@ -184,13 +182,84 @@ export function slideScaleLeave({ current }) {
     },
     0
   )
-  // Phase 2: slide out current page
+  // Ensure overlay element exists and initial position
+  let overlayTarget = null
+  try {
+    overlayTarget = document.querySelector('.mask-overlay')
+    if (!overlayTarget) {
+      const created = createViewportClipOverlay({ repeat: 0, yoyo: false })
+      overlayTarget = created && created.container
+    }
+  } catch (e) {
+    overlayTarget = null
+  }
+  if (overlayTarget) {
+    tl.set(overlayTarget, { left: '0px', display: 'block' }, 0)
+  }
+  tl.call(
+    () => {
+      try {
+        const el = document.querySelector('.mask-overlay')
+        if (el) {
+          console.debug('[mask-overlay] tl start state', {
+            left: el.style.left,
+            display: el.style.display,
+            rect: el.getBoundingClientRect(),
+          })
+        }
+      } catch (e) {
+        // ignore
+      }
+    },
+    [],
+    0
+  )
+  // Phase 2: slide out (current page as before) and slide overlay in sync (left: 0 -> -50vw)
   tl.to(currentPage, {
     xPercent: -100,
     duration: slideDur,
     ease: gsap.parseEase(`custom(${easeCurve})`),
   })
-  // No overlay slide here; mask will be applied on destination during enter
+  if (overlayTarget) {
+    tl.to(
+      overlayTarget,
+      {
+        left: () => `${-1 * window.innerWidth}px`,
+        duration: slideDur,
+        ease: gsap.parseEase(`custom(${easeCurve})`),
+        overwrite: 'auto',
+        onUpdate: () => {
+          try {
+            console.debug('[mask-overlay] left tween', overlayTarget.style.left)
+          } catch (e) {
+            // ignore
+          }
+        },
+      },
+      '<'
+    )
+  }
+  // Immediately after the overlay slide completes, play the rectangle clip animation once
+  tl.call(() => {
+    try {
+      // Use the same top offset as the departing page baseTopPx
+      playOverlayClipOnceWithTop(baseTopPx, true)
+    } catch (e) {
+      /* ignore */
+    }
+  })
+  // Immediately after the overlay slide completes, play the rectangle clip animation once
+  tl.call(() => {
+    try {
+      const ref = window.__maskOverlay
+      if (ref && ref.tl) {
+        ref.tl.pause(0)
+        ref.tl.play(0)
+      }
+    } catch (e) {
+      // ignore
+    }
+  })
   return tl
 }
 
@@ -220,125 +289,60 @@ export function slideScaleEnter({ next }) {
   })
 
   // no-op; previously used values removed
-  // Prepare timeline and labels before any calls
-  const tl = gsap.timeline()
-  const preDur = 1.2
-  const slideDur = 1.2
-  tl.addLabel('lift', preDur)
-  tl.addLabel('descale', preDur + slideDur)
-
-  // Ensure the mask is applied to destination as soon as it appears (t=0)
-  tl.call(
-    () => {
-      try {
-        const host = nextPage
-        if (host) {
-          let tries = 0
-          const maxTries = 20 // ~333ms @ 60fps
-          const attemptInit = () => {
-            try {
-              const rect = host.getBoundingClientRect()
-              const ready = rect && rect.width > 1 && rect.height > 1
-              // eslint-disable-next-line no-console
-              console.debug('[host-clip] layout check', {
-                w: rect && rect.width,
-                h: rect && rect.height,
-                tries,
-                ready,
-              })
-              if (!ready && tries < maxTries) {
-                tries += 1
-                return window.requestAnimationFrame(attemptInit)
-              }
-              const clip = createClipForHost(host, { repeat: 0, yoyo: false })
-              if (clip) {
-                resetHostClipBaseState(host, baseTopPx)
-                // eslint-disable-next-line no-console
-                console.debug('[host-clip] init@enter ready', {
-                  tries,
-                })
-              }
-            } catch (e) {
-              // ignore
-            }
-          }
-          window.requestAnimationFrame(attemptInit)
-        }
-      } catch (err) {
-        // ignore
-      }
-    },
-    [],
-    0
-  )
 
   // Destination appears without pre-scale or top offset (no incoming slide)
   gsap.set(nextPage, { transformOrigin: '50% 0%' })
 
-  // Prepare and slide the clip window horizontally during 'lift'
-  tl.call(
-    () => {
-      try {
-        const host = nextPage
-        if (host) {
-          const clip = createClipForHost(host, { repeat: 0, yoyo: false })
-          if (clip && clip.animState) {
-            // Reset to base state first
-            resetHostClipBaseState(host, baseTopPx)
-            // Capture target base x (2em normalized)
-            const targetX = clip.animState.x
-            // Start from offscreen right: left = 100vw -> x = 1
-            clip.animState.x = 1
-            try {
-              const rectEl = clip.clipRect
-              if (rectEl) {
-                const derivedY = 1 - clip.animState.h
-                rectEl.setAttribute('x', String(clip.animState.x))
-                rectEl.setAttribute('y', String(derivedY))
-                rectEl.setAttribute('width', String(clip.animState.w))
-                rectEl.setAttribute('height', String(clip.animState.h))
-                rectEl.setAttribute('rx', String(clip.animState.r))
-                rectEl.setAttribute('ry', String(clip.animState.r))
-              }
-            } catch (e) {
-              // ignore
-            }
-            // Slide window from 100vw to 2em
-            tweenHostClipSlideX(host, targetX, preDur, `custom(${easeCurve})`)
-          }
-        }
-      } catch (err) {
-        // ignore
-      }
-    },
-    [],
-    'lift'
-  )
+  const tl = gsap.timeline()
+  const preDur = 1.2
+  const slideDur = 1.2
+  // No top offset / scale for destination at start
+  // No incoming slide; current page handles the slide out
+  tl.addLabel('lift', preDur)
+  tl.addLabel('descale', preDur + slideDur)
 
-  // Apply clip-path directly on destination page at descale (animate to fullscreen)
+  // Overlay visibility and play clip once at descale
   tl.call(
     () => {
       try {
-        const host = nextPage
-        if (host) {
-          const clip = createClipForHost(host, { repeat: 0, yoyo: false })
-          if (clip && clip.tl) {
-            // Use baseTopPx from leave (page-info height) as the top reference
-            resetHostClipBaseState(host, baseTopPx)
-            clip.tl.pause(0)
+        const container = document.querySelector('.mask-overlay')
+        if (window.__clickedPtInner) {
+          console.debug('[mask-overlay] descale: show & play clip')
+          if (container) {
             try {
-              clip.tl.eventCallback('onComplete', () => {
-                try {
-                  // Reset page-info transform only after the transition fully ends
-                  gsap.set('.page-info_inner', { y: 0 })
-                } catch (e) {
-                  // ignore
-                }
-              })
+              container.classList.add('is-active')
             } catch (e) {
               // ignore
             }
-            clip.tl.play(0)
+            container.style.left = '0px'
+          } else {
+            const { container: c, tl: ctl } = createViewportClipOverlay({
+              fill: 'var(--accent)',
+              repeat: 0,
+              yoyo: false,
+            })
+            try {
+              c.classList.add('is-active')
+            } catch (e) {
+              // ignore
+            }
+            c.style.left = '0px'
+            try {
+              ctl.pause(0)
+              ctl.play(0)
+            } catch (e) {
+              // ignore
+            }
+            window.__maskOverlay = { container: c, tl: ctl }
+          }
+          // If overlay TL exists globally, play once
+          try {
+            if (window.__maskOverlay && window.__maskOverlay.tl) {
+              window.__maskOverlay.tl.pause(0)
+              window.__maskOverlay.tl.play(0)
+            }
+          } catch (e) {
+            // ignore
           }
         }
       } catch (err) {
@@ -453,7 +457,11 @@ export function slideScaleEnter({ next }) {
       } catch (e) {
         // ignore
       }
-      // Keep page-info transform until it is hidden externally
+      try {
+        gsap.set('.page-info_inner', { y: 0 })
+      } catch (e) {
+        // ignore
+      }
       // Do NOT remove .is-active here; it is removed in the clip timeline onComplete
     },
     [],

@@ -30,7 +30,7 @@
   color: var(--black);
 }
 
-/* Transition mask overlay */
+/* Transition mask overlay 
 .mask-overlay {
   position: absolute;
   z-index: -1;
@@ -50,4 +50,9 @@
 
 .mask-overlay_wrap {
   align-items: flex-start;
+}*/
+
+.mask-overlay,
+.mask-overlay.is-active {
+  display: none !important
 }

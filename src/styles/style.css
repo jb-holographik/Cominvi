@@ -105,3 +105,16 @@
 .marker.highlight {
   opacity: 1;
 }
+
+.processes .process:first-child .process-infos {
+  padding-top: 0;
+}
+
+.processes .process:nth-child(10) {
+  height: calc(100vh - 2em);
+}
+
+[data-video="last"].video {
+  position: relative;
+  top: 0;
+}

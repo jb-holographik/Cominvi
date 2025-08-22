@@ -356,8 +356,8 @@ export function initializeNavbarScroll(root = document) {
     } else if (delta < -2) {
       gsap.to(navbarElement, {
         duration: 0.5,
-        left: '2rem',
-        right: '2rem',
+        left: '2em',
+        right: '2em',
         pointerEvents: 'auto',
         overwrite: 'auto',
       })

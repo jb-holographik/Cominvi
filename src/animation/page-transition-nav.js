@@ -5,6 +5,7 @@ import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
 import { initializeNav2 } from './nav.js'
 import { initParallax } from './parallax.js'
+import { initVideoClipStickyTransform } from './process-images.js'
 import { initScrollList } from './scroll-list.js'
 import { initLenis, destroyLenis } from './scroll.js'
 import { initServiceCards } from './service-cards.js'
@@ -174,6 +175,7 @@ export function initializePageTransitionNav() {
           initScrollList()
           initTestimonials()
           initTextDisplayReveal()
+          initVideoClipStickyTransform(next && next.container)
           try {
             initMap(next && next.container)
           } catch (e) {
@@ -206,6 +208,7 @@ export function initializePageTransitionNav() {
           initScrollList()
           initTestimonials()
           initTextDisplayReveal()
+          initVideoClipStickyTransform(next && next.container)
           try {
             initMap(next && next.container)
           } catch (e) {
@@ -232,6 +235,7 @@ export function initializePageTransitionNav() {
     initServiceCards(next && next.container)
     initTextReveal()
     initMinerals()
+    initVideoClipStickyTransform(next && next.container)
     try {
       initMap(next && next.container)
     } catch (e) {

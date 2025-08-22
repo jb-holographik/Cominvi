@@ -96,6 +96,25 @@ export function initMinerals(root = document) {
         duration: D,
         ease: mineralsEase,
         overwrite: 'auto',
+        onUpdate: () => {
+          try {
+            const currentX =
+              parseFloat(gsap.getProperty(sliderTrack, 'xPercent')) || 0
+            const center = -currentX / 20
+            sliderImages.forEach((img, idx) => {
+              const d = idx - center
+              const sign = d === 0 ? 0 : d > 0 ? 1 : -1
+              const amount = Math.min(1, Math.abs(d))
+              const rot = 30 * sign * amount
+              gsap.set(img, {
+                rotate: rot,
+                transformOrigin: '50% 50%',
+              })
+            })
+          } catch (e) {
+            // ignore
+          }
+        },
       })
 
       // Initialize rotations once
@@ -103,13 +122,25 @@ export function initMinerals(root = document) {
         sliderTrack.__mineralsSlideIndex === undefined &&
         sliderImages.length
       ) {
-        sliderImages.forEach((img, idx) => {
+        sliderImages.forEach((img) => {
           img.style.willChange = 'transform'
-          gsap.set(img, {
-            rotate: idx === next ? 0 : -30,
-            transformOrigin: '50% 50%',
-          })
+          gsap.set(img, { transformOrigin: '50% 50%' })
         })
+        // Ensure initial rotation state matches current position
+        try {
+          const initialX = -20 * next
+          gsap.set(sliderTrack, { xPercent: initialX })
+          const center = -initialX / 20
+          sliderImages.forEach((img, idx) => {
+            const d = idx - center
+            const sign = d === 0 ? 0 : d > 0 ? 1 : -1
+            const amount = Math.min(1, Math.abs(d))
+            const rot = 30 * sign * amount
+            gsap.set(img, { rotate: rot })
+          })
+        } catch (e) {
+          // ignore
+        }
       }
 
       const incoming = sliderImages[next]
@@ -118,32 +149,12 @@ export function initMinerals(root = document) {
         // Initial state: ensure first visible image is at 0 without anim
         if (incoming) {
           incoming.classList.add('is-active')
-          gsap.set(incoming, { rotate: 0, transformOrigin: '50% 50%' })
+          gsap.set(incoming, { transformOrigin: '50% 50%' })
         }
       } else {
         // Determine scroll direction via index change
-        const dir = next > prev ? 1 : -1 // 1: vers la gauche (scroll down), -1: vers la droite (scroll up)
-
-        if (incoming) {
-          incoming.classList.add('is-active')
-          const fromRot = dir === 1 ? 30 : -30
-          gsap.fromTo(
-            incoming,
-            { rotate: fromRot, transformOrigin: '50% 50%' },
-            { rotate: 0, duration: D, ease: mineralsEase, overwrite: 'auto' }
-          )
-        }
-        if (outgoing) {
-          outgoing.classList.remove('is-active')
-          const toRot = dir === 1 ? -30 : 30
-          gsap.to(outgoing, {
-            rotate: toRot,
-            duration: D,
-            ease: mineralsEase,
-            overwrite: 'auto',
-            transformOrigin: '50% 50%',
-          })
-        }
+        if (incoming) incoming.classList.add('is-active')
+        if (outgoing) outgoing.classList.remove('is-active')
       }
 
       sliderTrack.__mineralsSlideIndex = next

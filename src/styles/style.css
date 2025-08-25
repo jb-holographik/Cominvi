@@ -30,43 +30,20 @@
   color: var(--black);
 }
 
-/* Transition mask overlay 
-.mask-overlay {
-  position: absolute;
-  z-index: -1;
-  height: 100vh;
-  width: 200vw;
-  background: transparent;
-  overflow: hidden;
-  left: 0;
-  top: 0;
-  display: none;
-}
-
-.mask-overlay.is-active {
-  display: block !important;
-  z-index: 2 !important;
-}
-
-.mask-overlay_wrap {
-  align-items: flex-start;
-}*/
-
 .mask-overlay,
 .mask-overlay.is-active {
   display: none !important
 }
 
-/* Map */
-/* .region {
-  fill: none;
-  stroke: #444;
-  transition: fill 0.3s, stroke 0.3s;
-} */
-
 .region,
 .region.highlight {
   transition: all 0.5s ease-out;
+}
+
+/* Ensure full region area (not just stroke) is hoverable */
+.is-map .region {
+  pointer-events: all;
+  cursor: pointer;
 }
 
 .region.highlight {
@@ -77,6 +54,11 @@
 
 .marker .dot {
   transition: fill 0.3s, r 0.3s;
+}
+
+.project-card,
+.project-card.is-dimmed {
+  transition: all 0.2s ease-out;
 }
 
 .marker.highlight circle {

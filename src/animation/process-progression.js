@@ -1,0 +1,215 @@
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+export function initProcessProgression(root = document) {
+  const section =
+    root.querySelector('.section_process') ||
+    document.querySelector('.section_process')
+  if (!section) return
+
+  const sticky = section.querySelector('.process-progression-inner')
+  const track = section.querySelector('.process-progression')
+  if (!sticky || !track) return
+
+  // Optional number track and readout (support both 'process' and 'procress' typos)
+  const numberTrack =
+    section.querySelector('.process-progression_number') ||
+    section.querySelector('.procress-progression_number') ||
+    null
+  let numberInner = null
+  if (numberTrack) {
+    numberInner = numberTrack.querySelector('.process-progression_number-inner')
+    if (!numberInner) {
+      numberInner = numberTrack.querySelector(
+        '.procress-progression_number-inner'
+      )
+    }
+  }
+  let progressReadout = section.querySelector(
+    '.process-progression #process-progress'
+  )
+  if (!progressReadout) {
+    progressReadout = section.querySelector(
+      '.procress-progression #process-progress'
+    )
+  }
+  if (!progressReadout) {
+    progressReadout = section.querySelector('#process-progress')
+  }
+
+  // Ensure the number indicator can move using absolute positioning
+  try {
+    if (numberTrack && !numberTrack.style.position) {
+      numberTrack.style.position = 'relative'
+    }
+    if (numberInner) {
+      numberInner.style.position = 'absolute'
+      numberInner.style.left = '0%'
+      numberInner.style.top = '50%'
+      numberInner.style.transform = 'translateY(-50%)'
+      numberInner.style.willChange = 'left'
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  try {
+    track.style.height = '100%'
+    track.style.flexDirection = 'row'
+    track.style.justifyContent = 'flex-start'
+    track.style.alignItems = 'flex-end'
+  } catch (e) {
+    // ignore
+  }
+
+  buildVerticalTicks(track, sticky)
+
+  let resizeTimer
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      buildVerticalTicks(track, sticky)
+      ScrollTrigger.refresh()
+    }, 150)
+  })
+
+  setupVerticalTickHighlighting(section, sticky, track, {
+    numberTrack,
+    numberInner,
+    progressReadout,
+  })
+}
+
+function buildVerticalTicks(track, sticky) {
+  const style = getComputedStyle(track)
+  const gap = parseFloat(
+    style.columnGap || style.getPropertyValue('column-gap') || style.gap || 0
+  )
+
+  let sample = track.querySelector('.scroll-tick.vertical')
+  let createdTemp = false
+  if (!sample) {
+    sample = document.createElement('div')
+    sample.className = 'scroll-tick vertical'
+    track.appendChild(sample)
+    createdTemp = true
+  }
+
+  const tickRect = sample.getBoundingClientRect()
+  const tickWidth = tickRect.width || 2
+  let containerWidth = track.clientWidth
+  if (!containerWidth && sticky) {
+    try {
+      const s = getComputedStyle(sticky)
+      const pl = parseFloat(s.paddingLeft || 0)
+      const pr = parseFloat(s.paddingRight || 0)
+      containerWidth = Math.max(0, sticky.clientWidth - pl - pr)
+    } catch (e) {
+      containerWidth = sticky.clientWidth || 0
+    }
+  }
+  const perUnit = tickWidth + gap
+  const count =
+    perUnit > 0 ? Math.max(1, Math.floor((containerWidth + gap) / perUnit)) : 1
+
+  track.innerHTML = ''
+  const frag = document.createDocumentFragment()
+  for (let i = 0; i < count; i++) {
+    const t = document.createElement('div')
+    t.className = 'scroll-tick vertical'
+    frag.appendChild(t)
+  }
+  track.appendChild(frag)
+
+  if (createdTemp) {
+    // no-op
+  }
+}
+
+function setupVerticalTickHighlighting(section, sticky, track, extras = {}) {
+  // Progress is measured against the local wrap, not global wrapper
+
+  const ticks = Array.from(track.querySelectorAll('.scroll-tick.vertical'))
+  if (!ticks.length) return
+
+  const update = () => {
+    const stickyRect = sticky.getBoundingClientRect()
+    const wrap =
+      section.querySelector('.process-progression-wrap') ||
+      sticky.parentElement ||
+      section
+    const wrapRect = wrap.getBoundingClientRect()
+
+    const startTop = wrapRect.top
+    const endTop = wrapRect.bottom - stickyRect.height
+    const range = Math.max(1, endTop - startTop)
+    const raw = (stickyRect.top - startTop) / range
+    const progress = Math.min(Math.max(raw, 0), 1)
+    // Use the exact fractional position and only round for class application
+    const exactIndex = progress * (ticks.length - 1)
+    const activeIndex = Math.round(exactIndex)
+
+    ticks.forEach((t) => t.classList.remove('is-xxl', 'is-xl', 'is-l', 'is-m'))
+    const set = (i, cls) => {
+      if (i >= 0 && i < ticks.length) ticks[i].classList.add(cls)
+    }
+    set(activeIndex, 'is-xxl')
+    set(activeIndex - 1, 'is-xl')
+    set(activeIndex + 1, 'is-xl')
+    set(activeIndex - 2, 'is-l')
+    set(activeIndex + 2, 'is-l')
+    set(activeIndex - 3, 'is-m')
+    set(activeIndex + 3, 'is-m')
+
+    // Drive the number indicator and readout, if present
+    try {
+      const pct = Math.round(progress * 100)
+      if (extras && extras.numberInner) {
+        // Constrain the indicator inside its track by using pixel-based positioning
+        const container = extras.numberInner.parentElement
+        if (container) {
+          const cw =
+            container.clientWidth ||
+            container.getBoundingClientRect().width ||
+            0
+          const iw = extras.numberInner.getBoundingClientRect().width || 0
+          const travel = Math.max(0, cw - iw)
+          const posPx = Math.min(travel, Math.max(0, travel * progress))
+          extras.numberInner.style.left = `${posPx}px`
+        }
+      }
+      if (extras && extras.progressReadout) {
+        // The % symbol is already present in the markup/style
+        extras.progressReadout.textContent = String(pct)
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  const wrapEl =
+    section.querySelector('.process-progression-wrap') ||
+    sticky.parentElement ||
+    section
+
+  ScrollTrigger.create({
+    trigger: wrapEl,
+    start: 'top bottom',
+    end: 'bottom top',
+    onUpdate: update,
+    onEnter: update,
+    onEnterBack: update,
+  })
+
+  // Also listen to sticky position changes (smoother reaction when sticking/unsticking)
+  ScrollTrigger.create({
+    trigger: sticky,
+    start: 'top top',
+    end: () => 'bottom bottom',
+    onUpdate: update,
+  })
+
+  update()
+}

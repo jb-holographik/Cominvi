@@ -6,6 +6,7 @@ import { initializeNav2 } from './animation/nav.js'
 import { initializePageTransitionNav } from './animation/page-transition-nav.js'
 import { initParallax } from './animation/parallax.js'
 import { initVideoClipStickyTransform } from './animation/process-images.js'
+import { initProcessProgression } from './animation/process-progression.js'
 import { initScrollList } from './animation/scroll-list.js'
 import { initLenis } from './animation/scroll.js'
 import { initServiceCards } from './animation/service-cards.js'
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTextReveal()
   initMinerals()
   initScrollList()
+  initProcessProgression()
   initTestimonials()
   initTextDisplayReveal()
   initVideoClipStickyTransform()

@@ -30,7 +30,7 @@ function createLetterRevealTimeline(element) {
   const timeline = gsap.timeline({
     scrollTrigger: {
       trigger: element,
-      start: 'top 98%',
+      start: 'top 85%',
       end: '+=420',
       scrub: true,
       scroller,

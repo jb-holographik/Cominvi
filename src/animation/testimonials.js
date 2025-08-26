@@ -9,6 +9,124 @@ try {
   // ignore if already created
 }
 
+// --- Line split + slide-in helpers for testimonials ---
+function getTestimonialTextElements(testimonialEl) {
+  const nodes = Array.from(
+    testimonialEl.querySelectorAll(
+      '[data-animate-lines], .testimonial-text, .quote, .text, p.body-xl'
+    ) || []
+  )
+  if (nodes.length) return nodes
+  const fallback = testimonialEl.querySelector('p')
+  return fallback ? [fallback] : [testimonialEl]
+}
+
+function ensureWordSpans(rootEl) {
+  if (rootEl.dataset.wordsSplitted === 'true') return
+  const text = rootEl.textContent || ''
+  const parts = text.split(/(\s+)/)
+  rootEl.textContent = ''
+  const frag = document.createDocumentFragment()
+  parts.forEach((part) => {
+    if (part.trim().length === 0) {
+      frag.appendChild(document.createTextNode(part))
+    } else {
+      const span = document.createElement('span')
+      span.className = 'testimonial-word'
+      span.textContent = part
+      span.style.display = 'inline-block'
+      frag.appendChild(span)
+    }
+  })
+  rootEl.appendChild(frag)
+  rootEl.dataset.wordsSplitted = 'true'
+}
+
+function splitIntoVisualLines(rootEl) {
+  // If already split, return existing inners
+  if (rootEl.dataset.linesSplitted === 'true') {
+    return Array.from(rootEl.querySelectorAll('.testimonial-line-inner'))
+  }
+
+  ensureWordSpans(rootEl)
+  const words = Array.from(rootEl.querySelectorAll('.testimonial-word'))
+  if (!words.length) return []
+
+  const lines = []
+  let currentTop = null
+  let lineWords = []
+  words.forEach((w) => {
+    const top = w.offsetTop
+    if (currentTop === null) {
+      currentTop = top
+    }
+    if (top !== currentTop && lineWords.length) {
+      lines.push(lineWords)
+      lineWords = []
+      currentTop = top
+    }
+    lineWords.push(w)
+  })
+  if (lineWords.length) lines.push(lineWords)
+
+  // Build line wrappers
+  const frag = document.createDocumentFragment()
+  lines.forEach((line) => {
+    const outer = document.createElement('span')
+    outer.className = 'testimonial-line'
+    outer.style.display = 'block'
+    outer.style.overflow = 'hidden'
+
+    const inner = document.createElement('span')
+    inner.className = 'testimonial-line-inner'
+    inner.style.display = 'inline-block'
+
+    line.forEach((w) => {
+      // Capture the following whitespace BEFORE moving the word node
+      const nextNode = w.nextSibling
+      const shouldMoveSpace =
+        nextNode &&
+        nextNode.nodeType === Node.TEXT_NODE &&
+        (nextNode.textContent || '').trim().length === 0
+
+      // Append the word
+      inner.appendChild(w)
+
+      // Preserve following whitespace text node (spaces) if present
+      if (shouldMoveSpace) {
+        inner.appendChild(nextNode)
+      }
+    })
+    outer.appendChild(inner)
+    frag.appendChild(outer)
+  })
+
+  rootEl.textContent = ''
+  rootEl.appendChild(frag)
+  rootEl.dataset.linesSplitted = 'true'
+  return Array.from(rootEl.querySelectorAll('.testimonial-line-inner'))
+}
+
+// (Deprecated) animateLinesIn kept only for reference; replaced by animateElementsLinesStaggered
+
+function animateElementsLinesStaggered(rootEls) {
+  const allLines = []
+  rootEls.forEach((el) => {
+    const lines = splitIntoVisualLines(el)
+    if (lines && lines.length) allLines.push(...lines)
+  })
+  if (!allLines.length) return
+  gsap.killTweensOf(allLines)
+  gsap.set(allLines, { yPercent: 100 })
+  gsap.to(allLines, {
+    yPercent: 0,
+    duration: 0.6,
+    ease: 'custom',
+    stagger: 0.05,
+    overwrite: 'auto',
+  })
+}
+
 export function initTestimonials(root = document) {
   const containers = Array.from(root.querySelectorAll('.testimonials') || [])
   if (!containers.length) return
@@ -64,13 +182,16 @@ export function initTestimonials(root = document) {
         else idEl.classList.remove('is-active')
       })
 
-      // Toggle testimonial active state with opacity crossfade
+      // Toggle testimonial active state with opacity crossfade + text slide-in
       if (testimonials.length >= 2) {
         const prev = testimonials[activeIndex]
         const next = testimonials[i]
         if (prev && next && prev !== next) {
           prev.classList.remove('is-active')
           next.classList.add('is-active')
+          // Prepare and animate incoming text lines
+          const textEls = getTestimonialTextElements(next)
+          animateElementsLinesStaggered(textEls)
           gsap.to(prev, {
             duration: 0.5,
             opacity: 0,
@@ -97,8 +218,40 @@ export function initTestimonials(root = document) {
     activeIndex = initial
     setInitialVisibility(initial)
 
+    // Auto-toggle when in view every 5 seconds
+    let autoToggleInterval = null
+    const startAutoToggle = () => {
+      if (autoToggleInterval || options.length < 2) return
+      autoToggleInterval = window.setInterval(() => {
+        const nextIndex = (activeIndex + 1) % options.length
+        setActiveIndex(nextIndex)
+      }, 5000)
+    }
+    const stopAutoToggle = () => {
+      if (autoToggleInterval) {
+        clearInterval(autoToggleInterval)
+        autoToggleInterval = null
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target !== container) return
+          if (entry.isIntersecting) startAutoToggle()
+          else stopAutoToggle()
+        })
+      },
+      { threshold: 0.25 }
+    )
+    observer.observe(container)
+
     options.forEach((opt, i) => {
-      opt.addEventListener('click', () => setActiveIndex(i))
+      opt.addEventListener('click', () => {
+        stopAutoToggle()
+        setActiveIndex(i)
+        startAutoToggle()
+      })
     })
   })
 }

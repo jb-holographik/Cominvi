@@ -13,20 +13,26 @@ export function initLenis(root = document) {
     document.querySelector('.content-wrap')
   if (!wrapper || !content) return null
 
-  const lenis = new Lenis({ wrapper, content })
+  const lenis = new Lenis({ wrapper, content, lerp: 0.125 })
   window.lenis = lenis
   window.__lenisWrapper = wrapper
 
   // Synchronize Lenis with ScrollTrigger
   lenis.on('scroll', ScrollTrigger.update)
 
-  // Drive Lenis with GSAP's ticker
-  const ticker = (time) => {
-    lenis.raf(time * 1000)
+  // Drive Lenis with requestAnimationFrame for stable timing
+  let rafId = null
+  const raf = (time) => {
+    try {
+      lenis.raf(time)
+    } catch (err) {
+      // ignore
+    }
+    rafId = requestAnimationFrame(raf)
   }
-  gsap.ticker.add(ticker)
-  gsap.ticker.lagSmoothing(0)
-  window.__lenisTicker = ticker
+  rafId = requestAnimationFrame(raf)
+  window.__lenisRaf = raf
+  window.__lenisRafId = rafId
 
   // Let ScrollTrigger know how to handle the custom scroller (wrapper)
   ScrollTrigger.scrollerProxy(wrapper, {
@@ -38,7 +44,14 @@ export function initLenis(root = document) {
           wrapper.scrollTop = value
         }
       }
-      return wrapper.scrollTop
+      // Report Lenis' virtual scroll position for consistency
+      try {
+        return typeof lenis.scroll === 'number'
+          ? lenis.scroll
+          : wrapper.scrollTop
+      } catch (err) {
+        return wrapper.scrollTop
+      }
     },
     getBoundingClientRect() {
       return {
@@ -61,9 +74,9 @@ export function initLenis(root = document) {
 
 export function destroyLenis() {
   try {
-    if (window.__lenisTicker) {
-      gsap.ticker.remove(window.__lenisTicker)
-      window.__lenisTicker = null
+    if (window.__lenisRafId) {
+      cancelAnimationFrame(window.__lenisRafId)
+      window.__lenisRafId = null
     }
   } catch (err) {
     // ignore
@@ -77,6 +90,7 @@ export function destroyLenis() {
   }
   try {
     window.lenis = null
+    window.__lenisRaf = null
   } catch (err) {
     // ignore
   }

@@ -1,976 +1,668 @@
-import { gsap } from 'gsap'
+import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
-
 gsap.registerPlugin(CustomEase)
 const easeCurve = 'M0,0 C0.6,0 0,1 1,1 '
 
-export function projectsOverlay(root = document) {
-  try {
-    const overlayContainer = root.querySelector('.projects_overlays')
-    const cardsWrapper = root.querySelector('.cards-wrapper')
-    if (!overlayContainer || !cardsWrapper) return
+export function initMap(root = document) {
+  const scope = root || document
 
-    // Avoid duplicate bindings
-    if (overlayContainer.__overlayBound) return
-    overlayContainer.__overlayBound = true
+  // Collect elements
+  const markers = Array.from(scope.querySelectorAll('.marker[id^="marker-"]'))
+  const regions = Array.from(scope.querySelectorAll('.region[id^="region-"]'))
+  const projectItems = Array.from(scope.querySelectorAll('.project-item'))
+  const overlayItems = Array.from(
+    scope.querySelectorAll('.projects-overlay-item')
+  )
 
-    const items = overlayContainer.querySelectorAll('.projects-overlay-item')
-    const closeButtons = overlayContainer.querySelectorAll('.close-button')
-    const mapRoot = root.querySelector('.is-map') || root
-    const markers = mapRoot.querySelectorAll('.marker')
+  if (!markers.length && !regions.length && !projectItems.length) return
 
-    const normalizeKey = (s) => {
-      try {
-        return String(s || '')
-          .trim()
-          .toLowerCase()
-      } catch (e) {
-        return ''
-      }
+  // Build lookups
+  const pointToMarker = new Map()
+  const markerToPoint = new Map()
+  markers.forEach((markerEl) => {
+    const id = markerEl.id || ''
+    const m = id.match(/^marker-(.+)$/)
+    if (m && m[1] != null) {
+      const pointKey = String(m[1])
+      pointToMarker.set(pointKey, markerEl)
+      markerToPoint.set(markerEl, pointKey)
     }
-    const showForProject = (projectKey) => {
-      try {
-        overlayContainer.style.display = 'flex'
-      } catch (e) {
-        // ignore
-      }
-      items.forEach((el) => {
-        const key = el.getAttribute('data-project') || ''
-        // Keep default CSS display for the active item; hide others
-        el.style.display =
-          normalizeKey(key) === normalizeKey(projectKey) ? '' : 'none'
-      })
-    }
+  })
 
-    const getScrollContainer = () => {
-      try {
-        const fallbackScrollRoot =
-          document.scrollingElement || document.documentElement || document.body
-        return (
-          root.querySelector('.page-wrap') ||
-          root.querySelector('.content-wrap') ||
-          root.querySelector('[data-barba="container"]') ||
-          fallbackScrollRoot
-        )
-      } catch (e) {
-        const fallbackScrollRoot =
-          document.scrollingElement || document.documentElement || document.body
-        return fallbackScrollRoot
-      }
-    }
-
-    const disableScroll = () => {
-      try {
-        const sc = getScrollContainer()
-        overlayContainer.__scrollContainer = sc
-        const isBody = sc === document.body || sc === document.documentElement
-        if (isBody) {
-          const scrollY = window.scrollY || window.pageYOffset || 0
-          sc.__scrollLockY = scrollY
-          document.body.style.position = 'fixed'
-          document.body.style.top = `-${scrollY}px`
-          document.body.style.left = '0'
-          document.body.style.right = '0'
-          document.body.style.width = '100%'
-          document.body.style.overflow = 'hidden'
-        } else {
-          const currentY = sc.scrollTop || 0
-          sc.__scrollLockY = currentY
-          sc.style.overflow = 'hidden'
-          sc.style.touchAction = 'none'
-          const prevent = (ev) => {
-            try {
-              ev.preventDefault()
-              ev.stopPropagation()
-            } catch (e) {
-              // ignore
-            }
-            return false
-          }
-          const preventKeys = (ev) => {
-            const keys = [
-              ' ',
-              'Spacebar',
-              'PageUp',
-              'PageDown',
-              'ArrowUp',
-              'ArrowDown',
-              'Home',
-              'End',
-            ]
-            if (keys.includes(ev.key)) {
-              try {
-                ev.preventDefault()
-                ev.stopPropagation()
-              } catch (e) {
-                // ignore
-              }
-              return false
-            }
-            return true
-          }
-          const snapScroll = () => {
-            try {
-              if (!overlayContainer.__overlayOpen) return
-              const y = parseInt(sc.__scrollLockY || 0, 10)
-              if (sc.scrollTop !== y) sc.scrollTop = y
-            } catch (e) {
-              // ignore
-            }
-          }
-          sc.__scrollPreventHandler = prevent
-          sc.__scrollKeyPreventHandler = preventKeys
-          sc.__scrollSnapHandler = snapScroll
-          try {
-            sc.addEventListener('wheel', prevent, { passive: false })
-            sc.addEventListener('touchmove', prevent, { passive: false })
-            sc.addEventListener('scroll', snapScroll, { passive: true })
-            // Also capture at the document level to block bubbling from descendants
-            document.addEventListener('wheel', prevent, {
-              passive: false,
-              capture: true,
-            })
-            document.addEventListener('touchmove', prevent, {
-              passive: false,
-              capture: true,
-            })
-            window.addEventListener('keydown', preventKeys, { passive: false })
-          } catch (e) {
-            // ignore
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
-
-    const enableScroll = () => {
-      try {
-        const sc = overlayContainer.__scrollContainer || getScrollContainer()
-        const isBody = sc === document.body || sc === document.documentElement
-        if (isBody) {
-          const y = parseInt(document.body.__scrollLockY || 0, 10)
-          document.body.style.position = ''
-          document.body.style.top = ''
-          document.body.style.left = ''
-          document.body.style.right = ''
-          document.body.style.width = ''
-          document.body.style.overflow = ''
-          try {
-            window.scrollTo(0, y)
-          } catch (e) {
-            // ignore
-          }
-          delete document.body.__scrollLockY
-        } else {
-          const y = parseInt(sc.__scrollLockY || 0, 10)
-          sc.style.overflow = ''
-          sc.style.touchAction = ''
-          try {
-            if (sc.__scrollPreventHandler) {
-              sc.removeEventListener('wheel', sc.__scrollPreventHandler)
-              sc.removeEventListener('touchmove', sc.__scrollPreventHandler)
-            }
-            if (sc.__scrollKeyPreventHandler) {
-              window.removeEventListener(
-                'keydown',
-                sc.__scrollKeyPreventHandler
-              )
-            }
-            if (sc.__scrollSnapHandler) {
-              sc.removeEventListener('scroll', sc.__scrollSnapHandler)
-            }
-            // Remove document-level captures
-            if (sc.__scrollPreventHandler) {
-              document.removeEventListener(
-                'wheel',
-                sc.__scrollPreventHandler,
-                true
-              )
-              document.removeEventListener(
-                'touchmove',
-                sc.__scrollPreventHandler,
-                true
-              )
-            }
-          } catch (e) {
-            // ignore
-          }
-          try {
-            sc.scrollTop = y
-          } catch (e) {
-            // ignore
-          }
-          delete sc.__scrollLockY
-          delete sc.__scrollPreventHandler
-          delete sc.__scrollKeyPreventHandler
-          delete sc.__scrollSnapHandler
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
-
-    const playIn = () => {
-      try {
-        overlayContainer.__overlayOpen = true
-      } catch (e) {
-        /* ignore */
-      }
-      // Reset pixel translation and set closed baseline: overlay at 110%
-      try {
-        gsap.set(cardsWrapper, { x: 0, xPercent: 0 })
-        gsap.set(overlayContainer, { x: 0, xPercent: 110 })
-      } catch (e) {
-        // ignore
-      }
-      try {
-        overlayContainer.style.display = 'flex'
-      } catch (e) {
-        // ignore
-      }
-      // Clear any card dimming when opening overlay
-      try {
-        const allCards = root.querySelectorAll('.project-card')
-        allCards.forEach((c) => c.classList.remove('is-dimmed'))
-      } catch (e) {
-        // ignore
-      }
-      disableScroll()
-      gsap.to(cardsWrapper, {
-        xPercent: 110,
-        duration: 1.2,
-        ease: CustomEase.create('custom', easeCurve),
-        overwrite: 'auto',
-      })
-      gsap.to(overlayContainer, {
-        xPercent: 0,
-        duration: 1.2,
-        ease: CustomEase.create('custom', easeCurve),
-        overwrite: 'auto',
-      })
-    }
-
-    const playOut = () => {
-      const tl = gsap.timeline({
-        defaults: {
-          duration: 1.2,
-          ease: CustomEase.create('custom', easeCurve),
-        },
-      })
-      tl.to(cardsWrapper, { xPercent: 0, x: 0 }, 0)
-      tl.to(overlayContainer, { xPercent: 110, x: 0 }, 0)
-      tl.add(() => {
-        try {
-          overlayContainer.style.display = 'none'
-          // Clear all highlights when closing
-          const regions = mapRoot.querySelectorAll('.region')
-          regions.forEach((r) => r.classList.remove('highlight'))
-          markers.forEach((m) => m.classList.remove('highlight', 'dimmed'))
-          const allCards = root.querySelectorAll('.project-card')
-          allCards.forEach((c) => c.classList.remove('is-dimmed'))
-        } catch (e) {
-          // ignore
-        }
-        try {
-          overlayContainer.__overlayOpen = false
-        } catch (e) {
-          /* ignore */
-        }
-        try {
-          enableScroll()
-        } catch (e) {
-          // ignore
-        }
-      })
-    }
-
-    // Bind clicks on project cards
-    const projectCards = root.querySelectorAll('.project-item')
-    projectCards.forEach((card) => {
-      card.addEventListener('click', (ev) => {
-        try {
-          ev.preventDefault()
-        } catch (e) {
-          // ignore
-        }
-        // Freeze hover logic immediately so mouseleave doesn't clear highlights
-        try {
-          const oc = root.querySelector('.projects_overlays')
-          if (oc) oc.__overlayOpen = true
-        } catch (e) {
-          // ignore
-        }
-        const projectKey = card.getAttribute('data-project') || ''
-        showForProject(projectKey)
-        // Persist highlights while overlay is open (emphasize target only)
-        try {
-          const regionId = `region-${card.dataset.region}`
-          const pointId = `marker-${card.dataset.point}`
-          const region = mapRoot.querySelector(`#${regionId}`)
-          const point = mapRoot.querySelector(`#${pointId}`)
-          if (region) {
-            // Use helper to ensure proper z-order without hiding others
-            const canHighlight =
-              region && typeof region.classList !== 'undefined'
-            if (canHighlight) {
-              // Do not strip classes from others; just highlight selected
-              region.classList.add('highlight')
-              if (region.parentNode && region.parentNode.appendChild) {
-                region.parentNode.appendChild(region)
-              }
-            }
-          }
-          if (point && point.classList) {
-            // Only highlight the target marker; don't dim the rest on click
-            point.classList.add('highlight')
-          }
-        } catch (e) {
-          // ignore
-        }
-        playIn()
-      })
-    })
-
-    if (closeButtons && closeButtons.length) {
-      closeButtons.forEach((btn) => {
-        btn.addEventListener('click', (ev) => {
-          try {
-            ev.preventDefault()
-            ev.stopPropagation()
-          } catch (e) {
-            // ignore
-          }
-          playOut()
-        })
-      })
-    }
-
-    // Allow external triggers (e.g., marker click) to open overlay for a project
+  const normalizeRegionKey = (raw) => {
+    if (!raw && raw !== 0) return null
     try {
-      // Expose an imperative opener to avoid duplication
-      overlayContainer.__openForProject = (detail) => {
-        try {
-          let projectKey = detail && detail.projectKey ? detail.projectKey : ''
-          const regionKey = detail && detail.regionKey ? detail.regionKey : ''
-          const pointKey = detail && detail.pointKey ? detail.pointKey : ''
-          // Resolve missing projectKey from point/region if needed
-          try {
-            if (!projectKey) {
-              let derived = null
-              if (pointKey) {
-                const byPoint = root.querySelector(
-                  `.project-item[data-point="${pointKey}"]`
-                )
-                if (byPoint) derived = byPoint.getAttribute('data-project')
-              }
-              if (!derived && regionKey) {
-                const byRegion = root.querySelector(
-                  `.project-item[data-region="${regionKey}"]`
-                )
-                if (byRegion) derived = byRegion.getAttribute('data-project')
-              }
-              if (derived) projectKey = derived
-            }
-          } catch (e) {
-            // ignore
-          }
-          if (projectKey) {
-            showForProject(projectKey)
-          }
-          // Persist highlights similar to card click
-          try {
-            if (regionKey) {
-              const regionId = `region-${regionKey}`
-              const region = mapRoot.querySelector(`#${regionId}`)
-              if (region) {
-                region.classList.add('highlight')
-                if (region.parentNode && region.parentNode.appendChild) {
-                  region.parentNode.appendChild(region)
-                }
-              }
-            }
-            if (pointKey) {
-              const pointId = `marker-${pointKey}`
-              const point = mapRoot.querySelector(`#${pointId}`)
-              if (point && point.classList) point.classList.add('highlight')
-            }
-          } catch (e) {
-            // ignore
-          }
-          playIn()
-        } catch (e) {
-          // ignore
-        }
-      }
-      // Expose helpers for external callers
-      try {
-        overlayContainer.__playOut = playOut
-        overlayContainer.__playIn = playIn
-        overlayContainer.__showForProject = showForProject
-      } catch (e) {
-        // ignore
-      }
-      if (!overlayContainer.__openEventBound) {
-        overlayContainer.addEventListener('open-project', (event) => {
-          overlayContainer.__openForProject(
-            event && event.detail ? event.detail : {}
-          )
-        })
-        overlayContainer.__openEventBound = true
+      let v = String(raw).trim().toLowerCase()
+      if (v.startsWith('#')) v = v.slice(1)
+      if (v.startsWith('region-')) v = v.slice(7)
+      return v || null
+    } catch (e) {
+      return null
+    }
+  }
+
+  const regionNameToRegion = new Map()
+  regions.forEach((regionEl) => {
+    const id = regionEl.id || ''
+    const m = id.match(/^region-(.+)$/)
+    if (m && m[1] != null) {
+      const regionKey = normalizeRegionKey(m[1])
+      regionNameToRegion.set(regionKey, regionEl)
+    }
+  })
+
+  const pointToProjectItems = new Map()
+  const regionNameToProjectItems = new Map()
+  const pointToRegionName = new Map()
+  projectItems.forEach((cardEl) => {
+    const pointKey = cardEl?.dataset?.point
+      ? String(cardEl.dataset.point)
+      : null
+    const regionKey = cardEl?.dataset?.region
+      ? normalizeRegionKey(cardEl.dataset.region)
+      : null
+
+    if (pointKey) {
+      const arr = pointToProjectItems.get(pointKey) || []
+      arr.push(cardEl)
+      pointToProjectItems.set(pointKey, arr)
+    }
+    if (regionKey) {
+      const arr = regionNameToProjectItems.get(regionKey) || []
+      arr.push(cardEl)
+      regionNameToProjectItems.set(regionKey, arr)
+    }
+    if (pointKey && regionKey && !pointToRegionName.has(pointKey)) {
+      pointToRegionName.set(pointKey, regionKey)
+    }
+  })
+
+  const pointToOverlayItems = new Map()
+  overlayItems.forEach((overlayEl) => {
+    const pointKey = overlayEl?.dataset?.point
+      ? String(overlayEl.dataset.point)
+      : null
+    if (pointKey) {
+      const arr = pointToOverlayItems.get(pointKey) || []
+      arr.push(overlayEl)
+      pointToOverlayItems.set(pointKey, arr)
+    }
+  })
+
+  // Helpers
+  const resetMarkers = () => {
+    markers.forEach((m) => {
+      m.classList.remove('highlight')
+      m.classList.remove('dimmed')
+    })
+  }
+
+  const resetRegions = () => {
+    regions.forEach((r) => r.classList.remove('highlight'))
+  }
+
+  const resetCardsDimming = () => {
+    projectItems.forEach((c) => c.classList.remove('is-dimmed'))
+  }
+
+  const resetAll = () => {
+    resetMarkers()
+    resetRegions()
+    resetCardsDimming()
+  }
+
+  const highlightRegionByName = (regionKey) => {
+    const normalized = normalizeRegionKey(regionKey)
+    if (!normalized) {
+      resetRegions()
+      return
+    }
+    const regionEl = regionNameToRegion.get(normalized)
+    if (!regionEl) {
+      // Clear any existing highlights if target missing
+      resetRegions()
+      return
+    }
+    regions.forEach((r) => {
+      if (r === regionEl) r.classList.add('highlight')
+      else r.classList.remove('highlight')
+    })
+    // Bring highlighted region to front so its contour is fully visible
+    try {
+      const parent = regionEl.parentNode
+      if (parent && typeof parent.appendChild === 'function') {
+        parent.appendChild(regionEl)
       }
     } catch (e) {
       // ignore
     }
+  }
 
-    // Close when clicking outside the overlay container entirely
+  const highlightMarkerForPoint = (pointKey) => {
+    const markerEl = pointToMarker.get(pointKey)
+    if (!markerEl) {
+      resetMarkers()
+      return
+    }
+    markers.forEach((m) => {
+      if (m === markerEl) {
+        m.classList.add('highlight')
+        m.classList.remove('dimmed')
+      } else {
+        m.classList.add('dimmed')
+        m.classList.remove('highlight')
+      }
+    })
+  }
+
+  const dimCardsExceptPoint = (pointKey) => {
+    const candidates = pointToProjectItems.get(pointKey) || []
+    const firstForPoint = candidates.length ? candidates[0] : null
+    projectItems.forEach((cardEl) => {
+      if (firstForPoint && cardEl === firstForPoint) {
+        cardEl.classList.remove('is-dimmed')
+      } else {
+        cardEl.classList.add('is-dimmed')
+      }
+    })
+  }
+
+  const scrollMapSectionToCard = (pointKey) => {
     try {
-      if (!overlayContainer.__outsideCloseBound) {
-        const outsideHandler = (ev) => {
+      const cards = projectItems
+      if (!cards.length) return
+      const candidates = pointToProjectItems.get(pointKey) || []
+      const target = candidates.length ? candidates[0] : null
+      if (!target) return
+
+      const index = cards.indexOf(target)
+      const beforeLastIdx = Math.max(0, cards.length - 2)
+
+      const wrapper = (() => {
+        try {
+          return window.__lenisWrapper || null
+        } catch (e) {
+          return null
+        }
+      })()
+
+      const viewportH = wrapper
+        ? wrapper.clientHeight
+        : window.innerHeight || document.documentElement.clientHeight
+
+      const rect = target.getBoundingClientRect()
+      const cardsContainer = scope.querySelector('.cards-wrapper')
+      const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0
+      const currentTop = wrapper
+        ? wrapper.scrollTop
+        : window.pageYOffset || document.documentElement.scrollTop || 0
+
+      // Compute offset for top/bottom/center alignment relative to viewport
+      let offset = 0
+      if (index <= 1) {
+        // For the first two cards, always scroll to the same top level: top of cards container
+        if (cardsContainer) {
+          const containerTopRel =
+            cardsContainer.getBoundingClientRect().top - wrapperTop
+          const desiredTop = currentTop + containerTopRel
           try {
-            if (!overlayContainer.__overlayOpen) return
-            const insideOverlay =
-              ev.target &&
-              typeof ev.target.closest === 'function' &&
-              ev.target.closest('.projects_overlays')
-            if (!insideOverlay) {
-              // Close overlay and fully consume the event so nothing beneath navigates
-              playOut()
-              try {
-                if (ev && typeof ev.preventDefault === 'function')
-                  ev.preventDefault()
-                if (ev && typeof ev.stopPropagation === 'function')
-                  ev.stopPropagation()
-                if (ev && typeof ev.stopImmediatePropagation === 'function')
-                  ev.stopImmediatePropagation()
-              } catch (e2) {
-                // ignore
-              }
+            if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+              window.lenis.scrollTo(desiredTop, {
+                duration: 1.2,
+                immediate: false,
+              })
               return
             }
           } catch (e) {
             // ignore
           }
+          // Fallback
+          try {
+            if (wrapper) {
+              gsap.to(wrapper, {
+                scrollTop: desiredTop,
+                duration: 1.2,
+                ease: CustomEase.create('custom', easeCurve),
+              })
+            } else {
+              window.scrollTo({ top: desiredTop, behavior: 'smooth' })
+            }
+            return
+          } catch (e) {
+            // ignore
+          }
         }
-        document.addEventListener('click', outsideHandler, true)
-        overlayContainer.__outsideCloseBound = true
+        offset = 0 // default top align
+      } else if (index >= beforeLastIdx) {
+        // For the last two cards, always scroll to the same bottom level: bottom of cards container
+        if (cardsContainer) {
+          const containerBottomRel =
+            cardsContainer.getBoundingClientRect().bottom - wrapperTop
+          const desiredTop = currentTop + containerBottomRel - viewportH
+          try {
+            if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+              window.lenis.scrollTo(desiredTop, {
+                duration: 1.2,
+                immediate: false,
+              })
+              return
+            }
+          } catch (e) {
+            // ignore
+          }
+          // Fallback
+          try {
+            if (wrapper) {
+              gsap.to(wrapper, {
+                scrollTop: desiredTop,
+                duration: 1.2,
+                ease: CustomEase.create('custom', easeCurve),
+              })
+            } else {
+              window.scrollTo({ top: desiredTop, behavior: 'smooth' })
+            }
+            return
+          } catch (e) {
+            // ignore
+          }
+        }
+        offset = -(viewportH - rect.height) // default bottom align
+      } else {
+        offset = -(viewportH / 2 - rect.height / 2) // center
+      }
+
+      // Prefer Lenis
+      try {
+        if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+          window.lenis.scrollTo(target, {
+            duration: 1.2,
+            immediate: false,
+            offset,
+          })
+          return
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      // Fallback: manual scroll of wrapper or window
+      try {
+        const currentTop = wrapper
+          ? wrapper.scrollTop
+          : window.pageYOffset || document.documentElement.scrollTop || 0
+        const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0
+        const targetTopRel = rect.top - wrapperTop
+        const desiredTop = currentTop + targetTopRel + offset
+        if (wrapper) {
+          gsap.to(wrapper, {
+            scrollTop: desiredTop,
+            duration: 1.2,
+            ease: CustomEase.create('custom', easeCurve),
+          })
+        } else {
+          window.scrollTo({ top: desiredTop, behavior: 'smooth' })
+        }
+      } catch (e) {
+        // ignore
       }
     } catch (e) {
       // ignore
     }
-  } catch (err) {
+  }
+
+  // Interactions
+  markers.forEach((markerEl) => {
+    markerEl.addEventListener('mouseenter', () => {
+      const pointKey = markerToPoint.get(markerEl)
+      if (!pointKey) return
+      highlightMarkerForPoint(pointKey)
+      const regionKey = pointToRegionName.get(pointKey)
+      if (regionKey) highlightRegionByName(regionKey)
+      dimCardsExceptPoint(pointKey)
+      scrollMapSectionToCard(pointKey)
+    })
+    markerEl.addEventListener('mouseleave', () => {
+      const currentOverlays = (scope || document).querySelector(
+        '.projects_overlays'
+      )
+      if (currentOverlays?.dataset?.open === 'true') return
+      resetAll()
+    })
+    markerEl.addEventListener('click', () => {
+      const pointKey = markerToPoint.get(markerEl)
+      if (!pointKey) return
+      try {
+        mapOpen(pointKey, scope)
+      } catch (e) {
+        // ignore
+      }
+    })
+  })
+
+  regions.forEach((regionEl) => {
+    regionEl.addEventListener('mouseenter', () => {
+      // Only region highlight per spec
+      const id = regionEl.id || ''
+      const m = id.match(/^region-(.+)$/)
+      const regionKey = m && m[1] ? normalizeRegionKey(m[1]) : null
+      if (regionKey) highlightRegionByName(regionKey)
+      else resetRegions()
+    })
+    regionEl.addEventListener('mouseleave', () => {
+      const currentOverlays = (scope || document).querySelector(
+        '.projects_overlays'
+      )
+      if (currentOverlays?.dataset?.open === 'true') return
+      resetRegions()
+    })
+  })
+
+  projectItems.forEach((cardEl) => {
+    cardEl.addEventListener('mouseenter', () => {
+      const pointKey = cardEl?.dataset?.point
+        ? String(cardEl.dataset.point)
+        : null
+      const regionKey = cardEl?.dataset?.region
+        ? normalizeRegionKey(cardEl.dataset.region)
+        : null
+      if (pointKey) highlightMarkerForPoint(pointKey)
+      if (regionKey) highlightRegionByName(regionKey)
+      // Also dim other points per spec
+      if (!pointKey) return
+      markers.forEach((m) => {
+        const mkPoint = markerToPoint.get(m)
+        if (mkPoint && mkPoint !== pointKey) {
+          m.classList.add('dimmed')
+          m.classList.remove('highlight')
+        }
+      })
+      // Dim other cards while hovering a card
+      projectItems.forEach((other) => {
+        if (other === cardEl) other.classList.remove('is-dimmed')
+        else other.classList.add('is-dimmed')
+      })
+    })
+    cardEl.addEventListener('mouseleave', () => {
+      const currentOverlays = (scope || document).querySelector(
+        '.projects_overlays'
+      )
+      if (currentOverlays?.dataset?.open === 'true') return
+      resetMarkers()
+      resetRegions()
+    })
+    cardEl.addEventListener('click', (ev) => {
+      try {
+        const pointKey = cardEl?.dataset?.point
+          ? String(cardEl.dataset.point)
+          : null
+        if (!pointKey) return
+        ev.preventDefault()
+        ev.stopPropagation()
+        mapOpen(pointKey, scope)
+      } catch (e) {
+        // ignore
+      }
+    })
+  })
+
+  // Keep cards dimmed until leaving the wrapper
+  try {
+    const cardsWrapper = scope.querySelector('.cards-wrapper')
+    if (cardsWrapper && !cardsWrapper.__cardsWrapperHandlersAttached) {
+      cardsWrapper.__cardsWrapperHandlersAttached = true
+      cardsWrapper.addEventListener('mouseleave', () => {
+        resetCardsDimming()
+      })
+    }
+  } catch (e) {
     // ignore
   }
-}
-export function initMap(root = document) {
+
+  // Attach close handlers for overlays (once)
   try {
-    const cards = root.querySelectorAll('.project-card')
-    const mapRoot = root.querySelector('.is-map') || root
-    const markers = mapRoot.querySelectorAll('.marker')
-    const regions = mapRoot.querySelectorAll('.region')
-    const cardsWrapper = root.querySelector('.cards-wrapper')
-    try {
-      // eslint-disable-next-line no-console
-      console.debug('[map] initMap found cards', {
-        count: cards.length,
-        hasMapRoot: !!(root.querySelector && root.querySelector('.is-map')),
-      })
-    } catch (e) {
-      // ignore
-    }
-    // Highlight helper: reset all regions, then optionally promote one to the top
-    const highlightRegion = (regionEl) => {
-      try {
-        const all = mapRoot.querySelectorAll('.region')
-        all.forEach((r) => r.classList.remove('highlight'))
-        if (regionEl) {
-          regionEl.classList.add('highlight')
-          if (regionEl.parentNode && regionEl.parentNode.appendChild) {
-            regionEl.parentNode.appendChild(regionEl)
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
-
-    cards.forEach((card) => {
-      const getByIdCaseInsensitive = (container, id) => {
-        if (!container || !id) return null
-        const direct = container.querySelector(`#${id}`)
-        if (direct) return direct
-        const targetLower = String(id).toLowerCase()
-        const allWithId = container.querySelectorAll('[id]')
-        for (const el of allWithId) {
+    const overlays = scope.querySelector('.projects_overlays')
+    if (overlays && !overlays.__overlayHandlersAttached) {
+      overlays.__overlayHandlersAttached = true
+      // Close on .close-button inside overlays
+      overlays.addEventListener('click', (ev) => {
+        const btn =
+          ev.target && ev.target.closest
+            ? ev.target.closest('.close-button')
+            : null
+        if (btn) {
+          ev.preventDefault()
+          ev.stopPropagation()
           try {
-            if (String(el.id).toLowerCase() === targetLower) return el
+            mapClose(scope)
           } catch (e) {
             // ignore
           }
         }
-        return null
-      }
-      try {
-        // eslint-disable-next-line no-console
-        console.debug('[map] bind card', {
-          region: card && card.dataset ? card.dataset.region : undefined,
-          point: card && card.dataset ? card.dataset.point : undefined,
-        })
-      } catch (e) {
-        // ignore
-      }
-      card.addEventListener('mouseenter', () => {
-        // If overlay is open, do not change highlights on hover
-        if (root.querySelector('.projects_overlays')?.__overlayOpen) return
-        const regionId = `region-${card.dataset.region}`
-        const pointId = `marker-${card.dataset.point}`
-        const region = getByIdCaseInsensitive(mapRoot, regionId)
-        const point = getByIdCaseInsensitive(mapRoot, pointId)
-        try {
-          // eslint-disable-next-line no-console
-          console.debug('[map] mouseenter', {
-            regionId,
-            pointId,
-            hasRegion: !!region,
-            hasPoint: !!point,
-          })
-        } catch (e) {
-          // ignore
-        }
-        if (region) highlightRegion(region)
-        // Markers behavior on card hover: highlight the target marker, dim others
-        try {
-          markers.forEach((m) => m.classList.remove('highlight', 'dimmed'))
-          const targetMarker = point
-          if (targetMarker) targetMarker.classList.add('highlight')
-          markers.forEach((m) => {
-            if (m !== targetMarker) m.classList.add('dimmed')
-          })
-        } catch (e) {
-          // ignore
-        }
-        // Cards behavior on card hover: dim other cards
-        try {
-          cards.forEach((c) => c.classList.remove('is-dimmed'))
-          cards.forEach((c) => {
-            if (c !== card) c.classList.add('is-dimmed')
-          })
-        } catch (e) {
-          // ignore
-        }
       })
-
-      card.addEventListener('mouseleave', (ev) => {
-        // If overlay is open, keep highlights until close
-        if (root.querySelector('.projects_overlays')?.__overlayOpen) return
-        // If we are still inside the cards wrapper, keep highlights
-        try {
-          if (
-            cardsWrapper &&
-            ev &&
-            ev.relatedTarget &&
-            cardsWrapper.contains(ev.relatedTarget)
-          ) {
-            return
-          }
-        } catch (e) {
-          // ignore
-        }
-        const regionId = `region-${card.dataset.region}`
-        const pointId = `marker-${card.dataset.point}`
-        const region = getByIdCaseInsensitive(mapRoot, regionId)
-        const point = getByIdCaseInsensitive(mapRoot, pointId)
-        try {
-          // eslint-disable-next-line no-console
-          console.debug('[map] mouseleave', {
-            regionId,
-            pointId,
-            hasRegion: !!region,
-            hasPoint: !!point,
-          })
-        } catch (e) {
-          // ignore
-        }
-        highlightRegion(null)
-        try {
-          markers.forEach((m) => m.classList.remove('highlight', 'dimmed'))
-        } catch (e) {
-          // ignore
-        }
-        // Remove card dimming on leave
-        try {
-          cards.forEach((c) => c.classList.remove('is-dimmed'))
-        } catch (e) {
-          // ignore
-        }
-      })
-    })
-
-    // Dimming behavior when hovering markers: dim other project cards
-    try {
-      markers.forEach((marker) => {
-        marker.addEventListener('mouseenter', () => {
-          if (root.querySelector('.projects_overlays')?.__overlayOpen) return
+      // Close when clicking outside overlays (but ignore marker clicks)
+      if (!window.__mapOverlayDocClick) {
+        const handler = (ev) => {
           try {
-            // Markers: highlight hovered, dim others
-            markers.forEach((m) => m.classList.remove('highlight', 'dimmed'))
-            marker.classList.add('highlight')
-            markers.forEach((m) => {
-              if (m !== marker) m.classList.add('dimmed')
-            })
-            const id = marker && marker.id ? String(marker.id) : ''
-            let pointKey = ''
-            if (id && id.toLowerCase().startsWith('marker-')) {
-              pointKey = id.slice('marker-'.length)
-            }
-            if (!pointKey && marker.getAttribute) {
-              pointKey = marker.getAttribute('data-point') || ''
-            }
-            const targetCard = Array.from(cards || []).find((c) => {
-              const cardPoint = c && c.dataset ? String(c.dataset.point) : ''
-              return cardPoint.toLowerCase() === String(pointKey).toLowerCase()
-            })
-            // Scroll the corresponding card into view (center), except last two -> bottom of section
-            try {
-              if (targetCard) {
-                const getSC = () => {
-                  try {
-                    return (
-                      root.querySelector('.page-wrap') ||
-                      root.querySelector('.content-wrap') ||
-                      root.querySelector('[data-barba="container"]') ||
-                      document.scrollingElement ||
-                      document.documentElement ||
-                      document.body
-                    )
-                  } catch (e) {
-                    return (
-                      document.scrollingElement ||
-                      document.documentElement ||
-                      document.body
-                    )
-                  }
-                }
-                const sc = getSC()
-                const isWindow =
-                  sc === document.body || sc === document.documentElement
-                const containerRect = isWindow
-                  ? { top: 0, height: window.innerHeight }
-                  : sc.getBoundingClientRect()
-                const cardRect = targetCard.getBoundingClientRect()
-                const currentScroll = isWindow
-                  ? window.scrollY || window.pageYOffset || 0
-                  : sc.scrollTop
-                const contentY =
-                  cardRect.top -
-                  (isWindow ? 0 : containerRect.top) +
-                  currentScroll
-                const containerHeight = isWindow
-                  ? window.innerHeight
-                  : sc.clientHeight
-                const centerTarget = Math.max(
-                  0,
-                  contentY - containerHeight / 2 + cardRect.height / 2
-                )
-                const cardsArr = Array.from(cards || [])
-                const cardIndex = cardsArr.indexOf(targetCard)
-                const isLastTwo =
-                  cardIndex >= 0 && cardIndex >= cardsArr.length - 2
-                const isFirst = cardIndex === 0
-                let targetScroll = centerTarget
-                try {
-                  const sectionRect = cardsWrapper.getBoundingClientRect()
-                  if (isFirst) {
-                    const topTarget =
-                      sectionRect.top -
-                      (isWindow ? 0 : containerRect.top) +
-                      currentScroll
-                    targetScroll = Math.max(0, topTarget)
-                  } else if (isLastTwo) {
-                    const bottomTarget =
-                      sectionRect.bottom -
-                      (isWindow ? 0 : containerRect.top) +
-                      currentScroll -
-                      containerHeight
-                    targetScroll = Math.max(0, bottomTarget)
-                  }
-                } catch (e) {
-                  // ignore
-                }
-                try {
-                  if (isWindow) {
-                    window.scrollTo({ top: targetScroll, behavior: 'smooth' })
-                  } else {
-                    sc.scrollTo({ top: targetScroll, behavior: 'smooth' })
-                  }
-                } catch (e) {
-                  // ignore
-                }
-              }
-            } catch (e) {
-              // ignore
-            }
-            // Highlight corresponding region when hovering marker
-            try {
-              const regionKey =
-                targetCard && targetCard.dataset
-                  ? String(targetCard.dataset.region)
-                  : ''
-              if (regionKey) {
-                const regionId = `region-${regionKey}`
-                const getByIdCaseInsensitiveLocal = (container, rid) => {
-                  if (!container || !rid) return null
-                  const direct = container.querySelector(`#${rid}`)
-                  if (direct) return direct
-                  const targetLower = String(rid).toLowerCase()
-                  const allWithId = container.querySelectorAll('[id]')
-                  for (const el of allWithId) {
-                    try {
-                      if (String(el.id).toLowerCase() === targetLower) return el
-                    } catch (e) {
-                      // ignore
-                    }
-                  }
-                  return null
-                }
-                const regionEl = getByIdCaseInsensitiveLocal(mapRoot, regionId)
-                if (regionEl) {
-                  highlightRegion(regionEl)
-                }
-              }
-            } catch (e) {
-              // ignore
-            }
-            cards.forEach((c) => c.classList.remove('is-dimmed'))
-            cards.forEach((c) => {
-              if (targetCard && c !== targetCard) c.classList.add('is-dimmed')
-            })
-          } catch (e) {
-            // ignore
-          }
-        })
-        marker.addEventListener('click', (ev) => {
-          try {
-            ev.preventDefault()
-            ev.stopPropagation()
-            if (typeof ev.stopImmediatePropagation === 'function') {
-              ev.stopImmediatePropagation()
-            }
-          } catch (e) {
-            // ignore
-          }
-          try {
-            const overlay = root.querySelector('.projects_overlays')
-            if (!overlay) return
-            // If already open: close
-            if (overlay.__overlayOpen) {
-              try {
-                if (typeof overlay.__playOut === 'function') overlay.__playOut()
-              } catch (e) {
-                // ignore
-              }
+            // Resolve current overlays dynamically (page transitions replace DOM)
+            const currentOverlays = (scope || document).querySelector(
+              '.projects_overlays'
+            )
+            // Only when overlay is currently open
+            const isOpen = currentOverlays?.dataset?.open === 'true'
+            if (!isOpen) return
+            const t = ev.target
+            if (!t) return
+            if (currentOverlays && currentOverlays.contains(t)) return
+            if (
+              t.closest &&
+              (t.closest('.marker') || t.closest('.projects_overlays'))
+            )
               return
-            }
-            // Resolve the corresponding project card by marker point
-            const id = marker && marker.id ? String(marker.id) : ''
-            let pointKey = ''
-            if (id && id.toLowerCase().startsWith('marker-')) {
-              pointKey = id.slice('marker-'.length)
-            }
-            if (!pointKey && marker.getAttribute) {
-              pointKey = marker.getAttribute('data-point') || ''
-            }
-            const cardsArr = Array.from(cards || [])
-            const targetCard = cardsArr.find((c) => {
-              const cardPoint = c && c.dataset ? String(c.dataset.point) : ''
-              return cardPoint.toLowerCase() === String(pointKey).toLowerCase()
-            })
-            if (!targetCard) return
-            // Prefer triggering the exact same handler as a real card click
-            // Prefer the .project-item mapping by point -> project
-            let projectKey = ''
-            try {
-              const projItem = root.querySelector(
-                `.project-item[data-point="${pointKey}"]`
-              )
-              if (projItem)
-                projectKey = projItem.getAttribute('data-project') || ''
-            } catch (e) {
-              // ignore
-            }
-            if (!projectKey)
-              projectKey = targetCard.getAttribute('data-project') || ''
-            const regionKey = targetCard.dataset
-              ? targetCard.dataset.region
-              : ''
-            let dispatched = false
-            try {
-              if (projectKey) {
-                const clickable = root.querySelector(
-                  `.project-item[data-project="${projectKey}"]`
-                )
-                if (clickable) {
-                  const clickEvt = new MouseEvent('click', {
-                    bubbles: true,
-                    cancelable: true,
-                    view: window,
-                  })
-                  clickable.dispatchEvent(clickEvt)
-                  dispatched = true
-                }
-              }
-            } catch (e) {
-              // ignore
-            }
-            // Fallback to imperative open if no card element was found
-            if (!dispatched) {
-              try {
-                if (typeof overlay.__openForProject === 'function') {
-                  overlay.__openForProject({ projectKey, regionKey, pointKey })
-                } else {
-                  const evt = new CustomEvent('open-project', {
-                    bubbles: false,
-                    cancelable: true,
-                    detail: { projectKey, regionKey, pointKey },
-                  })
-                  overlay.dispatchEvent(evt)
-                }
-              } catch (e) {
-                // ignore
-              }
-            }
+            mapClose(scope || document)
           } catch (e) {
             // ignore
           }
-        })
-        marker.addEventListener('mouseleave', (ev) => {
-          if (root.querySelector('.projects_overlays')?.__overlayOpen) return
-          try {
-            // Reset marker highlight/dim
-            markers.forEach((m) => m.classList.remove('highlight', 'dimmed'))
-            // If moving into the corresponding region, keep region highlighted
-            try {
-              const id = marker && marker.id ? String(marker.id) : ''
-              let pointKey = ''
-              if (id && id.toLowerCase().startsWith('marker-')) {
-                pointKey = id.slice('marker-'.length)
-              }
-              if (!pointKey && marker.getAttribute) {
-                pointKey = marker.getAttribute('data-point') || ''
-              }
-              const targetCard = Array.from(cards || []).find((c) => {
-                const cardPoint = c && c.dataset ? String(c.dataset.point) : ''
-                return (
-                  cardPoint.toLowerCase() === String(pointKey).toLowerCase()
-                )
-              })
-              const regionKey =
-                targetCard && targetCard.dataset
-                  ? String(targetCard.dataset.region)
-                  : ''
-              if (regionKey) {
-                const regionId = `region-${regionKey}`
-                const regionEl = mapRoot.querySelector(`#${regionId}`)
-                if (
-                  regionEl &&
-                  ev &&
-                  ev.relatedTarget &&
-                  typeof ev.relatedTarget.closest === 'function' &&
-                  ev.relatedTarget.closest(`#${regionId}`)
-                ) {
-                  // Moving into region: keep it highlighted
-                  highlightRegion(regionEl)
-                } else {
-                  highlightRegion(null)
-                }
-              } else {
-                highlightRegion(null)
-              }
-            } catch (e) {
-              // ignore
-            }
-            cards.forEach((c) => c.classList.remove('is-dimmed'))
-          } catch (e) {
-            // ignore
-          }
-        })
-      })
-    } catch (e) {
-      // ignore
-    }
-
-    // Region hover: add/remove highlight on the hovered region
-    try {
-      regions.forEach((region) => {
-        region.addEventListener('mouseenter', () => {
-          if (root.querySelector('.projects_overlays')?.__overlayOpen) return
-          try {
-            const canHighlight = region && region.classList
-            if (canHighlight) {
-              highlightRegion(region)
-            }
-          } catch (e) {
-            // ignore
-          }
-        })
-        region.addEventListener('mouseleave', () => {
-          if (root.querySelector('.projects_overlays')?.__overlayOpen) return
-          try {
-            highlightRegion(null)
-          } catch (e) {
-            // ignore
-          }
-        })
-      })
-    } catch (e) {
-      // ignore
-    }
-
-    // Fallback: delegated hover so fills/backgrounds inside regions also trigger highlight
-    try {
-      const onRegionOver = (ev) => {
-        if (root.querySelector('.projects_overlays')?.__overlayOpen) return
-        try {
-          const target = ev && ev.target
-          const region =
-            target && typeof target.closest === 'function'
-              ? target.closest('.region')
-              : null
-          if (region) highlightRegion(region)
-        } catch (e) {
-          // ignore
         }
+        window.__mapOverlayDocClick = handler
+        document.addEventListener('click', handler)
       }
-      const onRegionOut = (ev) => {
-        if (root.querySelector('.projects_overlays')?.__overlayOpen) return
-        try {
-          const target = ev && ev.target
-          const region =
-            target && typeof target.closest === 'function'
-              ? target.closest('.region')
-              : null
-          if (
-            region &&
-            ev &&
-            ev.relatedTarget &&
-            region.contains(ev.relatedTarget)
-          ) {
-            return
-          }
-          if (region) highlightRegion(null)
-        } catch (e) {
-          // ignore
-        }
-      }
-      mapRoot.addEventListener('mouseover', onRegionOver)
-      mapRoot.addEventListener('mouseout', onRegionOut)
-    } catch (e) {
-      // ignore
     }
-
-    // Initialize overlays behavior
-    projectsOverlay(root)
-  } catch (err) {
+  } catch (e) {
     // ignore
+  }
+
+  // Return context for potential debugging/extension
+  return {
+    markers,
+    regions,
+    projectItems,
+    overlayItems,
+    lookups: {
+      pointToMarker,
+      markerToPoint,
+      regionNameToRegion,
+      pointToProjectItems,
+      regionNameToProjectItems,
+      pointToRegionName,
+      pointToOverlayItems,
+    },
+  }
+}
+
+export function mapOpen(pointKey, root = document) {
+  const scope = root || document
+  const cardsWrapper = scope.querySelector('.cards-wrapper')
+  const overlays = scope.querySelector('.projects_overlays')
+  const overlayItems = Array.from(
+    scope.querySelectorAll('.projects-overlay-item')
+  )
+
+  // Activate only the first overlay item matching the point
+  const targetItems = overlayItems.filter((el) => {
+    const pk = el?.dataset?.point ? String(el.dataset.point) : null
+    return pk && String(pk) === String(pointKey)
+  })
+  const first = targetItems.length ? targetItems[0] : null
+  overlayItems.forEach((el) => el.classList.remove('is-active'))
+  if (first) first.classList.add('is-active')
+
+  // Animate panels
+  if (cardsWrapper) {
+    gsap.to(cardsWrapper, {
+      xPercent: 110,
+      duration: 1.2,
+      ease: CustomEase.create('custom', easeCurve),
+    })
+  }
+  if (overlays) {
+    gsap.set(overlays, { display: 'flex' })
+    // Start off-screen, clear any px translation, animate to 0 with custom ease
+    gsap.set(overlays, { x: 0, xPercent: 110, overwrite: 'auto' })
+    gsap.to(overlays, {
+      x: 0,
+      xPercent: 0,
+      duration: 1.2,
+      ease: CustomEase.create('custom', easeCurve),
+    })
+    try {
+      overlays.dataset.open = 'true'
+    } catch (e) {
+      // ignore
+    }
+    // Persist highlight for the selected point/region while open
+    try {
+      if (pointKey) {
+        const markers = Array.from(
+          scope.querySelectorAll('.marker[id^="marker-"]')
+        )
+        const selectedMarker = scope.getElementById(
+          `marker-${String(pointKey)}`
+        )
+        markers.forEach((m) => {
+          if (m === selectedMarker) {
+            m.classList.add('highlight')
+            m.classList.remove('dimmed')
+          } else {
+            m.classList.add('dimmed')
+            m.classList.remove('highlight')
+          }
+        })
+
+        // Find corresponding region via first matching project-item's data-region
+        const projectItems = Array.from(scope.querySelectorAll('.project-item'))
+        let regionKeyRaw = null
+        for (const el of projectItems) {
+          const pk = el?.dataset?.point ? String(el.dataset.point) : null
+          if (pk && pk === String(pointKey)) {
+            regionKeyRaw = el?.dataset?.region
+            break
+          }
+        }
+        const normalize = (raw) => {
+          if (!raw && raw !== 0) return null
+          let v = String(raw).trim().toLowerCase()
+          if (v.startsWith('#')) v = v.slice(1)
+          if (v.startsWith('region-')) v = v.slice(7)
+          return v || null
+        }
+        const regionKey = normalize(regionKeyRaw)
+        const regions = Array.from(
+          scope.querySelectorAll('.region[id^="region-"]')
+        )
+        const targetRegion = regionKey
+          ? scope.getElementById(`region-${regionKey}`)
+          : null
+        regions.forEach((r) => {
+          if (r === targetRegion) r.classList.add('highlight')
+          else r.classList.remove('highlight')
+        })
+        try {
+          if (targetRegion && targetRegion.parentNode) {
+            targetRegion.parentNode.appendChild(targetRegion)
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    // Disable scroll (Lenis wrapper)
+    try {
+      if (window.lenis && typeof window.lenis.stop === 'function') {
+        window.lenis.stop()
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+}
+
+export function mapClose(root = document) {
+  const scope = root || document
+  const cardsWrapper = scope.querySelector('.cards-wrapper')
+  const overlays = scope.querySelector('.projects_overlays')
+  const overlayItems = Array.from(
+    scope.querySelectorAll('.projects-overlay-item')
+  )
+
+  // Ensure cards are not dimmed before content returns into view
+  try {
+    const cards = Array.from(scope.querySelectorAll('.project-item'))
+    cards.forEach((c) => c.classList.remove('is-dimmed'))
+  } catch (e) {
+    // ignore
+  }
+
+  if (cardsWrapper) {
+    gsap.to(cardsWrapper, {
+      xPercent: 0,
+      duration: 1.2,
+      ease: CustomEase.create('custom', easeCurve),
+    })
+  }
+  if (overlays) {
+    // Reset any px translation so percent-based move is accurate
+    gsap.set(overlays, { x: 0, overwrite: 'auto' })
+    gsap.to(overlays, {
+      x: 0,
+      xPercent: 110,
+      duration: 1.2,
+      ease: CustomEase.create('custom', easeCurve),
+      onComplete: () => {
+        try {
+          // Deactivate overlays after the slide-out finishes
+          overlayItems.forEach((el) => el.classList.remove('is-active'))
+          overlays.style.display = 'none'
+          delete overlays.dataset.open
+        } catch (e) {
+          // ignore
+        }
+        // Re-enable scroll (Lenis wrapper)
+        try {
+          if (window.lenis && typeof window.lenis.start === 'function') {
+            window.lenis.start()
+          }
+        } catch (e) {
+          // ignore
+        }
+        // Clear any persistent highlights
+        try {
+          const markers = Array.from(
+            scope.querySelectorAll('.marker[id^="marker-"]')
+          )
+          markers.forEach((m) => {
+            m.classList.remove('highlight')
+            m.classList.remove('dimmed')
+          })
+          const regions = Array.from(
+            scope.querySelectorAll('.region[id^="region-"]')
+          )
+          regions.forEach((r) => r.classList.remove('highlight'))
+        } catch (e) {
+          // ignore
+        }
+      },
+    })
   }
 }

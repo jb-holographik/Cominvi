@@ -13,6 +13,30 @@ export function initProcessProgression(root = document) {
   const track = section.querySelector('.process-progression')
   if (!sticky || !track) return
 
+  // Clean up any existing triggers from a previous page to avoid duplicates
+  try {
+    const wrapEl =
+      section.querySelector('.process-progression-wrap') ||
+      sticky.parentElement ||
+      section
+    const all = ScrollTrigger.getAll()
+    all.forEach((st) => {
+      try {
+        if (
+          st &&
+          st.vars &&
+          (st.vars.trigger === wrapEl || st.vars.trigger === sticky)
+        ) {
+          st.kill()
+        }
+      } catch (e) {
+        // ignore
+      }
+    })
+  } catch (e) {
+    // ignore
+  }
+
   // Optional number track and readout (support both 'process' and 'procress' typos)
   const numberTrack =
     section.querySelector('.process-progression_number') ||
@@ -66,14 +90,23 @@ export function initProcessProgression(root = document) {
 
   buildVerticalTicks(track, sticky)
 
+  // De-dupe resize listener across transitions
+  try {
+    if (window.__processResizeHandler) {
+      window.removeEventListener('resize', window.__processResizeHandler)
+    }
+  } catch (e) {
+    // ignore
+  }
   let resizeTimer
-  window.addEventListener('resize', () => {
+  window.__processResizeHandler = () => {
     clearTimeout(resizeTimer)
     resizeTimer = setTimeout(() => {
       buildVerticalTicks(track, sticky)
       ScrollTrigger.refresh()
     }, 150)
-  })
+  }
+  window.addEventListener('resize', window.__processResizeHandler)
 
   setupVerticalTickHighlighting(section, sticky, track, {
     numberTrack,

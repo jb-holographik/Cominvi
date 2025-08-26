@@ -5,7 +5,11 @@ import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
 import { initializeNav2 } from './nav.js'
 import { initParallax } from './parallax.js'
-import { initVideoClipStickyTransform } from './process-images.js'
+import {
+  initVideoClipStickyTransform,
+  destroyVideoClipStickyTransform,
+} from './process-images.js'
+import { initProcessProgression } from './process-progression.js'
 import { initScrollList } from './scroll-list.js'
 import { initLenis, destroyLenis } from './scroll.js'
 import { initServiceCards } from './service-cards.js'
@@ -173,8 +177,14 @@ export function initializePageTransitionNav() {
           initTextReveal()
           initMinerals()
           initScrollList()
+          initProcessProgression(next && next.container)
           initTestimonials()
           initTextDisplayReveal()
+          try {
+            destroyVideoClipStickyTransform()
+          } catch (e) {
+            /* ignore */
+          }
           initVideoClipStickyTransform(next && next.container)
           try {
             initMap(next && next.container)
@@ -206,8 +216,14 @@ export function initializePageTransitionNav() {
           initTextReveal()
           initMinerals()
           initScrollList()
+          initProcessProgression(next && next.container)
           initTestimonials()
           initTextDisplayReveal()
+          try {
+            destroyVideoClipStickyTransform()
+          } catch (e) {
+            /* ignore */
+          }
           initVideoClipStickyTransform(next && next.container)
           try {
             initMap(next && next.container)
@@ -233,8 +249,14 @@ export function initializePageTransitionNav() {
     reinitializeWebflowAnimations()
     initParallax(next && next.container)
     initServiceCards(next && next.container)
+    initProcessProgression(next && next.container)
     initTextReveal()
     initMinerals()
+    try {
+      destroyVideoClipStickyTransform()
+    } catch (e) {
+      /* ignore */
+    }
     initVideoClipStickyTransform(next && next.container)
     try {
       initMap(next && next.container)

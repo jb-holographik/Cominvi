@@ -109,6 +109,13 @@ p {
   background-size: cover;
 }
 
+.section_hero.is-technology {
+  background-image: url('../images/technology_1.avif');
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .background {
   object-fit: cover;
   width: 100%;
@@ -496,6 +503,7 @@ p {
   grid-template-rows: auto auto;
   grid-template-columns: 1fr 1fr;
   grid-auto-columns: 1fr;
+  width: 100%;
   padding-right: 7.188em;
   display: block;
 }
@@ -1113,6 +1121,10 @@ p {
 
 .body-xxl.is-grey {
   color: #d5dad7;
+}
+
+.body-xxl.is-transparent {
+  color: #0000;
 }
 
 .machines-grid {
@@ -1803,6 +1815,7 @@ p {
 .display {
   justify-content: flex-start;
   align-items: center;
+  height: 12.7em;
   display: flex;
 }
 
@@ -1824,14 +1837,14 @@ p {
 
 .overlay-gradient {
   border-radius: 10em;
-  width: 20%;
-  height: 5.5em;
+  width: 10%;
+  height: 50%;
   display: flex;
   overflow: hidden;
 }
 
 .overlay-gradient.is-2 {
-  height: 5.2em;
+  height: 50%;
 }
 
 .gradient-left {
@@ -1848,12 +1861,14 @@ p {
 
 .overlay-gradients {
   z-index: 1;
-  grid-column-gap: .4em;
-  grid-row-gap: .4em;
-  width: 60%;
+  grid-column-gap: 0em;
+  grid-row-gap: 0em;
+  width: 70%;
+  height: 12.6em;
   display: flex;
   position: absolute;
   top: 1px;
+  overflow: hidden;
 }
 
 .code-embed {
@@ -1873,16 +1888,20 @@ p {
 }
 
 .svgtext-mask {
-  justify-content: center;
-  align-items: center;
-  width: 29.5em;
-  height: 5.9em;
-  display: flex;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .svgtext-mask.is-2 {
   width: 29.5em;
   height: 5.3em;
+}
+
+.svgtext-mask.is-tech-1 {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .display-text {
@@ -1896,9 +1915,9 @@ p {
 .is-text-mask {
   z-index: 2;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
-  height: 100%;
+  height: auto;
   display: flex;
   position: absolute;
 }
@@ -1911,7 +1930,7 @@ p {
 .mask-fill {
   background-color: var(--light-green);
   flex: 1;
-  height: 100%;
+  height: 12.9em;
 }
 
 .color {
@@ -2014,11 +2033,13 @@ p {
   grid-column-gap: 1em;
   grid-row-gap: 1em;
   flex-flow: column;
+  justify-content: flex-start;
+  align-items: center;
   display: flex;
 }
 
 .page-info_wrap {
-  height: 3.5em;
+  height: 3.9em;
   overflow: hidden;
 }
 
@@ -2092,6 +2113,10 @@ p {
   grid-row-gap: 2em;
   flex-flow: column;
   display: flex;
+}
+
+.project-item.is-dimmed {
+  opacity: .2;
 }
 
 .project-card {
@@ -2192,6 +2217,11 @@ p {
 
 .projects-overlay-item {
   height: 100%;
+  display: none;
+}
+
+.projects-overlay-item.is-active {
+  display: flex;
 }
 
 .project-overlay {
@@ -2437,6 +2467,74 @@ p {
   display: flex;
 }
 
+.svg-t-bottom {
+  color: var(--gray);
+  width: 100%;
+  height: 100%;
+}
+
+.machines {
+  z-index: 2;
+  border-top: 1px solid var(--primary);
+  background-color: var(--light-green);
+  flex-flow: column;
+  width: 100%;
+  padding-top: .5em;
+  display: flex;
+  position: sticky;
+  top: 50%;
+  overflow: hidden;
+}
+
+.machines_wrap {
+  grid-column-gap: 1em;
+  grid-row-gap: 1em;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-auto-columns: 1fr;
+  width: 100%;
+  display: grid;
+}
+
+.machines-list-list {
+  flex-flow: column;
+  display: flex;
+}
+
+.machines-list-item {
+  padding-top: .375em;
+  padding-bottom: .125em;
+}
+
+.machine_item {
+  width: 100%;
+}
+
+.machine_name {
+  padding-bottom: .5em;
+}
+
+.machine_category {
+  padding-top: .4em;
+}
+
+.machines-wrapper {
+  width: 100%;
+  height: 200vh;
+  position: relative;
+}
+
+.machines-bottom {
+  opacity: .2;
+  flex-flow: column;
+  width: 100%;
+  padding-top: 1em;
+  padding-bottom: 50%;
+  display: flex;
+  position: absolute;
+  inset: 1px 0% auto;
+}
+
 #w-node-_33e34690-9048-f1cc-5996-0de4203dfa95-3e31b7cd {
   grid-area: span 1 / span 7 / span 1 / span 7;
 }
@@ -2474,11 +2572,11 @@ p {
   grid-area: span 1 / span 10 / span 1 / span 10;
 }
 
-#w-node-_4871ab60-6b13-0ced-da01-9668f8e7e5e8-3e31b7cd {
+#w-node-_1f5661f6-8f20-019f-338a-f39a75305b7c-75305b7a {
   grid-area: span 1 / span 4 / span 1 / span 4;
 }
 
-#w-node-_71c83acb-8393-aa96-7ea5-a8032b4d2a16-3e31b7cd {
+#w-node-_1f5661f6-8f20-019f-338a-f39a75305b95-75305b7a {
   grid-area: span 1 / span 8 / span 1 / span 8;
 }
 
@@ -2600,11 +2698,84 @@ p {
   grid-area: 1 / 3 / 2 / 4;
 }
 
-#w-node-af685103-4207-a756-8bde-8b6e49ffd063-9ee752f7 {
+#w-node-_33e34690-9048-f1cc-5996-0de4203dfa95-35b9cb9a {
+  grid-area: span 1 / span 7 / span 1 / span 7;
+}
+
+#w-node-_71f0f5f4-69d5-22f9-d97f-4036c42db11c-35b9cb9a {
+  grid-area: span 1 / span 5 / span 1 / span 5;
+}
+
+#w-node-_856ffc81-c0d5-5e76-e729-7b745be6dc6e-35b9cb9a {
+  order: 0;
+  grid-area: 1 / 8 / 2 / 13;
+}
+
+#w-node-c93c8f4e-7912-3b01-975e-897eec858b94-35b9cb9a {
+  grid-area: 1 / 8 / 2 / 13;
+}
+
+#w-node-_3dd82e25-bb13-7349-c1cb-d77390040b47-35b9cb9a {
   grid-area: span 1 / span 4 / span 1 / span 4;
 }
 
-#w-node-af685103-4207-a756-8bde-8b6e49ffd07e-9ee752f7 {
+#w-node-_6b402824-d8c2-33a9-22fe-780f549734e3-35b9cb9a {
+  grid-area: span 1 / span 8 / span 1 / span 8;
+}
+
+#w-node-_522651ff-9c8b-eb28-1dda-d0871f6c28d4-35b9cb9a {
+  grid-area: span 1 / span 4 / span 1 / span 4;
+}
+
+#w-node-_522651ff-9c8b-eb28-1dda-d0871f6c28d7-35b9cb9a {
+  grid-area: span 1 / span 8 / span 1 / span 8;
+}
+
+#w-node-_6dac416a-d143-5282-fea3-7cf27ede5796-35b9cb9a {
+  grid-area: span 1 / span 4 / span 1 / span 4;
+}
+
+#w-node-_6dac416a-d143-5282-fea3-7cf27ede5799-35b9cb9a {
+  grid-area: span 1 / span 8 / span 1 / span 8;
+}
+
+#w-node-ebdb2d67-33f2-38ff-2f4c-f0fd0fe313eb-35b9cb9a {
+  grid-area: span 1 / span 4 / span 1 / span 4;
+}
+
+#w-node-ebdb2d67-33f2-38ff-2f4c-f0fd0fe313ee-35b9cb9a {
+  grid-area: span 1 / span 8 / span 1 / span 8;
+}
+
+#w-node-_878eb008-92db-8efa-2f51-3cd055821511-35b9cb9a {
+  grid-area: span 1 / span 4 / span 1 / span 4;
+}
+
+#w-node-_878eb008-92db-8efa-2f51-3cd055821514-35b9cb9a {
+  grid-area: span 1 / span 8 / span 1 / span 8;
+}
+
+#w-node-_878eb008-92db-8efa-2f51-3cd05582151e-35b9cb9a {
+  grid-area: span 1 / span 4 / span 1 / span 4;
+}
+
+#w-node-_878eb008-92db-8efa-2f51-3cd055821521-35b9cb9a {
+  grid-area: span 1 / span 8 / span 1 / span 8;
+}
+
+#w-node-_878eb008-92db-8efa-2f51-3cd05582152b-35b9cb9a {
+  grid-area: span 1 / span 4 / span 1 / span 4;
+}
+
+#w-node-_878eb008-92db-8efa-2f51-3cd05582152e-35b9cb9a {
+  grid-area: span 1 / span 8 / span 1 / span 8;
+}
+
+#w-node-_878eb008-92db-8efa-2f51-3cd055821538-35b9cb9a {
+  grid-area: span 1 / span 4 / span 1 / span 4;
+}
+
+#w-node-_878eb008-92db-8efa-2f51-3cd05582153b-35b9cb9a {
   grid-area: span 1 / span 8 / span 1 / span 8;
 }
 

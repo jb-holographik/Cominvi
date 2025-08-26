@@ -11,6 +11,7 @@ import { initScrollList } from './animation/scroll-list.js'
 import { initLenis } from './animation/scroll.js'
 import { initServiceCards } from './animation/service-cards.js'
 import { createViewportClipOverlay } from './animation/svg-clip-overlay.js'
+import { initTechnology } from './animation/technology.js'
 import { initTestimonials } from './animation/testimonials.js'
 import {
   initTextDisplayReveal,
@@ -36,6 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize map interactions on first load
   try {
     initMap(document)
+  } catch (e) {
+    // ignore
+  }
+  // Technology page behaviors
+  try {
+    initTechnology(document)
   } catch (e) {
     // ignore
   }

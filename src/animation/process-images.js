@@ -355,6 +355,58 @@ export function initVideoClipStickyTransform(root = document) {
     state.firstVideo.classList.contains('is-fixed')
   )
   state.lastFixedRemoved = false
+
+  // Applique immédiatement l'état sticky en fonction de la position courante
+  try {
+    const threshold = pxFromEm(2) + getContentTopOffsetPx()
+    if (state.firstVideo && state.firstVideo.isConnected) {
+      const top = state.firstVideo.getBoundingClientRect().top
+      if (top <= threshold) {
+        try {
+          state.firstVideo.classList.add('is-fixed')
+        } catch (e) {
+          state.firstVideo.className += ' is-fixed'
+        }
+        registerVideoInners(state, state.firstVideo)
+        state.firstFixedApplied = true
+      } else {
+        try {
+          state.firstVideo.classList.remove('is-fixed')
+        } catch (e) {
+          state.firstVideo.className = (state.firstVideo.className || '')
+            .replace(/\bis-fixed\b/, '')
+            .trim()
+        }
+        unregisterVideoInners(state, state.firstVideo)
+        state.firstFixedApplied = false
+      }
+    }
+    if (state.lastVideo && state.lastVideo.isConnected) {
+      const top = state.lastVideo.getBoundingClientRect().top
+      // is-fixed pour la dernière: true lorsque au-dessus du seuil, sinon false
+      if (top > threshold) {
+        try {
+          state.lastVideo.classList.add('is-fixed')
+        } catch (e) {
+          state.lastVideo.className += ' is-fixed'
+        }
+        registerVideoInners(state, state.lastVideo)
+        state.lastFixedRemoved = false
+      } else {
+        try {
+          state.lastVideo.classList.remove('is-fixed')
+        } catch (e) {
+          state.lastVideo.className = (state.lastVideo.className || '')
+            .replace(/\bis-fixed\b/, '')
+            .trim()
+        }
+        unregisterVideoInners(state, state.lastVideo)
+        state.lastFixedRemoved = true
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
   if (!els || !els.length) {
     stopLoopIfIdle()
     return []

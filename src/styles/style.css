@@ -30,6 +30,10 @@
   color: var(--black);
 }
 
+.testimonial-line {
+  padding-bottom: 0.08em;
+}
+
 .mask-overlay,
 .mask-overlay.is-active {
   display: none !important
@@ -99,4 +103,12 @@
 [data-video="last"].video {
   position: relative;
   top: 0;
+}
+
+.svgtext-mask {
+  padding-top: 1px;
+}
+
+.is-text-mask>.mask-fill:last-child {
+  margin-left: -1px;
 }

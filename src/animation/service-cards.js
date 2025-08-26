@@ -62,6 +62,49 @@ export function initServiceCards(root = document) {
     card.__serviceCardsBound = true
   })
 
+  // Apply same reveal behavior to technology machine cards
+  const machineCards = scope.querySelectorAll('.machine-card')
+  machineCards.forEach((card) => {
+    if (card.__machineCardsBound) return
+    const bloc = card.querySelector('.machine-card_inner')
+    if (!bloc) return
+
+    try {
+      // Start hidden below using translateY while preserving translateX(-50%) from CSS
+      bloc.style.transition = 'none'
+      const rect = bloc.getBoundingClientRect()
+      const cs = getComputedStyle(bloc)
+      const bottomPx = parseFloat(cs.bottom) || 0
+      const h = rect.height + bottomPx
+      bloc.style.transform = `translate(-50%) translateY(${h}px)`
+      void bloc.offsetWidth
+      bloc.style.transition = 'transform 0.5s ease, opacity 0.3s ease'
+    } catch (err) {
+      // ignore
+    }
+
+    const slideIn = () => {
+      bloc.style.transition = 'transform 0.5s ease'
+      // Ensure we slide exactly to its resting position
+      bloc.style.transform = 'translate(-50%) translateY(0)'
+    }
+    const slideOut = () => {
+      const rect = bloc.getBoundingClientRect()
+      const cs = getComputedStyle(bloc)
+      const bottomPx = parseFloat(cs.bottom) || 0
+      const h = rect.height + bottomPx
+      bloc.style.transform = `translate(-50%) translateY(${h}px)`
+    }
+
+    card.addEventListener('mouseenter', slideIn)
+    card.addEventListener('mouseleave', slideOut)
+    // Pointer events for broader support
+    card.addEventListener('pointerenter', slideIn)
+    card.addEventListener('pointerleave', slideOut)
+
+    card.__machineCardsBound = true
+  })
+
   // Also bind the hover → viewer image logic
   serviceCardsHover(scope)
 }

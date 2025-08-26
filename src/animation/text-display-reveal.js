@@ -1,7 +1,9 @@
 import gsap from 'gsap'
+import { CustomEase } from 'gsap/CustomEase'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, CustomEase)
+const easeCurve = 'M0,0 C0.6,0 0,1 1,1 '
 
 export function initTextDisplayReveal(root = document) {
   const sections = Array.from(root.querySelectorAll('.title-big'))
@@ -17,49 +19,60 @@ export function initTextDisplayReveal(root = document) {
     // Start collapsed
     gsap.set(gradients, { width: '0%' })
 
-    // Animate width while .display crosses from 60% to 40% of viewport
-    gsap.to(gradients, {
-      width: '100%',
-      ease: 'power2.inOut',
-      stagger: 0.025,
-      scrollTrigger: {
-        trigger: section.querySelector('.display') || section,
-        start: 'top 80%',
-        end: 'top 50%',
-        scrub: true,
-      },
-    })
-
     // Eyebrow split and reveal per word
     const eyebrow =
       container && container.querySelector
         ? container.querySelector('.eyebrow-wrapper-a > .eyebrow-m')
         : null
+    let words = []
     if (eyebrow && !eyebrow.dataset.splitted) {
       splitIntoWordSpans(eyebrow)
       eyebrow.dataset.splitted = 'true'
-      const words = Array.from(eyebrow.querySelectorAll('.eyebrow-word'))
-      if (words.length) {
-        gsap.set(words, {
-          display: 'inline-block',
-          yPercent: 100,
-          rotation: 70,
-          transformOrigin: 'left bottom',
-        })
-        gsap.to(words, {
+      words = Array.from(eyebrow.querySelectorAll('.eyebrow-word'))
+    } else if (eyebrow) {
+      words = Array.from(eyebrow.querySelectorAll('.eyebrow-word'))
+    }
+
+    if (words.length) {
+      gsap.set(words, {
+        display: 'inline-block',
+        yPercent: 100,
+        rotation: 70,
+        transformOrigin: 'left bottom',
+      })
+    }
+
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { duration: 1.2, ease: CustomEase.create('custom', easeCurve) },
+    })
+    tl.to(gradients, { width: '100%', stagger: 0.025 }, 0)
+    if (words.length) {
+      tl.to(
+        words,
+        {
           yPercent: 0,
           rotation: 0,
-          ease: 'power2.inOut',
           stagger: 0.02,
-          scrollTrigger: {
-            trigger: section.querySelector('.display') || section,
-            start: 'top 80%',
-            end: 'top 50%',
-            scrub: true,
-          },
-        })
-      }
+        },
+        0
+      )
     }
+
+    const triggerEl = section.querySelector('.display') || section
+    const st = ScrollTrigger.create({
+      trigger: triggerEl,
+      start: 'top 80%',
+      onEnter: () => tl.play(0),
+      toggleActions: 'play none none none',
+    })
+    tl.eventCallback('onComplete', () => {
+      try {
+        if (st && typeof st.kill === 'function') st.kill()
+      } catch (e) {
+        // ignore
+      }
+    })
   })
 }
 

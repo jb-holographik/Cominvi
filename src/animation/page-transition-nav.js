@@ -17,6 +17,7 @@ import {
   createViewportClipOverlay,
   resetOverlayClipBaseState,
 } from './svg-clip-overlay.js'
+import { initTechnology } from './technology.js'
 import { initTestimonials } from './testimonials.js'
 import { initTextDisplayReveal } from './text-display-reveal.js'
 import { initTextReveal } from './text-reveal.js'
@@ -191,6 +192,11 @@ export function initializePageTransitionNav() {
           } catch (e) {
             /* ignore */
           }
+          try {
+            initTechnology(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
         },
       },
       {
@@ -230,6 +236,11 @@ export function initializePageTransitionNav() {
           } catch (e) {
             /* ignore */
           }
+          try {
+            initTechnology(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
         },
       },
     ],
@@ -260,6 +271,11 @@ export function initializePageTransitionNav() {
     initVideoClipStickyTransform(next && next.container)
     try {
       initMap(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      initTechnology(next && next.container)
     } catch (e) {
       /* ignore */
     }

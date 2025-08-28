@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Tue Aug 26 2025 15:09:47 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Thu Aug 28 2025 14:19:56 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="68ada22c8efaceb435b9cb9a" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -240,6 +240,39 @@
       #video-3::before {
         background-image: url("https://cdn.prod.website-files.com/68a6f1839c241fc65368dbab/68a6f4343fd221a2e41bdf94_project-2.jpg");
       }
+
+      .toggle.is-green>.toggle-option>.toggle-id {
+        color: var(--primary);
+      }
+
+      .toggle.is-green>.toggle-option>.toggle-id.is-active {
+        color: var(--white);
+      }
+
+      .toggle.is-white>.toggle-option>.toggle-id {
+        color: var(--primary);
+      }
+
+      .toggle.is-white>.toggle-option>.toggle-id.is-active {
+        color: var(--white);
+      }
+
+      .toggle.is-white>.toggle-indicator {
+        background-color: var(--primary);
+      }
+
+      .toggle.is-white {
+        width: 8.75em;
+      }
+
+      .toggle.is-white>.toggle-option,
+      .toggle.is-white>.toggle-indicator {
+        width: 4em;
+      }
+
+      html.wf-design-mode>body>div.page-wrap>div>div.section_latest-technology>div.content>div {
+        overflow: hidden;
+      }
     </style>
   </div>
   <div class="navbar">
@@ -450,7 +483,7 @@
           </div>
         </div>
       </div>
-      <div bg="lightgreen" class="section_technology">
+      <div bg="lightgreen" class="section_latest-technology">
         <div class="intro">
           <div class="eyebrows">
             <div class="is-eyebrow"><span class="eyebrow-s">S.01</span></div>
@@ -601,154 +634,246 @@
           </div>
           <div class="eyebrow-wrapper-a"><span class="eyebrow-m">for underground performance</span></div>
         </div>
-        <div class="content">
-          <div class="machines-wrapper">
-            <div class="machines">
-              <div class="machines_wrap">
-                <div id="w-node-_3dd82e25-bb13-7349-c1cb-d77390040b47-35b9cb9a" class="machine_category"><span
-                    class="eyebrow-m">Development &amp; Drilling</span></div>
-                <div id="w-node-_6b402824-d8c2-33a9-22fe-780f549734e3-35b9cb9a"
-                  class="machines-list-wrapper w-dyn-list">
-                  <div role="list" class="machines-list-list w-dyn-items">
-                    <div role="listitem" class="machines-list-item w-dyn-item">
-                      <div class="machine_item">
-                        <div class="machine_name">
-                          <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+        <div class="content is-v">
+          <div class="is-grid-toggle">
+            <div class="toggle is-white">
+              <div class="toggle-option" data-toggle="grid"><span class="toggle-id">Grid</span></div>
+              <div class="toggle-option" data-toggle="list"><span class="toggle-id is-active">List</span></div>
+              <div class="toggle-indicator is-grid"></div>
+            </div>
+          </div>
+          <div class="content_inner">
+            <div class="machines-wrapper">
+              <div class="machines">
+                <div class="machines_images">
+                  <div class="machines_images-wrap w-dyn-list">
+                    <div role="list" class="machines_images-list w-dyn-items">
+                      <div role="listitem" class="machines_images-item w-dyn-item"><img
+                          src="https://d3e54v103j8qbb.cloudfront.net/plugins/Basic/assets/placeholder.60f9b1840c.svg"
+                          loading="lazy" alt="" class="image w-dyn-bind-empty"></div>
+                    </div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="machines_button-wrap"><button class="machines_button"><span
+                      class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg"
+                      width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
+                      <g clip-path="url(#clip0_4895_136)">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4895_136">
+                          <rect width="10" height="10" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></button><button class="machines_button is-close"><span
+                      class="machines_button-label body-xs">CLOSE</span><svg xmlns="http://www.w3.org/2000/svg"
+                      width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
+                      <g clip-path="url(#clip0_4895_136)">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4895_136">
+                          <rect width="10" height="10" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></button></div>
+                <div class="machines_wrap">
+                  <div id="w-node-_3dd82e25-bb13-7349-c1cb-d77390040b47-35b9cb9a" class="machine_category"><span
+                      class="eyebrow-m">Development &amp; Drilling</span></div>
+                  <div id="w-node-_6b402824-d8c2-33a9-22fe-780f549734e3-35b9cb9a"
+                    class="machines-list-wrapper w-dyn-list">
+                    <div role="list" class="machines-list-list w-dyn-items">
+                      <div role="listitem" class="machines-list-item w-dyn-item">
+                        <div class="machine_item">
+                          <div id="w-node-e32ef4f4-778d-4af9-0dc5-58987edcfd80-35b9cb9a" class="machine_name">
+                            <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                          </div>
+                          <div id="w-node-_190136f2-4aee-56c2-aba9-caebaf39ed74-35b9cb9a" class="machine_desc">
+                            <p class="body-s w-dyn-bind-empty"></p>
+                          </div>
                         </div>
                       </div>
                     </div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
                   </div>
-                  <div class="w-dyn-empty">
-                    <div>No items found.</div>
+                </div>
+                <div class="machines_wrap">
+                  <div id="w-node-_522651ff-9c8b-eb28-1dda-d0871f6c28d4-35b9cb9a" class="machine_category"><span
+                      class="eyebrow-m">Haulage &amp; Loading</span></div>
+                  <div id="w-node-_522651ff-9c8b-eb28-1dda-d0871f6c28d7-35b9cb9a"
+                    class="machines-list-wrapper w-dyn-list">
+                    <div role="list" class="machines-list-list w-dyn-items">
+                      <div role="listitem" class="machines-list-item w-dyn-item">
+                        <div class="machine_item">
+                          <div id="w-node-_522651ff-9c8b-eb28-1dda-d0871f6c28db-35b9cb9a" class="machine_name">
+                            <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                          </div>
+                          <div id="w-node-_179e7384-9c63-876d-0e32-91b2fdf39d8b-35b9cb9a" class="machine_desc">
+                            <p class="body-s w-dyn-bind-empty"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="machines_wrap">
+                  <div id="w-node-_6dac416a-d143-5282-fea3-7cf27ede5796-35b9cb9a" class="machine_category"><span
+                      class="eyebrow-m">Ground Support &amp; Construction</span></div>
+                  <div id="w-node-_6dac416a-d143-5282-fea3-7cf27ede5799-35b9cb9a"
+                    class="machines-list-wrapper w-dyn-list">
+                    <div role="list" class="machines-list-list w-dyn-items">
+                      <div role="listitem" class="machines-list-item w-dyn-item">
+                        <div class="machine_item">
+                          <div id="w-node-_6dac416a-d143-5282-fea3-7cf27ede579d-35b9cb9a" class="machine_name">
+                            <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                          </div>
+                          <div id="w-node-_8993e998-2a25-1572-c312-0bc17ebf7e9a-35b9cb9a" class="machine_desc">
+                            <p class="body-s w-dyn-bind-empty"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="machines_wrap">
+                  <div id="w-node-ebdb2d67-33f2-38ff-2f4c-f0fd0fe313eb-35b9cb9a" class="machine_category"><span
+                      class="eyebrow-m">Operational Support</span></div>
+                  <div id="w-node-ebdb2d67-33f2-38ff-2f4c-f0fd0fe313ee-35b9cb9a"
+                    class="machines-list-wrapper w-dyn-list">
+                    <div role="list" class="machines-list-list w-dyn-items">
+                      <div role="listitem" class="machines-list-item w-dyn-item">
+                        <div class="machine_item">
+                          <div id="w-node-ebdb2d67-33f2-38ff-2f4c-f0fd0fe313f2-35b9cb9a" class="machine_name">
+                            <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                          </div>
+                          <div id="w-node-ae177388-5d79-40dd-cdfa-31e6a624d31a-35b9cb9a" class="machine_desc">
+                            <p class="body-s w-dyn-bind-empty"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="machines_wrap">
-                <div id="w-node-_522651ff-9c8b-eb28-1dda-d0871f6c28d4-35b9cb9a" class="machine_category"><span
-                    class="eyebrow-m">Haulage &amp; Loading</span></div>
-                <div id="w-node-_522651ff-9c8b-eb28-1dda-d0871f6c28d7-35b9cb9a"
-                  class="machines-list-wrapper w-dyn-list">
-                  <div role="list" class="machines-list-list w-dyn-items">
-                    <div role="listitem" class="machines-list-item w-dyn-item">
-                      <div class="machine_item">
-                        <div class="machine_name">
-                          <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+              <div class="machines-bottom">
+                <div class="machines_wrap">
+                  <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821511-35b9cb9a" class="machine_category"><span
+                      class="eyebrow-m">Development &amp; Drilling</span></div>
+                  <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821514-35b9cb9a"
+                    class="machines-list-wrapper w-dyn-list">
+                    <div role="list" class="machines-list-list w-dyn-items">
+                      <div role="listitem" class="machines-list-item w-dyn-item">
+                        <div class="machine_item">
+                          <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821518-35b9cb9a" class="machine_name">
+                            <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                          </div>
+                          <div id="w-node-_50ceaf93-5636-836a-3aa1-9cb43bb12eb1-35b9cb9a" class="machine_desc">
+                            <p class="body-s w-dyn-bind-empty"></p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="w-dyn-empty">
-                    <div>No items found.</div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="machines_wrap">
-                <div id="w-node-_6dac416a-d143-5282-fea3-7cf27ede5796-35b9cb9a" class="machine_category"><span
-                    class="eyebrow-m">Ground Support &amp; Construction</span></div>
-                <div id="w-node-_6dac416a-d143-5282-fea3-7cf27ede5799-35b9cb9a"
-                  class="machines-list-wrapper w-dyn-list">
-                  <div role="list" class="machines-list-list w-dyn-items">
-                    <div role="listitem" class="machines-list-item w-dyn-item">
-                      <div class="machine_item">
-                        <div class="machine_name">
-                          <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                <div class="machines_wrap">
+                  <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582151e-35b9cb9a" class="machine_category"><span
+                      class="eyebrow-m">Haulage &amp; Loading</span></div>
+                  <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821521-35b9cb9a"
+                    class="machines-list-wrapper w-dyn-list">
+                    <div role="list" class="machines-list-list w-dyn-items">
+                      <div role="listitem" class="machines-list-item w-dyn-item">
+                        <div class="machine_item">
+                          <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821525-35b9cb9a" class="machine_name">
+                            <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                          </div>
+                          <div id="w-node-_4b700488-88eb-c84e-7fd3-dd9569da3656-35b9cb9a" class="machine_desc">
+                            <p class="body-s w-dyn-bind-empty"></p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="w-dyn-empty">
-                    <div>No items found.</div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="machines_wrap">
-                <div id="w-node-ebdb2d67-33f2-38ff-2f4c-f0fd0fe313eb-35b9cb9a" class="machine_category"><span
-                    class="eyebrow-m">Operational Support</span></div>
-                <div id="w-node-ebdb2d67-33f2-38ff-2f4c-f0fd0fe313ee-35b9cb9a" class="machines-list-wrapper w-dyn-list">
-                  <div role="list" class="machines-list-list w-dyn-items">
-                    <div role="listitem" class="machines-list-item w-dyn-item">
-                      <div class="machine_item">
-                        <div class="machine_name">
-                          <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                <div class="machines_wrap">
+                  <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582152b-35b9cb9a" class="machine_category"><span
+                      class="eyebrow-m">Ground Support &amp; Construction</span></div>
+                  <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582152e-35b9cb9a"
+                    class="machines-list-wrapper w-dyn-list">
+                    <div role="list" class="machines-list-list w-dyn-items">
+                      <div role="listitem" class="machines-list-item w-dyn-item">
+                        <div class="machine_item">
+                          <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821532-35b9cb9a" class="machine_name">
+                            <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                          </div>
+                          <div id="w-node-ae53e26e-adf5-9d71-6495-cb6f51833db3-35b9cb9a" class="machine_desc">
+                            <p class="body-s w-dyn-bind-empty"></p>
+                          </div>
                         </div>
                       </div>
                     </div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
                   </div>
-                  <div class="w-dyn-empty">
-                    <div>No items found.</div>
+                </div>
+                <div class="machines_wrap">
+                  <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821538-35b9cb9a" class="machine_category"><span
+                      class="eyebrow-m">Operational Support</span></div>
+                  <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582153b-35b9cb9a"
+                    class="machines-list-wrapper w-dyn-list">
+                    <div role="list" class="machines-list-list w-dyn-items">
+                      <div role="listitem" class="machines-list-item w-dyn-item">
+                        <div class="machine_item">
+                          <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582153f-35b9cb9a" class="machine_name">
+                            <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
+                          </div>
+                          <div id="w-node-_381af02f-ed20-3aaf-b764-62dd5ebc58a3-35b9cb9a" class="machine_desc">
+                            <p class="body-s w-dyn-bind-empty"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="w-dyn-empty">
+                      <div>No items found.</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="machines-bottom">
-              <div class="machines_wrap">
-                <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821511-35b9cb9a" class="machine_category"><span
-                    class="eyebrow-m">Development &amp; Drilling</span></div>
-                <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821514-35b9cb9a"
-                  class="machines-list-wrapper w-dyn-list">
-                  <div role="list" class="machines-list-list w-dyn-items">
-                    <div role="listitem" class="machines-list-item w-dyn-item">
-                      <div class="machine_item">
-                        <div class="machine_name">
-                          <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="w-dyn-empty">
-                    <div>No items found.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="machines_wrap">
-                <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582151e-35b9cb9a" class="machine_category"><span
-                    class="eyebrow-m">Haulage &amp; Loading</span></div>
-                <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821521-35b9cb9a"
-                  class="machines-list-wrapper w-dyn-list">
-                  <div role="list" class="machines-list-list w-dyn-items">
-                    <div role="listitem" class="machines-list-item w-dyn-item">
-                      <div class="machine_item">
-                        <div class="machine_name">
-                          <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="w-dyn-empty">
-                    <div>No items found.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="machines_wrap">
-                <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582152b-35b9cb9a" class="machine_category"><span
-                    class="eyebrow-m">Ground Support &amp; Construction</span></div>
-                <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582152e-35b9cb9a"
-                  class="machines-list-wrapper w-dyn-list">
-                  <div role="list" class="machines-list-list w-dyn-items">
-                    <div role="listitem" class="machines-list-item w-dyn-item">
-                      <div class="machine_item">
-                        <div class="machine_name">
-                          <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="w-dyn-empty">
-                    <div>No items found.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="machines_wrap">
-                <div id="w-node-_878eb008-92db-8efa-2f51-3cd055821538-35b9cb9a" class="machine_category"><span
-                    class="eyebrow-m">Operational Support</span></div>
-                <div id="w-node-_878eb008-92db-8efa-2f51-3cd05582153b-35b9cb9a"
-                  class="machines-list-wrapper w-dyn-list">
-                  <div role="list" class="machines-list-list w-dyn-items">
-                    <div role="listitem" class="machines-list-item w-dyn-item">
-                      <div class="machine_item">
-                        <div class="machine_name">
-                          <h3 class="body-xl is-black w-dyn-bind-empty"></h3>
-                        </div>
+            <div class="machines-grid-wrapper">
+              <div class="machines_grid">
+                <div class="machines-grid_wrapper w-dyn-list">
+                  <div role="list" class="machines-grid_list w-dyn-items">
+                    <div role="listitem" class="machines-grid_item w-dyn-item">
+                      <div class="machines-grid_item-inner">
+                        <div class="machines-grid_img-wrap"><img
+                            src="https://d3e54v103j8qbb.cloudfront.net/plugins/Basic/assets/placeholder.60f9b1840c.svg"
+                            loading="lazy" alt="" class="machines-grid_img w-dyn-bind-empty"></div>
+                        <div class="machines-grid_name-wrap"><span class="body-m w-dyn-bind-empty"></span></div>
                       </div>
                     </div>
                   </div>
@@ -760,30 +885,295 @@
             </div>
           </div>
         </div>
-        <div class="w-layout-vflex text-button">
-          <p tr="1" class="body-xl is-black is-center">We operate leading brands like Epiroc, Sandvik, Caterpillar,
-            among others ensuring maximum uptime and productivity where it matters most.</p>
-          <div class="button-wrap-md">
-            <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
-              class="button w-inline-block">
-              <div class="button_inner">
-                <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                    viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
-                    <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg">
-                    </rect>
-                    <path
-                      d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                      fill="currentColor" class="arrow-white-1_arrow"></path>
-                  </svg><span class="button_label">Our Fleet</span><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                    viewbox="0 0 34 34" fill="none" class="is-arrow-square">
-                    <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-bg"></rect>
-                    <path
-                      d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
-                      fill="currentColor" class="arrow-arrow"></path>
-                  </svg></div>
+      </div>
+      <div bg="black" class="section_brands">
+        <div class="intro">
+          <div class="eyebrows is-white">
+            <div class="is-eyebrow"><span class="eyebrow-s">S.02</span></div>
+            <div class="is-eyebrow"><span class="eyebrow-s">Brands</span></div>
+          </div>
+          <p tr="1" class="body-xl">           Our fleet is powered by top-tier global brands and operated by skilled
+            professionals. With dedicated in-house and on-site maintenance infrastructure, we ensure mechanical
+            availability across all mining operations.</p>
+        </div>
+        <div class="content">
+          <div class="logos-slider">
+            <div class="logos-sider_view">
+              <div class="logos-slider_inner">
+                <div class="logos-slider_grid">
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                </div>
+                <div class="logos-slider_grid">
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg></div>
+                </div>
               </div>
-            </a>
-            <link rel="prefetch" href="/our-services">
+            </div>
+            <div class="logos-slider_control"><button class="body-m is-o-30">Prev</button>
+              <div class="toggle is-light">
+                <div class="toggle-option"><span class="toggle-id is-active">01</span></div>
+                <div class="toggle-option"><span class="toggle-id">02</span></div>
+                <div class="toggle-indicator"></div>
+              </div><button class="body-m is-white">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div bg="black" class="section_workshops">
+        <div class="content is-h-100">
+          <div class="workshops">
+            <div id="w-node-_110e54dd-5249-272f-dbd2-c45c704292a3-35b9cb9a" class="workshops_left">
+              <div class="workshops_left_top">
+                <div class="eyebrows">
+                  <div class="is-eyebrow"><span class="eyebrow-s">S.03</span></div>
+                  <div class="is-eyebrow is-black"><span class="eyebrow-s">Workshops</span></div>
+                </div>
+                <div class="toggle is-green">
+                  <div class="toggle-option"><span class="toggle-id is-active">01</span></div>
+                  <div class="toggle-option"><span class="toggle-id">02</span></div>
+                  <div class="toggle-option"><span class="toggle-id">03</span></div>
+                  <div class="toggle-indicator is-black"></div>
+                </div>
+              </div>
+            </div>
+            <div id="w-node-b1106990-f814-7568-5b60-b415de92643a-35b9cb9a" class="workshops_right"></div>
           </div>
         </div>
       </div>

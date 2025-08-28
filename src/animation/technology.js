@@ -8,25 +8,29 @@ if (!gsap.parseEase('machinesStep')) {
   // Gentle ease-out for lighter snap
   CustomEase.create('machinesStep', 'M0,0 C0.25,0.46 0.45,0.94 1,1')
 }
-// Easing for machineOpen / machineClose interactions
-if (!gsap.parseEase('machinesOpenClose')) {
-  CustomEase.create('machinesOpenClose', 'M0,0 C0.6,0 0,1 1,1')
-}
 
 export function initTechnology(root = document) {
-  const DEBUG_MACHINES = true
-  const dlog = (...args) => {
-    if (!DEBUG_MACHINES) return
-    try {
-      console.log('[machines]', ...args)
-    } catch (err) {
-      /* noop */
-    }
+  // Support being called with the Barba container element itself
+  try {
+    const container = root && root.nodeType === 1 ? root : document
+    const isSelfTechnology =
+      container &&
+      container.getAttribute &&
+      container.getAttribute('data-barba-namespace') === 'technology'
+    const page = isSelfTechnology
+      ? container
+      : container.querySelector('[data-barba-namespace="technology"]')
+    if (!page) return
+    // From here on, treat `root` as the page container for scoped queries
+    root = page
+  } catch (err) {
+    // If anything goes wrong with detection, bail out to avoid double-binding
+    return
   }
-  const page = root.querySelector('[data-barba-namespace="technology"]')
-  if (!page) return
 
   const machinesWrapper = root.querySelector('.machines-wrapper')
+  const machinesGridWrapper = root.querySelector('.machines-grid-wrapper')
+  const gridToggle = root.querySelector('.toggle.is-white')
   const machines = root.querySelector('.machines')
   if (!machinesWrapper || !machines) return
 
@@ -75,12 +79,13 @@ export function initTechnology(root = document) {
       const baseEl = imagesList || imagesRoot || machines
       const fs = window.getComputedStyle(baseEl).fontSize
       const px = parseFloat(fs || '16') || 16
-      return px * 11.25
+      return px * 11.2
     } catch (err) {
-      return 16 * 11.25
+      return 16 * 11.2
     }
   }
   let imagesStepPx = getImagesBasePx()
+  let imagesYBeforeOpen = 0
   let closedItemEmHeight = 0
 
   const getStepProgress = (distance) => {
@@ -168,7 +173,7 @@ export function initTechnology(root = document) {
         onEnter: () => {
           gsap.to(imagesRoot, {
             width: '13.5em',
-            height: '11.25em',
+            height: '11.2em',
             duration: 0.5,
             ease: gsap.parseEase('machinesStep') || ((t) => t),
           })
@@ -180,6 +185,349 @@ export function initTechnology(root = document) {
     // ignore
   }
 
+  // ---------- Open / Close controls ----------
+  // ---------- Grid/List Toggle ----------
+  try {
+    if (gridToggle && machinesGridWrapper && machinesWrapper) {
+      const indicator = gridToggle.querySelector('.toggle-indicator')
+      const optGrid = gridToggle.querySelector('[data-toggle="grid"]')
+      const optList = gridToggle.querySelector('[data-toggle="list"]')
+      const setMode = (mode) => {
+        const isGrid = mode === 'grid'
+        machinesWrapper.style.display = isGrid ? 'none' : 'block'
+        machinesGridWrapper.style.display = isGrid ? 'block' : 'none'
+        try {
+          const active = gridToggle.querySelector(
+            `.toggle-option[data-toggle="${mode}"]`
+          )
+          if (indicator) {
+            // In grid mode, indicator should be on the left (base),
+            // and in list mode on the right (is-grid)
+            if (isGrid) indicator.classList.remove('is-grid')
+            else indicator.classList.add('is-grid')
+          }
+          gridToggle
+            .querySelectorAll('.toggle-id')
+            .forEach((el) => el.classList.remove('is-active'))
+          const id = active ? active.querySelector('.toggle-id') : null
+          if (id) id.classList.add('is-active')
+        } catch (err) {
+          // ignore
+        }
+      }
+      if (optGrid)
+        optGrid.addEventListener('click', (e) => {
+          e.preventDefault()
+          setMode('grid')
+        })
+      if (optList)
+        optList.addEventListener('click', (e) => {
+          e.preventDefault()
+          setMode('list')
+        })
+      // initial state: list visible, grid hidden and indicator aligned to list
+      machinesGridWrapper.style.display = 'none'
+      setMode('list')
+    }
+  } catch (err) {
+    // ignore
+  }
+  const lockScroll = () => {
+    if (isScrollLocked) return
+    try {
+      if (window.lenis && typeof window.lenis.stop === 'function') {
+        window.lenis.stop()
+      }
+    } catch (err) {
+      // ignore
+    }
+    try {
+      const targetEl =
+        scroller && scroller !== window ? scroller : document.documentElement
+      if (targetEl) {
+        targetEl.style.overflow = 'hidden'
+        targetEl.style.touchAction = 'none'
+      }
+      if (targetEl !== document.documentElement) {
+        document.documentElement.style.overflow = 'hidden'
+        document.body.style.overflow = 'hidden'
+        document.body.style.touchAction = 'none'
+      }
+    } catch (err) {
+      // ignore
+    }
+    isScrollLocked = true
+  }
+  const unlockScroll = () => {
+    if (!isScrollLocked) return
+    try {
+      if (window.lenis && typeof window.lenis.start === 'function') {
+        window.lenis.start()
+      }
+    } catch (err) {
+      // ignore
+    }
+    try {
+      const targetEl =
+        scroller && scroller !== window ? scroller : document.documentElement
+      if (targetEl) {
+        targetEl.style.overflow = ''
+        targetEl.style.touchAction = ''
+      }
+      document.documentElement.style.overflow = ''
+      document.body.style.overflow = ''
+      document.body.style.touchAction = ''
+    } catch (err) {
+      // ignore
+    }
+    isScrollLocked = false
+  }
+  const getCurrentDistance = () => {
+    try {
+      const y = Number(gsap.getProperty(content, 'y')) || 0
+      const maxDist = offsets[offsets.length - 1] || 0
+      return Math.max(0, Math.min(maxDist, -y))
+    } catch (err) {
+      return st.scroll() - st.start
+    }
+  }
+  const getCurrentIndex = () => {
+    const dist = getCurrentDistance()
+    return getNearestStepForScroll(dist)
+  }
+  const markActiveImage = (index) => {
+    try {
+      const rootEl = imagesRoot || machines
+      const items = rootEl.querySelectorAll('.machines_images-item')
+      if (!items || !items.length) return
+      items.forEach((el, i) => {
+        if (i === index) el.classList.add('is-active')
+        else el.classList.remove('is-active')
+      })
+    } catch (err) {
+      // ignore
+    }
+  }
+  const getPairForIndex = (index) => {
+    const stickyItems = machines.querySelectorAll('.machines-list-item')
+    const bottom =
+      root.querySelector('.machines-bottom') ||
+      document.querySelector('.machines-bottom')
+    const bottomItems = bottom
+      ? bottom.querySelectorAll('.machines-list-item')
+      : []
+    const pair = []
+    if (stickyItems[index]) pair.push(stickyItems[index])
+    if (bottomItems[index]) pair.push(bottomItems[index])
+    return pair
+  }
+
+  const machineOpen = () => {
+    const index = getCurrentIndex()
+    const pair = getPairForIndex(index)
+    if (pair.length === 0) return
+    lockScroll()
+    try {
+      // Measure inner height in em for the selected item
+      const item = pair[0]
+      const inner = item.querySelector('.machine_item')
+      const fs = parseFloat(window.getComputedStyle(item).fontSize || '16')
+      const innerHpx = inner ? inner.getBoundingClientRect().height : 0
+      // Add list-item's own vertical padding
+      const itemCS = window.getComputedStyle(item)
+      const pt = parseFloat(itemCS.paddingTop || '0') || 0
+      const pb = parseFloat(itemCS.paddingBottom || '0') || 0
+      const hpx = innerHpx + pt + pb
+      const hem = fs ? hpx / fs : 0
+      if (hem > 0) {
+        pair.forEach((el) => {
+          gsap.to(el, {
+            height: `${hem}em`,
+            duration: 0.5,
+            ease: gsap.parseEase('machinesStep') || ((t) => t),
+          })
+        })
+      }
+    } catch (err) {
+      // ignore
+    }
+    try {
+      const btnWrap = machines.querySelector('.machines_button-wrap')
+      const btns = btnWrap ? btnWrap.querySelectorAll('.machines_button') : null
+      if (btns && btns.length)
+        gsap.to(btns, {
+          yPercent: -100,
+          duration: 0.5,
+          ease: gsap.parseEase('machinesStep') || ((t) => t),
+        })
+      // Rotate the plus icon inside the close button
+      const closePlus = btnWrap
+        ? btnWrap.querySelector('.machines_button.is-close > .is-plus')
+        : null
+      if (closePlus)
+        gsap.to(closePlus, {
+          rotate: 135,
+          duration: 0.5,
+          ease: gsap.parseEase('machinesStep') || ((t) => t),
+        })
+    } catch (err) {
+      // ignore
+    }
+    try {
+      if (imagesRoot && imagesRoot !== machines) {
+        // Capture the current list translation so we can counter it while open
+        try {
+          const dist = getCurrentDistance()
+          setImagesByDistance(dist)
+          if (imagesList) {
+            imagesYBeforeOpen = Number(gsap.getProperty(imagesList, 'y')) || 0
+          }
+        } catch (err) {
+          // ignore
+        }
+        imagesRoot.classList.add('is-open')
+        gsap.to(imagesRoot, {
+          width: '28em',
+          height: '23.313em',
+          duration: 0.5,
+          ease: gsap.parseEase('machinesStep') || ((t) => t),
+          onUpdate: () => {
+            try {
+              const h = imagesRoot.getBoundingClientRect().height || 0
+              const items = (imagesRoot || machines).querySelectorAll(
+                '.machines_images-item.is-active'
+              )
+              if (h > 0 && items && items.length) {
+                items.forEach((el) => (el.style.height = `${Math.round(h)}px`))
+              }
+            } catch (err) {
+              // ignore
+            }
+          },
+        })
+        // Ensure active image is marked and positioned at top:0 (CSS handles positioning)
+        try {
+          const items = (imagesRoot || machines).querySelectorAll(
+            '.machines_images-item'
+          )
+          const idx = index
+          items.forEach((el, i) => {
+            if (i === idx) el.classList.add('is-active')
+            else el.classList.remove('is-active')
+          })
+        } catch (err) {
+          // ignore
+        }
+      }
+      // Do not touch inner items/list during open; container resize is sufficient
+    } catch (err) {
+      // ignore
+    }
+  }
+
+  const machineClose = () => {
+    const index = getCurrentIndex()
+    const pair = getPairForIndex(index)
+    if (pair.length === 0) return
+    const heightEm = closedItemEmHeight || 0
+    try {
+      if (heightEm > 0) {
+        pair.forEach((el) => {
+          gsap.to(el, {
+            height: `${heightEm}em`,
+            duration: 0.5,
+            ease: gsap.parseEase('machinesStep') || ((t) => t),
+          })
+        })
+      }
+    } catch (err) {
+      // ignore
+    }
+    try {
+      const btnWrap = machines.querySelector('.machines_button-wrap')
+      const btns = btnWrap ? btnWrap.querySelectorAll('.machines_button') : null
+      if (btns && btns.length)
+        gsap.to(btns, {
+          yPercent: 0,
+          duration: 0.5,
+          ease: gsap.parseEase('machinesStep') || ((t) => t),
+        })
+    } catch (err) {
+      // ignore
+    }
+    try {
+      if (imagesRoot && imagesRoot !== machines) {
+        gsap.to(imagesRoot, {
+          width: '13.5em',
+          height: '11.2em',
+          duration: 0.5,
+          ease: gsap.parseEase('machinesStep') || ((t) => t),
+          onComplete: () => {
+            // Ensure images list transform is synced before restoring transform
+            try {
+              if (imagesList) {
+                // Restore exact y to avoid any visual jump
+                gsap.set(imagesList, { y: imagesYBeforeOpen || 0 })
+              } else {
+                const dist = getCurrentDistance()
+                setImagesByDistance(dist)
+              }
+              requestAnimationFrame(() => {
+                try {
+                  imagesRoot.classList.remove('is-open')
+                  unlockScroll()
+                } catch (err) {
+                  // ignore
+                }
+              })
+            } catch (err) {
+              // ignore
+            }
+          },
+          onUpdate: () => {
+            try {
+              const h = imagesRoot.getBoundingClientRect().height || 0
+              const items = (imagesRoot || machines).querySelectorAll(
+                '.machines_images-item.is-active'
+              )
+              if (h > 0 && items && items.length) {
+                items.forEach((el) => (el.style.height = `${Math.round(h)}px`))
+              }
+            } catch (err) {
+              // ignore
+            }
+          },
+        })
+      }
+      // Do not touch inner items/list during close; container resize is sufficient
+      const btnWrap = machines.querySelector('.machines_button-wrap')
+      const closePlus = btnWrap
+        ? btnWrap.querySelector('.machines_button.is-close > .is-plus')
+        : null
+      if (closePlus)
+        gsap.to(closePlus, {
+          rotate: 0,
+          duration: 0.5,
+          ease: gsap.parseEase('machinesStep') || ((t) => t),
+        })
+    } catch (err) {
+      // ignore
+    }
+  }
+
+  // Wire buttons
+  try {
+    machines.machineOpen = machineOpen
+    machines.machineClose = machineClose
+    const btnWrap = machines.querySelector('.machines_button-wrap')
+    if (btnWrap) {
+      const buttons = btnWrap.querySelectorAll('.machines_button')
+      if (buttons[0]) buttons[0].addEventListener('click', machineOpen)
+      if (buttons[1]) buttons[1].addEventListener('click', machineClose)
+    }
+  } catch (err) {
+    // ignore
+  }
   let stepHeight = 0
   let isActive = false
   let currentStep = -1
@@ -228,12 +576,6 @@ export function initTechnology(root = document) {
       return `+=${Math.max(1, Math.ceil(totalDistance))}`
     },
     onToggle: (self) => {
-      dlog('onToggle', {
-        isActiveBefore: isActive,
-        scroll: self.scroll(),
-        start: self.start,
-        end: self.end,
-      })
       isActive = self.isActive
       if (isActive) {
         // Snap current step to nearest at activation
@@ -242,11 +584,6 @@ export function initTechnology(root = document) {
         currentStep = Math.max(0, nearest)
         if (offsets.length > 0)
           gsap.set(content, { y: -Math.round(offsets[currentStep] || 0) })
-        dlog('onToggle->active mapped', {
-          dist,
-          nearest,
-          contentY: Number(gsap.getProperty(content, 'y')) || 0,
-        })
       } else {
         wheelAccumulator = 0
       }
@@ -254,18 +591,14 @@ export function initTechnology(root = document) {
     onUpdate: (self) => {
       // Continuous follow of scroll during movement; snapping happens only on stop
       try {
-        if (isOpenAnimating) return
         const dist = self.scroll() - self.start
         const maxDist = offsets[offsets.length - 1] || 0
         const clamped = Math.max(0, Math.min(maxDist, dist))
         gsap.set(content, { y: -Math.round(clamped) })
         setImagesByDistance(clamped)
-        if (DEBUG_MACHINES && Math.random() < 0.01)
-          dlog('onUpdate follow', {
-            dist,
-            clamped,
-            contentY: Number(gsap.getProperty(content, 'y')) || 0,
-          })
+        // Update active image in real-time so the image under the line is marked
+        const idx = getNearestStepForScroll(clamped)
+        markActiveImage(idx)
       } catch (err) {
         // ignore
       }
@@ -286,6 +619,7 @@ export function initTechnology(root = document) {
   let queuedDuration = SNAP_MIN
   let lastScrollMagnitude = 0
   let softSnapTimer = null
+  let isScrollLocked = false
 
   // Soft snap is disabled during scrolling; we only snap on stop now
   const STOP_DEBOUNCE_MS = 140
@@ -600,420 +934,6 @@ export function initTechnology(root = document) {
 
   // Touch support: quantize scrolling on touchend similarly
   let touchStartY = null
-  // Helpers to resolve item under the line at current position
-  const getCurrentDistance = () => {
-    try {
-      const y = Number(gsap.getProperty(content, 'y')) || 0
-      const maxDist = offsets[offsets.length - 1] || 0
-      return Math.max(0, Math.min(maxDist, -y))
-    } catch (err) {
-      return st.scroll() - st.start
-    }
-  }
-  // removed legacy helper
-
-  // Index and pairing helpers (sticky + bottom)
-  const getCurrentIndex = () => {
-    const dist = getCurrentDistance()
-    return getNearestStepForScroll(dist)
-  }
-  const getPairForIndex = (index) => {
-    const stickyItems = machines.querySelectorAll('.machines-list-item')
-    const bottom =
-      root.querySelector('.machines-bottom') ||
-      document.querySelector('.machines-bottom')
-    const bottomItems = bottom
-      ? bottom.querySelectorAll('.machines-list-item')
-      : []
-    const pair = []
-    if (stickyItems[index]) pair.push(stickyItems[index])
-    if (bottomItems[index]) pair.push(bottomItems[index])
-    return pair
-  }
-
-  // Helpers to read/set native scroll consistently (window/Lenis/element)
-  const getNativeScrollPos = () => {
-    try {
-      if (window.lenis && typeof window.lenis.scroll === 'number')
-        return window.lenis.scroll
-    } catch (err) {
-      // ignore
-    }
-    try {
-      if (scroller && scroller !== window) return scroller.scrollTop || 0
-    } catch (err) {
-      // ignore
-    }
-    try {
-      return window.scrollY || window.pageYOffset || 0
-    } catch (err) {
-      return 0
-    }
-  }
-  const setNativeScrollPos = (val) => {
-    try {
-      if (window.lenis && typeof window.lenis.scrollTo === 'function') {
-        window.lenis.scrollTo(val, { duration: 0, lock: true })
-        return
-      }
-    } catch (err) {
-      // ignore
-    }
-    try {
-      if (scroller && scroller !== window) scroller.scrollTop = val
-      else window.scrollTo(0, val)
-    } catch (err) {
-      // ignore
-    }
-  }
-
-  let savedNativeScroll = null
-  let savedDistFromStart = 0
-
-  const lockScroll = () => {
-    try {
-      if (window.lenis && typeof window.lenis.stop === 'function') {
-        window.lenis.stop()
-      } else {
-        document.documentElement.style.overflow = 'hidden'
-        document.body.style.overflow = 'hidden'
-        document.body.style.touchAction = 'none'
-      }
-    } catch (err) {
-      // ignore
-    }
-  }
-  const unlockScroll = () => {
-    try {
-      if (window.lenis && typeof window.lenis.start === 'function') {
-        window.lenis.start()
-      } else {
-        document.documentElement.style.overflow = ''
-        document.body.style.overflow = ''
-        document.body.style.touchAction = ''
-      }
-    } catch (err) {
-      // ignore
-    }
-  }
-
-  // Open/Close behaviors
-  let isOpenAnimating = false
-  const machineOpen = () => {
-    const index = getCurrentIndex()
-    const pair = getPairForIndex(index)
-    if (pair.length === 0) return
-    const item = pair[0]
-    const inner = item.querySelector('.machine_item')
-    const btnWrap = machines.querySelector('.machines_button-wrap')
-    const btns = btnWrap ? btnWrap.querySelectorAll('.machines_button') : null
-    const closePlus = btnWrap
-      ? btnWrap.querySelector('.machines_button.is-close > .is-plus')
-      : null
-    try {
-      // Expand list-item to its inner height with page position preserved
-      const itemFs = parseFloat(window.getComputedStyle(item).fontSize || '16')
-      const innerRect = inner && inner.getBoundingClientRect()
-      const innerHpx = innerRect ? innerRect.height : 0
-      const innerEm = itemFs ? innerHpx / itemFs : 0
-      if (innerEm > 0) {
-        // preserve preOffset for completeness (no binding during open)
-        // no scroll binding during open
-        const tl = gsap.timeline({
-          defaults: {
-            duration: 0.5,
-            ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-          },
-          onStart: () => {
-            isOpenAnimating = true
-            lockScroll()
-            // Freeze scroll binding while animating so other items push naturally
-            gsap.set(content, { willChange: 'auto' })
-            // Save absolute scroll and relative distance to st.start to restore later
-            savedNativeScroll = getNativeScrollPos()
-            const stStart = st && st.start ? st.start : 0
-            savedDistFromStart = Math.max(0, savedNativeScroll - stStart)
-            dlog('open:start', {
-              index,
-              savedNativeScroll,
-              stStart,
-              savedDistFromStart,
-              contentY: Number(gsap.getProperty(content, 'y')) || 0,
-            })
-          },
-          onComplete: () => {
-            measureSteps()
-            const newOffset = offsets[index] || 0
-            gsap.set(content, { y: -Math.round(newOffset) })
-            st.refresh()
-            isOpenAnimating = false
-            dlog('open:complete', {
-              index,
-              newOffset,
-              contentY: Number(gsap.getProperty(content, 'y')) || 0,
-            })
-          },
-        })
-        pair.forEach((el) =>
-          tl.to(
-            el,
-            {
-              height: `${innerEm}em`,
-            },
-            0
-          )
-        )
-        // buttons & images
-        if (btns && btns.length)
-          tl.to(
-            btns,
-            {
-              yPercent: -100,
-            },
-            0
-          )
-        if (imagesRoot && imagesRoot !== machines) {
-          tl.to(
-            imagesRoot,
-            {
-              width: '28em',
-              height: '23.313em',
-            },
-            0
-          )
-          const imageItems = imagesRoot.querySelectorAll(
-            '.machines_images-item'
-          )
-          if (imageItems && imageItems.length)
-            tl.to(
-              imageItems,
-              {
-                height: '23.313em',
-              },
-              0
-            )
-        }
-        if (closePlus)
-          tl.to(
-            closePlus,
-            {
-              rotate: 135,
-            },
-            0
-          )
-      }
-    } catch (err) {
-      // ignore
-    }
-    try {
-      // Move both buttons up
-      if (btns && btns.length)
-        gsap.to(btns, {
-          yPercent: -100,
-          duration: 0.5,
-          ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-        })
-      // Grow images
-      if (imagesRoot && imagesRoot !== machines) {
-        gsap.to(imagesRoot, {
-          width: '28em',
-          height: '23.313em',
-          duration: 0.5,
-          ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-        })
-        try {
-          const imageItems = imagesRoot.querySelectorAll(
-            '.machines_images-item'
-          )
-          if (imageItems && imageItems.length) {
-            gsap.to(imageItems, {
-              height: '23.313em',
-              duration: 0.5,
-              ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-            })
-          }
-        } catch (err) {
-          // ignore
-        }
-      }
-      // Rotate the plus icon inside the close button
-      if (closePlus)
-        gsap.to(closePlus, {
-          rotate: 135,
-          duration: 0.5,
-          ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-        })
-    } catch (err) {
-      // ignore
-    }
-  }
-
-  const machineClose = () => {
-    const index = getCurrentIndex()
-    const pair = getPairForIndex(index)
-    if (pair.length === 0) return
-    const btnWrap = machines.querySelector('.machines_button-wrap')
-    const btns = btnWrap ? btnWrap.querySelectorAll('.machines_button') : null
-    const closePlus = btnWrap
-      ? btnWrap.querySelector('.machines_button.is-close > .is-plus')
-      : null
-    try {
-      if (closedItemEmHeight > 0) {
-        // no scroll binding during close; compute dims if needed later
-        const tl = gsap.timeline({
-          defaults: {
-            duration: 0.5,
-            ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-          },
-          onStart: () => {
-            isOpenAnimating = true
-            dlog('close:start', {
-              index,
-              savedNativeScroll,
-              savedDistFromStart,
-              contentY: Number(gsap.getProperty(content, 'y')) || 0,
-            })
-          },
-          onComplete: () => {
-            // Recompute steps and realign content to where we were BEFORE refresh
-            measureSteps()
-            const maxDist = offsets[offsets.length - 1] || 0
-            const distClamped = Math.max(
-              0,
-              Math.min(maxDist, savedDistFromStart)
-            )
-            const idxNow = getNearestStepForScroll(distClamped)
-            const newOffset = offsets[idxNow] || 0
-            // Align content to the logical offset for current scroll
-            gsap.set(content, { y: -Math.round(newOffset) })
-            // Ensure ScrollTrigger uses the same scroll position
-            setNativeScrollPos((st && st.start ? st.start : 0) + distClamped)
-            ScrollTrigger.update()
-            st.refresh()
-            wheelAccumulator = 0
-            // Delay re-enabling onUpdate binding by one frame to avoid race
-            const finish = () => {
-              isOpenAnimating = false
-              unlockScroll()
-              savedNativeScroll = null
-              savedDistFromStart = 0
-              dlog('close:complete', {
-                index,
-                distClamped,
-                idxNow,
-                newOffset,
-                scrollNow: getNativeScrollPos(),
-                contentY: Number(gsap.getProperty(content, 'y')) || 0,
-              })
-            }
-            if (typeof requestAnimationFrame === 'function')
-              requestAnimationFrame(finish)
-            else finish()
-          },
-        })
-        pair.forEach((el) =>
-          tl.to(
-            el,
-            {
-              height: `${closedItemEmHeight}em`,
-            },
-            0
-          )
-        )
-        if (btns && btns.length)
-          tl.to(
-            btns,
-            {
-              yPercent: 0,
-            },
-            0
-          )
-        if (imagesRoot && imagesRoot !== machines) {
-          tl.to(
-            imagesRoot,
-            {
-              width: '13.5em',
-              height: '11.25em',
-            },
-            0
-          )
-          const imageItems = imagesRoot.querySelectorAll(
-            '.machines_images-item'
-          )
-          if (imageItems && imageItems.length)
-            tl.to(
-              imageItems,
-              {
-                height: '11.25em',
-              },
-              0
-            )
-        }
-        if (closePlus)
-          tl.to(
-            closePlus,
-            {
-              rotate: 0,
-            },
-            0
-          )
-      }
-    } catch (err) {
-      // ignore
-    }
-    try {
-      if (btns && btns.length)
-        gsap.to(btns, {
-          yPercent: 0,
-          duration: 0.5,
-          ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-        })
-      if (imagesRoot && imagesRoot !== machines) {
-        gsap.to(imagesRoot, {
-          width: '13.5em',
-          height: '11.25em',
-          duration: 0.5,
-          ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-        })
-        try {
-          const imageItems = imagesRoot.querySelectorAll(
-            '.machines_images-item'
-          )
-          if (imageItems && imageItems.length) {
-            gsap.to(imageItems, {
-              height: '11.25em',
-              duration: 0.5,
-              ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-            })
-          }
-        } catch (err) {
-          // ignore
-        }
-      }
-      if (closePlus)
-        gsap.to(closePlus, {
-          rotate: 0,
-          duration: 0.5,
-          ease: gsap.parseEase('machinesOpenClose') || ((t) => t),
-        })
-    } catch (err) {
-      // ignore
-    }
-  }
-
-  // Expose controls and wire buttons
-  try {
-    machines.machineOpen = machineOpen
-    machines.machineClose = machineClose
-    const btnWrap = machines.querySelector('.machines_button-wrap')
-    if (btnWrap) {
-      const buttons = btnWrap.querySelectorAll('.machines_button')
-      if (buttons[0]) buttons[0].addEventListener('click', machineOpen)
-      if (buttons[1]) buttons[1].addEventListener('click', machineClose)
-    }
-  } catch (err) {
-    // ignore
-  }
   const onTouchStart = (e) => {
     if (!isActive) return
     touchStartY =

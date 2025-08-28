@@ -112,3 +112,25 @@
 .is-text-mask>.mask-fill:last-child {
   margin-left: -1px;
 }
+
+.machines-inner>.machines_wrap:first-of-type .machines-list-list>.machines-list-item:first-of-type,
+.machines-bottom>.machines_wrap:first-of-type .machines-list-list>.machines-list-item:first-of-type {
+  padding-top: 0.6em;
+}
+
+/* Machines images: anchor 1em from the top of .machines (machines stays sticky) */
+.machines_images {
+  position: absolute;
+  top: 1em;
+  left: 0;
+  /* width/height initial are 0; JS will animate to em sizes */
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Keep the button wrap anchored at 1em from the top of .machines */
+.machines_button-wrap {
+  position: absolute;
+  top: 1em;
+}

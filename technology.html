@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Thu Aug 28 2025 14:19:56 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Fri Aug 29 2025 11:52:53 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="68ada22c8efaceb435b9cb9a" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -273,6 +273,10 @@
       html.wf-design-mode>body>div.page-wrap>div>div.section_latest-technology>div.content>div {
         overflow: hidden;
       }
+
+      html.wf-design-mode>body>.loader {
+        display: none;
+      }
     </style>
   </div>
   <div class="navbar">
@@ -320,8 +324,8 @@
           </svg><span class="navlink_label">Our Services</span></a>
       </li>
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-            viewbox="0 0 34 34" fill="none" class="navlink_icon">
+        <a href="technology.html" aria-current="page" class="navlink w-inline-block w--current"><svg
+            xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
               d="M14.0293 9.26572C14.0293 8.67179 14.7474 8.37434 15.1674 8.79432L22.8716 16.4986C23.1319 16.7589 23.1319 17.181 22.8716 17.4414L15.1674 25.1456C14.7474 25.5656 14.0293 25.2681 14.0293 24.6742V9.26572Z"
@@ -637,8 +641,8 @@
         <div class="content is-v">
           <div class="is-grid-toggle">
             <div class="toggle is-white">
-              <div class="toggle-option" data-toggle="grid"><span class="toggle-id">Grid</span></div>
-              <div class="toggle-option" data-toggle="list"><span class="toggle-id is-active">List</span></div>
+              <div data-toggle="grid" class="toggle-option"><span class="toggle-id">Grid</span></div>
+              <div data-toggle="list" class="toggle-option"><span class="toggle-id is-active">List</span></div>
               <div class="toggle-indicator is-grid"></div>
             </div>
           </div>
@@ -1172,8 +1176,46 @@
                   <div class="toggle-indicator is-black"></div>
                 </div>
               </div>
+              <div class="workshops_left_middle">
+                <h3 class="body-xl is-black">Maintenance<br>Infrastructure</h3>
+                <h3 class="body-xl is-black">Central service<br>workshop</h3>
+                <h3 class="body-xl is-black">On-Site service<br>workshops</h3>
+              </div>
+              <div class="workshops_left_bottom">
+                <p class="body-s">At our company, maintenance is not just an operational function, it’s a strategic
+                  commitment to safety, mechanical availability, and equipment reliability across every project. Our
+                  comprehensive approach integrates preventive and corrective maintenance, life cycle-based component
+                  replacements, major repairs, and rebuilds, all aimed at maximizing performance and minimizing
+                  downtime.</p>
+                <p class="body-s">Our central facility is equipped to carry out complete overhauls, major repairs, and
+                  life cycle-driven component change-outs. Using advanced diagnostics and OEM-certified parts, we
+                  restore equipment to peak efficiency, ensuring the highest standards of safety, quality, and
+                  durability.</p>
+                <p class="body-s">Each of our project sites features a fully equipped on-site workshop for scheduled
+                  maintenance, daily inspections, and rapid response to mechanical issues. This decentralized model
+                  allows us to maintain high levels of operational availability and ensure continuous operations across
+                  all shifts. Our commitment to maintenance excellence is a core part of the high-quality service we
+                  deliver to our clients.</p>
+              </div>
             </div>
-            <div id="w-node-b1106990-f814-7568-5b60-b415de92643a-35b9cb9a" class="workshops_right"></div>
+            <div id="w-node-b1106990-f814-7568-5b60-b415de92643a-35b9cb9a" class="workshops_right">
+              <div class="worskshops_img-wrap">
+                <div class="workshops_img-view"><img src="images/workshops-1_1.avif" loading="lazy"
+                    sizes="(max-width: 812px) 100vw, 812px"
+                    srcset="images/workshops-1_1workshops-1.avif 500w, images/workshops-1_1.avif 812w" alt=""
+                    class="workshops_img"></div>
+              </div>
+              <div class="worskshops_img-wrap">
+                <div class="workshops_img-view"><img src="images/workshops-2_1.avif" loading="lazy"
+                    sizes="(max-width: 812px) 100vw, 812px"
+                    srcset="images/workshops-2_1workshops-2.avif 500w, images/workshops-2_1.avif 812w" alt=""
+                    class="workshops_img"></div>
+              </div>
+              <div class="worskshops_img-wrap">
+                <div class="workshops_img-view"><img src="images/safety-sm_1.avif" loading="lazy" alt=""
+                    class="workshops_img"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1236,13 +1278,13 @@
             </svg>
             <div class="footer_socials">
               <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                  viewbox="0 0 26 26" fill="none" class="social-logo">
+                  viewbox="0 0 26 26" fill="none" class="social-logo is-footer">
                   <path
                     d="M19.9805 0.734375H5.98047C3.21947 0.734375 0.980469 2.97338 0.980469 5.73438V19.7344C0.980469 22.4954 3.21947 24.7344 5.98047 24.7344H19.9805C22.7425 24.7344 24.9805 22.4954 24.9805 19.7344V5.73438C24.9805 2.97338 22.7425 0.734375 19.9805 0.734375ZM8.98047 19.7344H5.98047V8.73438H8.98047V19.7344ZM7.48047 7.46637C6.51447 7.46637 5.73047 6.67637 5.73047 5.70237C5.73047 4.72837 6.51447 3.93837 7.48047 3.93837C8.44647 3.93837 9.23047 4.72837 9.23047 5.70237C9.23047 6.67637 8.44747 7.46637 7.48047 7.46637ZM20.9805 19.7344H17.9805V14.1304C17.9805 10.7624 13.9805 11.0174 13.9805 14.1304V19.7344H10.9805V8.73438H13.9805V10.4994C15.3765 7.91338 20.9805 7.72238 20.9805 12.9754V19.7344Z"
                     fill="#1E1E1E"></path>
                 </svg></a>
               <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                  viewbox="0 0 26 26" fill="none" class="social-logo">
+                  viewbox="0 0 26 26" fill="none" class="social-logo is-footer">
                   <g clip-path="url(#clip0_4667_20925)">
                     <path
                       d="M12.9805 2.89738C16.1845 2.89738 16.5645 2.90937 17.8305 2.96738C21.0825 3.11538 22.6015 4.65838 22.7495 7.88637C22.8075 9.15137 22.8185 9.53138 22.8185 12.7354C22.8185 15.9404 22.8065 16.3194 22.7495 17.5844C22.6005 20.8094 21.0855 22.3554 17.8305 22.5034C16.5645 22.5614 16.1865 22.5734 12.9805 22.5734C9.77647 22.5734 9.39647 22.5614 8.13147 22.5034C4.87147 22.3544 3.36047 20.8044 3.21247 17.5834C3.15447 16.3184 3.14247 15.9394 3.14247 12.7344C3.14247 9.53037 3.15547 9.15137 3.21247 7.88538C3.36147 4.65838 4.87647 3.11438 8.13147 2.96638C9.39747 2.90938 9.77647 2.89738 12.9805 2.89738ZM12.9805 0.734375C9.72147 0.734375 9.31347 0.748375 8.03347 0.806375C3.67547 1.00638 1.25347 3.42438 1.05347 7.78638C0.994469 9.06738 0.980469 9.47538 0.980469 12.7344C0.980469 15.9934 0.994469 16.4024 1.05247 17.6824C1.25247 22.0404 3.67047 24.4624 8.03247 24.6624C9.31347 24.7204 9.72147 24.7344 12.9805 24.7344C16.2395 24.7344 16.6485 24.7204 17.9285 24.6624C22.2825 24.4624 24.7105 22.0444 24.9075 17.6824C24.9665 16.4024 24.9805 15.9934 24.9805 12.7344C24.9805 9.47538 24.9665 9.06738 24.9085 7.78737C24.7125 3.43337 22.2915 1.00738 17.9295 0.807375C16.6485 0.748375 16.2395 0.734375 12.9805 0.734375ZM12.9805 6.57237C9.57747 6.57237 6.81847 9.33138 6.81847 12.7344C6.81847 16.1374 9.57747 18.8974 12.9805 18.8974C16.3835 18.8974 19.1425 16.1384 19.1425 12.7344C19.1425 9.33138 16.3835 6.57237 12.9805 6.57237ZM12.9805 16.7344C10.7715 16.7344 8.98047 14.9444 8.98047 12.7344C8.98047 10.5254 10.7715 8.73438 12.9805 8.73438C15.1895 8.73438 16.9805 10.5254 16.9805 12.7344C16.9805 14.9444 15.1895 16.7344 12.9805 16.7344ZM19.3865 4.88938C18.5905 4.88938 17.9455 5.53437 17.9455 6.32937C17.9455 7.12437 18.5905 7.76937 19.3865 7.76937C20.1815 7.76937 20.8255 7.12437 20.8255 6.32937C20.8255 5.53437 20.1815 4.88938 19.3865 4.88938Z"
@@ -1255,7 +1297,7 @@
                   </defs>
                 </svg></a>
               <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                  viewbox="0 0 24 25" fill="none" class="social-logo">
+                  viewbox="0 0 24 25" fill="none" class="social-logo is-footer">
                   <rect y="0.5" width="24" height="24" rx="6" fill="#151515"></rect>
                   <path
                     d="M16.2401 13.6789L16.791 10.679H13.5843V9.61799C13.5843 8.03265 14.2063 7.42293 15.816 7.42293C16.316 7.42293 16.7184 7.4351 16.9501 7.45949V4.74003C16.5111 4.61806 15.438 4.49609 14.816 4.49609C11.5356 4.49609 10.0234 6.04488 10.0234 9.38631V10.679H7.99902V13.6789H10.0234V20.207C10.783 20.3954 11.5772 20.4961 12.395 20.4961C12.7976 20.4961 13.1944 20.4713 13.5843 20.4242V13.6789H16.2401Z"

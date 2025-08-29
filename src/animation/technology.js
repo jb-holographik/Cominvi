@@ -2,6 +2,8 @@ import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+import { initWorkshopsStickyImages } from './workshops'
+
 gsap.registerPlugin(ScrollTrigger, CustomEase)
 // Smooth, slightly springy step ease
 if (!gsap.parseEase('machinesStep')) {
@@ -33,6 +35,129 @@ export function initTechnology(root = document) {
   const gridToggle = root.querySelector('.toggle.is-white')
   const machines = root.querySelector('.machines')
   if (!machinesWrapper || !machines) return
+
+  // Workshops images pin (2em from top)
+  try {
+    initWorkshopsStickyImages(root)
+  } catch (err) {
+    // ignore
+  }
+
+  // Logos slider control
+  try {
+    const control = root.querySelector('.logos-slider_control')
+    const inner = root.querySelector('.logos-slider_inner')
+    const toggle = control ? control.querySelector('.toggle.is-light') : null
+    const options = toggle ? toggle.querySelectorAll('.toggle-option') : []
+    const ids = toggle ? toggle.querySelectorAll('.toggle-id') : []
+    const indicator = toggle ? toggle.querySelector('.toggle-indicator') : null
+    const buttons = control ? control.querySelectorAll('button.body-m') : []
+    const prevBtn = buttons && buttons.length ? buttons[0] : null
+    const nextBtn = buttons && buttons.length > 1 ? buttons[1] : null
+
+    if (
+      control &&
+      inner &&
+      toggle &&
+      options &&
+      options.length >= 2 &&
+      ids &&
+      ids.length >= 2 &&
+      indicator &&
+      prevBtn &&
+      nextBtn
+    ) {
+      try {
+        inner.style.willChange = 'transform'
+      } catch (e) {
+        // ignore
+      }
+      const moveIndicator = (idx) => {
+        try {
+          const baseLeft = options[0] ? options[0].offsetLeft : 0
+          const targetLeft = options[idx] ? options[idx].offsetLeft : 0
+          indicator.style.transform = `translate3d(${Math.max(
+            0,
+            targetLeft - baseLeft
+          )}px, 0, 0)`
+        } catch (e) {
+          // ignore
+        }
+      }
+      const setButtonsFor = (idx) => {
+        // idx 0: Prev dim (is-o-30), Next active (is-white)
+        // idx 1: Prev active (is-white), Next dim (is-o-30)
+        const prevActive = idx === 1
+        const nextActive = idx === 0
+        prevBtn.classList.toggle('is-white', prevActive)
+        prevBtn.classList.toggle('is-o-30', !prevActive)
+        nextBtn.classList.toggle('is-white', nextActive)
+        nextBtn.classList.toggle('is-o-30', !nextActive)
+      }
+      const setIdsFor = (idx) => {
+        ids.forEach((el, i) => {
+          if (i === idx) el.classList.add('is-active')
+          else el.classList.remove('is-active')
+        })
+      }
+      const setPage = (idx) => {
+        const i = Math.max(0, Math.min(1, idx))
+        try {
+          if (!gsap.parseEase('wsEase'))
+            CustomEase.create('wsEase', 'M0,0 C0.6,0 0,1 1,1')
+          const target = i === 0 ? 0 : -50
+          gsap.to(inner, {
+            xPercent: target,
+            duration: 0.5,
+            ease: 'wsEase',
+          })
+        } catch (e) {
+          try {
+            inner.style.transform =
+              i === 0 ? 'translate3d(0, 0, 0)' : 'translate3d(-50%, 0, 0)'
+          } catch (err) {
+            // ignore
+          }
+        }
+        setIdsFor(i)
+        moveIndicator(i)
+        setButtonsFor(i)
+      }
+
+      // Wire events
+      nextBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        setPage(1)
+      })
+      prevBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        setPage(0)
+      })
+      options[0].addEventListener('click', (e) => {
+        e.preventDefault()
+        setPage(0)
+      })
+      options[1].addEventListener('click', (e) => {
+        e.preventDefault()
+        setPage(1)
+      })
+      // Initial state
+      try {
+        gsap.set(inner, { xPercent: 0 })
+      } catch (e) {
+        try {
+          inner.style.transform = 'translate3d(0, 0, 0)'
+        } catch (err) {
+          // ignore
+        }
+      }
+      setIdsFor(0)
+      moveIndicator(0)
+      setButtonsFor(0)
+    }
+  } catch (err) {
+    // ignore
+  }
 
   // Ensure we translate only scrolling content, not the sticky container itself
   // Keep `.machines_images` and `.machines_button-wrap` OUTSIDE of `.machines-inner`

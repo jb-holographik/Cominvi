@@ -44,7 +44,7 @@ export function initTextDisplayReveal(root = document) {
 
     const tl = gsap.timeline({
       paused: true,
-      defaults: { duration: 1.2, ease: CustomEase.create('custom', easeCurve) },
+      defaults: { duration: 2, ease: CustomEase.create('custom', easeCurve) },
     })
     tl.to(gradients, { width: '100%', stagger: 0.025 }, 0)
     if (words.length) {

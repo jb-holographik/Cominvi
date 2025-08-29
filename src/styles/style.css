@@ -17,7 +17,7 @@
 }
 
 .scroll-item>.body-xl {
-  transition: all 0.1s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .eyebrows.is-white .is-eyebrow {
@@ -162,4 +162,38 @@
 
 .workshops_left_top>.eyebrows {
   padding-top: 0;
+}
+
+.footer-link {
+  position: relative;
+}
+
+.footer-link:hover {
+  opacity: 1;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: #151515;
+  transform-origin: bottom right;
+  transition: transform 0.5s cubic-bezier(0.32, 0.01, 0, 1);
+}
+
+.footer-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+h1>.is-h1-span-wrap:last-child>span {
+  padding-bottom: 0.025em;
+}
+
+.workshops .toggle-option {
+  cursor: default;
 }

@@ -70,9 +70,9 @@ export function initMinerals(root = document) {
       nameItems.forEach((el, idx) => {
         const isActive = idx === activeIndex
         el.classList.toggle('is-active', isActive)
-        el.classList.toggle('is-o-10', !isActive)
+        el.classList.toggle('is-o-15', !isActive)
         gsap.to(el, {
-          opacity: isActive ? 1 : 0.35,
+          opacity: isActive ? 1 : 0.15,
           duration: 1.2,
           ease: mineralsEase,
           overwrite: 'auto',

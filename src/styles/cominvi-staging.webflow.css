@@ -437,6 +437,10 @@ p {
   width: 2.8em;
 }
 
+.social-logo.is-footer {
+  width: 1.5em;
+}
+
 .page-scroll {
   width: 100%;
 }
@@ -1249,7 +1253,7 @@ p {
 .loader {
   z-index: 999;
   background-color: var(--accent);
-  display: none;
+  display: flex;
   position: fixed;
   inset: 0%;
 }
@@ -2759,7 +2763,6 @@ p {
   background-color: var(--primary);
   flex-flow: column;
   width: 100%;
-  height: 100vh;
   padding: 2em;
   display: flex;
 }
@@ -2778,11 +2781,21 @@ p {
 .workshops_left {
   background-color: var(--white);
   border-radius: .5em;
-  padding: .6em;
+  flex-flow: column;
+  justify-content: space-between;
+  height: calc(100vh - 4em);
+  padding: 1em;
+  display: flex;
+  position: sticky;
+  top: 2em;
 }
 
 .workshops_right {
+  grid-column-gap: 1px;
+  grid-row-gap: 1px;
   border-radius: .5em;
+  flex-flow: column;
+  display: flex;
 }
 
 .workshops_left_top {
@@ -2837,6 +2850,39 @@ p {
   align-items: center;
   width: 100%;
   display: flex;
+}
+
+.worskshops_img-wrap {
+  border-radius: .5em;
+  height: calc(100vh - 4em);
+  overflow: hidden;
+}
+
+.workshops_img {
+  object-fit: cover;
+  border-radius: .5em;
+  width: 100%;
+  height: 110%;
+}
+
+.workshops_left_middle {
+  text-align: center;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+.workshops_left_bottom {
+  text-align: center;
+  padding-bottom: 2em;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+.workshops_img-view {
+  border-radius: .5em;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 #w-node-_33e34690-9048-f1cc-5996-0de4203dfa95-3e31b7cd {

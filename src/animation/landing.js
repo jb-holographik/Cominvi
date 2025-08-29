@@ -56,9 +56,11 @@ export function heroAnimation(root = document, opts = {}) {
   const cards = Array.from(scope.querySelectorAll('.section_hero .card'))
   if (cards.length) {
     const starts = [110, 120]
+    // Démarrer les cartes 500ms après le début des animations de texte
+    const base = 0.5
     cards.forEach((card, i) => {
       const startPercent = starts[i] != null ? starts[i] : 100
-      const pos = 0
+      const pos = base
       tl.set(card, { autoAlpha: 1 }, pos)
       tl.fromTo(
         card,

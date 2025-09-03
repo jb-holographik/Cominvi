@@ -47,7 +47,7 @@
 /* Ensure full region area (not just stroke) is hoverable */
 .is-map .region {
   pointer-events: all;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .region.highlight {
@@ -196,4 +196,22 @@ h1>.is-h1-span-wrap:last-child>span {
 
 .workshops .toggle-option {
   cursor: default;
+}
+
+.w-background-video>video {
+  inset: 0;
+}
+
+/* Loader outline overlay: always on top and non-interactive */
+.loader-logo_outline {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  border-radius: 0.55em;
+  outline: 0.188em solid var(--primary);
+  outline-offset: -0.188em;
+  /* draw inside */
+  pointer-events: none;
+  mix-blend-mode: normal;
 }

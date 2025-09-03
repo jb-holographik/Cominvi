@@ -4,7 +4,7 @@ import { reinitializeWebflowAnimations } from '../utils/base.js'
 import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
 import { initializeNav2 } from './nav.js'
-import { initParallax } from './parallax.js'
+import { initParallax, initHeroBackgroundParallax } from './parallax.js'
 import {
   initVideoClipStickyTransform,
   destroyVideoClipStickyTransform,
@@ -174,6 +174,7 @@ export function initializePageTransitionNav() {
           reinitializeWebflowAnimations()
           initializeNav2()
           initParallax(next && next.container)
+          initHeroBackgroundParallax(next && next.container)
           initServiceCards(next && next.container)
           initTextReveal()
           initMinerals()
@@ -218,6 +219,7 @@ export function initializePageTransitionNav() {
           reinitializeWebflowAnimations()
           initializeNav2()
           initParallax(next && next.container)
+          initHeroBackgroundParallax(next && next.container)
           initServiceCards(next && next.container)
           initTextReveal()
           initMinerals()
@@ -259,6 +261,7 @@ export function initializePageTransitionNav() {
     initializeNav2()
     reinitializeWebflowAnimations()
     initParallax(next && next.container)
+    initHeroBackgroundParallax(next && next.container)
     initServiceCards(next && next.container)
     initProcessProgression(next && next.container)
     initTextReveal()

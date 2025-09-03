@@ -71,6 +71,31 @@ export function slideScaleEnter({ next }) {
     ease: gsap.parseEase(`custom(${easeCurve})`),
   })
   tl.addLabel('lift')
+  // Normalize background-inner scale perceptually by compensating page pre-scale
+  try {
+    const bgInner =
+      nextPage.querySelector('.background-inner') ||
+      document.querySelector('.background-inner')
+    if (bgInner) {
+      gsap.set(bgInner, { transformOrigin: '50% 50%' })
+      // Scale by 1.2 relative to perceived page scale so effect matches loader
+      const targetScale = 1.2
+      const compensated = targetScale // page descale will visually cancel pre-scale
+      tl.to(
+        bgInner,
+        {
+          scale: compensated,
+          transformOrigin: '50% 50%',
+          duration: 1.2,
+          ease: gsap.parseEase(`custom(${easeCurve})`),
+          overwrite: 'auto',
+        },
+        'lift'
+      )
+    }
+  } catch (err) {
+    // ignore
+  }
   // Pendant la descale, refermer visuellement les liens du menu
   addMenuLinksCloseToTimeline(tl, 'lift')
   // Anime les h1 spans de la page destination en synchro
@@ -88,6 +113,28 @@ export function slideScaleEnter({ next }) {
     [],
     'lift'
   )
+  // Scale background-inner during descale (lift)
+  try {
+    const bgInner =
+      nextPage.querySelector('.background-inner') ||
+      document.querySelector('.background-inner')
+    if (bgInner) {
+      gsap.set(bgInner, { transformOrigin: '50% 50%', scale: 1 })
+      tl.to(
+        bgInner,
+        {
+          scale: 1.2,
+          transformOrigin: '50% 50%',
+          duration: 1.2,
+          ease: gsap.parseEase(`custom(${easeCurve})`),
+          overwrite: 'auto',
+        },
+        'lift'
+      )
+    }
+  } catch (err) {
+    // ignore
+  }
   // Compute and apply destination theme at the same moment bars close
   tl.call(
     () => {

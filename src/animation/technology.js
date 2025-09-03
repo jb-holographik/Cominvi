@@ -407,6 +407,331 @@ export function initTechnology(root = document) {
     }
     isScrollLocked = false
   }
+
+  // ---------- Grid view: expand item fullscreen and push others ----------
+  try {
+    let gridList = null
+    let gridItems = []
+    let gridButtons = []
+    if (machinesGridWrapper) {
+      gridList = machinesGridWrapper.querySelector('.machines-grid_list')
+      gridItems = Array.from(
+        machinesGridWrapper.querySelectorAll('.machines-grid_item')
+      )
+      gridButtons = Array.from(
+        machinesGridWrapper.querySelectorAll('.machines-grid_button')
+      )
+    }
+
+    if (
+      machinesGridWrapper &&
+      gridList &&
+      gridItems.length &&
+      gridButtons.length
+    ) {
+      let openItem = null
+      let openClone = null
+      let resizeHandler = null
+
+      const clearItemInlineStyles = (el) => {
+        try {
+          el.style.position = ''
+          el.style.left = ''
+          el.style.top = ''
+          el.style.width = ''
+          el.style.height = ''
+          el.style.padding = ''
+          el.style.zIndex = ''
+          el.style.margin = ''
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      const pushOthersOut = (selected, tl) => {
+        const selRect = selected.getBoundingClientRect()
+        const cx = selRect.left + selRect.width / 2
+        const cy = selRect.top + selRect.height / 2
+        gridItems.forEach((item) => {
+          if (item === selected) return
+          const r = item.getBoundingClientRect()
+          const ox = r.left + r.width / 2
+          const oy = r.top + r.height / 2
+          const dx = ox - cx
+          const dy = oy - cy
+          const sameRowThreshold = selRect.height * 0.6
+          const sameRow = Math.abs(dy) <= sameRowThreshold
+          let toVars = { x: 0, y: 0 }
+          if (sameRow) {
+            // Always push horizontally for items in the same row
+            toVars.x =
+              dx < 0
+                ? -(r.left + r.width + 50)
+                : window.innerWidth - r.left + 50
+          } else {
+            // Push vertically for items in other rows
+            toVars.y =
+              dy < 0
+                ? -(r.top + r.height + 50)
+                : window.innerHeight - r.top + 50
+          }
+          const anim = {
+            x: toVars.x,
+            y: toVars.y,
+            duration: 0.8,
+            ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+            overwrite: 'auto',
+          }
+          if (tl) tl.to(item, anim, 0)
+          else gsap.to(item, anim)
+        })
+      }
+
+      const resetOthers = (tl) => {
+        gridItems.forEach((item) => {
+          if (item === openItem) return
+          const anim = {
+            x: 0,
+            y: 0,
+            duration: 0.6,
+            ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+            clearProps: 'transform',
+            overwrite: 'auto',
+          }
+          if (tl) tl.to(item, anim, 0)
+          else gsap.to(item, anim)
+        })
+      }
+
+      // (removed maintainFullscreenSize; handled via resizeHandler)
+
+      const openGridItem = (item) => {
+        if (openItem === item) return
+        openItem = item
+        // Capture current scroll to prevent any auto-scroll on click/focus
+        let savedTop = 0
+        let savedLeft = 0
+        let wrapper = null
+        try {
+          wrapper = window.__lenisWrapper || null
+          if (wrapper) {
+            savedTop = wrapper.scrollTop
+            savedLeft = wrapper.scrollLeft || 0
+          } else {
+            savedTop =
+              window.pageYOffset || document.documentElement.scrollTop || 0
+            savedLeft =
+              window.pageXOffset || document.documentElement.scrollLeft || 0
+          }
+        } catch (e) {
+          // ignore
+        }
+        lockScroll()
+        // Restore scroll immediately after locking to neutralize any jump
+        try {
+          if (wrapper) {
+            wrapper.scrollTop = savedTop
+            if (typeof wrapper.scrollLeft === 'number')
+              wrapper.scrollLeft = savedLeft
+          } else {
+            window.scrollTo(savedLeft, savedTop)
+          }
+        } catch (e) {
+          // ignore
+        }
+        const r = item.getBoundingClientRect()
+        // Create a visual duplicate to animate, keep original in flow (opacity 0)
+        try {
+          openClone = item.cloneNode(true)
+          openClone.classList.add('machines-grid_item-clone')
+          document.body.appendChild(openClone)
+          gsap.set(openClone, {
+            position: 'fixed',
+            left: r.left,
+            top: r.top,
+            width: r.width,
+            height: r.height,
+            padding: 0,
+            margin: 0,
+            zIndex: 6,
+            pointerEvents: 'none',
+          })
+          gsap.set(item, { opacity: 0 })
+        } catch (e) {
+          // Fallback: animate the original if cloning fails
+          openClone = null
+          gsap.set(item, {
+            position: 'fixed',
+            left: r.left,
+            top: r.top,
+            width: r.width,
+            height: r.height,
+            padding: 0,
+            margin: 0,
+            zIndex: 5,
+          })
+        }
+        const targetEl = openClone || item
+        const tl = gsap.timeline({ defaults: { overwrite: 'auto' } })
+        tl.to(
+          targetEl,
+          {
+            left: 0,
+            top: 0,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            padding: '2em',
+            duration: 0.8,
+            ease: gsap.parseEase('machinesStep') || 'power2.out',
+          },
+          0
+        )
+        pushOthersOut(item, tl)
+        // Keep sizing correct on resize while open
+        resizeHandler = () => {
+          const el = openClone || item
+          try {
+            gsap.set(el, {
+              left: 0,
+              top: 0,
+              width: window.innerWidth,
+              height: window.innerHeight,
+            })
+          } catch (e) {
+            // ignore
+          }
+        }
+        window.addEventListener('resize', resizeHandler)
+      }
+
+      const closeGridItem = () => {
+        if (!openItem) return
+        const item = openItem
+        openItem = null
+        window.removeEventListener('resize', resizeHandler)
+        resizeHandler = null
+        // Animate back to the original grid item's rect
+        const gridRect = item.getBoundingClientRect()
+        const el = openClone || item
+        if (!openClone) {
+          // If we animated the original, ensure it starts from its current visual position
+          const currentRect = el.getBoundingClientRect()
+          gsap.set(el, {
+            position: 'fixed',
+            left: currentRect.left,
+            top: currentRect.top,
+            width: currentRect.width,
+            height: currentRect.height,
+            padding: '2em',
+            zIndex: 5,
+          })
+        }
+        const tl = gsap.timeline({
+          onComplete: () => {
+            if (openClone) {
+              try {
+                openClone.remove()
+              } catch (e) {
+                // ignore
+              }
+              openClone = null
+              gsap.set(item, { opacity: 1 })
+            } else {
+              clearItemInlineStyles(item)
+            }
+            unlockScroll()
+          },
+        })
+        tl.to(
+          el,
+          {
+            left: gridRect.left,
+            top: gridRect.top,
+            width: gridRect.width,
+            height: gridRect.height,
+            padding: 0,
+            duration: 0.7,
+            ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+          },
+          0
+        )
+        resetOthers(tl)
+      }
+
+      // Assign stable unique ids to items/buttons for robust mapping
+      let gridUidCounter = 0
+      try {
+        const listItems = Array.from(
+          gridList.querySelectorAll('.machines-grid_item')
+        )
+        listItems.forEach((it) => {
+          const uid = it.dataset.gridUid || String(++gridUidCounter)
+          it.dataset.gridUid = uid
+          const b = it.querySelector('.machines-grid_button')
+          if (b) b.dataset.gridUid = uid
+        })
+      } catch (e) {
+        // ignore
+      }
+
+      // Per-item handler to avoid any ambiguity with ordering/duplication
+      const attachClickForItem = (item) => {
+        try {
+          const btn = item.querySelector('.machines-grid_button')
+          if (!btn || btn.__gridHandlerAttached) return
+          btn.__gridHandlerAttached = true
+          btn.addEventListener('click', (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            if (typeof e.stopImmediatePropagation === 'function') {
+              e.stopImmediatePropagation()
+            }
+            try {
+              btn.blur()
+              if (document.activeElement && document.activeElement.blur)
+                document.activeElement.blur()
+            } catch (e2) {
+              // ignore
+            }
+            // Resolve item by stable uid
+            try {
+              const uid = btn.dataset.gridUid
+              let exact = null
+              if (uid) {
+                const selector = `.machines-grid_item[data-grid-uid="${uid}"]`
+                exact = gridList.querySelector(selector)
+              }
+              const target = exact || item
+              if (openItem && openItem === target) closeGridItem()
+              else openGridItem(target)
+            } catch (e3) {
+              if (openItem && openItem === item) closeGridItem()
+              else openGridItem(item)
+            }
+          })
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      gridItems.forEach((it) => attachClickForItem(it))
+
+      // Also support close via inner close button when available
+      machinesGridWrapper
+        .querySelectorAll(
+          '.machines-grid_close-button, .machines-grid_button_label'
+        )
+        .forEach((el) => {
+          el.addEventListener('click', (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            if (openItem) closeGridItem()
+          })
+        })
+    }
+  } catch (err) {
+    // ignore
+  }
   const getCurrentDistance = () => {
     try {
       const y = Number(gsap.getProperty(content, 'y')) || 0

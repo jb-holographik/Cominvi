@@ -143,3 +143,68 @@ export function initParallax(root = document) {
   ScrollTrigger.refresh()
   return tweens
 }
+
+// Parallax for hero background .background-inner inside .hero-background
+// Does not modify element sizes; only translates along Y to create depth
+export function initHeroBackgroundParallax(root = document) {
+  try {
+    if (window.__heroBgParallax) {
+      try {
+        if (window.__heroBgParallax.scrollTrigger)
+          window.__heroBgParallax.scrollTrigger.kill()
+      } catch (e) {
+        // ignore
+      }
+      try {
+        window.__heroBgParallax.kill()
+      } catch (e) {
+        // ignore
+      }
+      window.__heroBgParallax = null
+    }
+  } catch (err) {
+    // ignore
+  }
+
+  const scope = root && root.querySelector ? root : document
+  const bgInner =
+    (scope.querySelector &&
+      scope.querySelector('.hero-background .background-inner')) ||
+    document.querySelector('.hero-background .background-inner')
+  if (!bgInner) return null
+
+  const scroller = window.__lenisWrapper || undefined
+  // Small translation range to avoid revealing edges while preserving size
+  const amplitudePx = 40
+
+  try {
+    gsap.set(bgInner, { willChange: 'transform' })
+  } catch (e) {
+    // ignore
+  }
+
+  const triggerEl = bgInner.parentElement || bgInner
+  let baseY = Number(gsap.getProperty(bgInner, 'y')) || 0
+  const tween = gsap.to(bgInner, {
+    y: () => baseY + amplitudePx,
+    ease: 'none',
+    immediateRender: false,
+    scrollTrigger: {
+      trigger: triggerEl,
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true,
+      scroller,
+      invalidateOnRefresh: true,
+      onRefresh: () => {
+        baseY = Number(gsap.getProperty(bgInner, 'y')) || 0
+      },
+    },
+  })
+  try {
+    window.__heroBgParallax = tween
+  } catch (e) {
+    // ignore
+  }
+  return tween
+}

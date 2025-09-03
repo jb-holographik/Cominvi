@@ -29,6 +29,99 @@ export function initMap(root = document) {
     }
   })
 
+  // Create larger clickable buttons over each marker
+  const markerHitboxPaddingPx = 12
+  const markerToButton = new Map()
+  const syncMarkerButton = (markerEl, btn) => {
+    try {
+      const rect = markerEl.getBoundingClientRect()
+      btn.style.left = `${rect.left - markerHitboxPaddingPx}px`
+      btn.style.top = `${rect.top - markerHitboxPaddingPx}px`
+      btn.style.width = `${rect.width + markerHitboxPaddingPx * 2}px`
+      btn.style.height = `${rect.height + markerHitboxPaddingPx * 2}px`
+    } catch (e) {
+      // ignore
+    }
+  }
+  const syncAllMarkerButtons = () => {
+    markerToButton.forEach((btn, markerEl) => syncMarkerButton(markerEl, btn))
+  }
+  try {
+    markers.forEach((markerEl) => {
+      // Avoid duplicating buttons if initMap runs multiple times
+      if (markerToButton.has(markerEl)) return
+      const btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'marker-hitbox'
+      btn.setAttribute('aria-label', 'Open project')
+      Object.assign(btn.style, {
+        position: 'fixed',
+        left: '0px',
+        top: '0px',
+        width: '0px',
+        height: '0px',
+        padding: '0',
+        margin: '0',
+        background: 'transparent',
+        border: '0',
+        outline: 'none',
+        cursor: 'pointer',
+        zIndex: '4',
+      })
+      // Button takes over all marker interactions
+      btn.addEventListener('mouseenter', () => {
+        const pointKey = markerToPoint.get(markerEl)
+        if (!pointKey) return
+        highlightMarkerForPoint(pointKey)
+        const regionKey = pointToRegionName.get(pointKey)
+        if (regionKey) highlightRegionByName(regionKey)
+        dimCardsExceptPoint(pointKey)
+        scrollMapSectionToCard(pointKey)
+      })
+      btn.addEventListener('mouseleave', () => {
+        const currentOverlays = (scope || document).querySelector(
+          '.projects_overlays'
+        )
+        if (currentOverlays?.dataset?.open === 'true') return
+        resetAll()
+      })
+      btn.addEventListener('click', (ev) => {
+        ev.preventDefault()
+        ev.stopPropagation()
+        const pointKey = markerToPoint.get(markerEl)
+        if (!pointKey) return
+        try {
+          const overlays = (scope || document).querySelector(
+            '.projects_overlays'
+          )
+          const isOpen = overlays?.dataset?.open === 'true'
+          if (isOpen) mapClose(scope)
+          else mapOpen(pointKey, scope)
+        } catch (e) {
+          // ignore
+        }
+      })
+      document.body.appendChild(btn)
+      markerToButton.set(markerEl, btn)
+      syncMarkerButton(markerEl, btn)
+    })
+    // Keep positions in sync on resize/scroll
+    const onResizeOrScroll = () => syncAllMarkerButtons()
+    window.addEventListener('resize', onResizeOrScroll)
+    window.addEventListener('scroll', onResizeOrScroll, true)
+    // If a smooth-scroll wrapper exists, sync on its scroll as well
+    try {
+      const wrapper = window.__lenisWrapper || null
+      if (wrapper && typeof wrapper.addEventListener === 'function') {
+        wrapper.addEventListener('scroll', onResizeOrScroll)
+      }
+    } catch (e) {
+      // ignore
+    }
+  } catch (e) {
+    // ignore
+  }
+
   const normalizeRegionKey = (raw) => {
     if (!raw && raw !== 0) return null
     try {
@@ -310,34 +403,7 @@ export function initMap(root = document) {
     }
   }
 
-  // Interactions
-  markers.forEach((markerEl) => {
-    markerEl.addEventListener('mouseenter', () => {
-      const pointKey = markerToPoint.get(markerEl)
-      if (!pointKey) return
-      highlightMarkerForPoint(pointKey)
-      const regionKey = pointToRegionName.get(pointKey)
-      if (regionKey) highlightRegionByName(regionKey)
-      dimCardsExceptPoint(pointKey)
-      scrollMapSectionToCard(pointKey)
-    })
-    markerEl.addEventListener('mouseleave', () => {
-      const currentOverlays = (scope || document).querySelector(
-        '.projects_overlays'
-      )
-      if (currentOverlays?.dataset?.open === 'true') return
-      resetAll()
-    })
-    markerEl.addEventListener('click', () => {
-      const pointKey = markerToPoint.get(markerEl)
-      if (!pointKey) return
-      try {
-        mapOpen(pointKey, scope)
-      } catch (e) {
-        // ignore
-      }
-    })
-  })
+  // Interactions now handled by marker-hitbox buttons
 
   regions.forEach((regionEl) => {
     regionEl.addEventListener('mouseenter', () => {

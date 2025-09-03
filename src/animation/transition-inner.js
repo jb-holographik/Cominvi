@@ -326,6 +326,28 @@ export function slideScaleEnter({ next }) {
             // Use baseTopPx from leave (page-info height) as the top reference
             resetHostClipBaseState(host, baseTopPx)
             clip.tl.pause(0)
+            // Scale background-inner during descale
+            try {
+              const bgInner =
+                host.querySelector('.background-inner') ||
+                document.querySelector('.background-inner')
+              if (bgInner) {
+                gsap.set(bgInner, { transformOrigin: '50% 50%', scale: 1 })
+                tl.to(
+                  bgInner,
+                  {
+                    scale: 1.2,
+                    transformOrigin: '50% 50%',
+                    duration: 1.2,
+                    ease: gsap.parseEase(`custom(${easeCurve})`),
+                    overwrite: 'auto',
+                  },
+                  'descale'
+                )
+              }
+            } catch (e) {
+              // ignore
+            }
             try {
               clip.tl.eventCallback('onComplete', () => {
                 try {

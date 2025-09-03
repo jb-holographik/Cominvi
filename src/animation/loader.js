@@ -2,6 +2,7 @@ import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 
 import { heroAnimation } from './landing.js'
+import { initHeroBackgroundParallax } from './parallax.js'
 
 /**
  * Loader animation sequence
@@ -30,6 +31,9 @@ export function initLoader() {
     const textBox = document.querySelector('.is-logo-text')
     const logoText = document.querySelector('.is-logo-text .logo-text')
     const bgVideos = document.querySelectorAll('.background_video')
+    let outlineEl = null
+    let syncOutlineSize = null
+    let handleResize = null
 
     if (
       !loader ||
@@ -46,6 +50,37 @@ export function initLoader() {
 
     const otherPaths = Array.from(logoText.querySelectorAll('path'))
 
+    // Create an overlay outline that mirrors .loader-logo_wrap size/position
+    try {
+      outlineEl = document.createElement('div')
+      outlineEl.className = 'loader-logo_outline'
+      // Append to body to avoid being masked by loader's SVG/CSS mask
+      document.body.appendChild(outlineEl)
+      // Fixed overlay synced to the wrapper's bounding rect
+      gsap.set(outlineEl, {
+        position: 'fixed',
+        pointerEvents: 'none',
+        zIndex: 2147483647,
+        autoAlpha: 0,
+        mixBlendMode: 'normal',
+      })
+      syncOutlineSize = () => {
+        const rect = logoWrap.getBoundingClientRect()
+        gsap.set(outlineEl, {
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+        })
+      }
+      syncOutlineSize()
+      gsap.ticker.add(syncOutlineSize)
+      handleResize = () => syncOutlineSize()
+      window.addEventListener('resize', handleResize)
+    } catch (e) {
+      // ignore
+    }
+
     const computePxFromEm = (el, emValue) => {
       const fontSizePx = parseFloat(getComputedStyle(el).fontSize) || 16
       return emValue * fontSizePx
@@ -61,6 +96,14 @@ export function initLoader() {
     // Init background video size to avoid layout jumps
     if (bgVideos && bgVideos.length) {
       gsap.set(bgVideos, { width: '100%', height: '100%' })
+    }
+    try {
+      const bgInner = document.querySelector('.background-inner')
+      if (bgInner) {
+        gsap.set(bgInner, { transformOrigin: '50% 50%', scale: 1 })
+      }
+    } catch (e) {
+      // ignore
     }
     // Text box starts hidden; will fade in right after logo-square completes
     gsap.set(textBox, { opacity: 0 })
@@ -94,13 +137,25 @@ export function initLoader() {
     // 2. à la fin de logo-square: bg du wrapper devient var(--primary) immédiatement,
     // puis le texte devient visible (fade), et le wrapper s'élargit
     tl.set(logoWrap, { backgroundColor: 'var(--primary)' }, '>')
+    // Reveal outline only after logo-square has completed to 100%
+    if (outlineEl) {
+      tl.set(outlineEl, { autoAlpha: 1 }, '>')
+    }
     tl.to(textBox, { opacity: 1, duration: 0.3, ease: loaderEase }, '<')
     tl.to(
       logoWrap,
       { width: logoTargetWidthPx, duration: 0.8, ease: loaderEase },
       '<'
     )
-    tl.from(otherPaths, { yPercent: 100, stagger: 0.02, duration: 0.8 }, '<')
+    tl.from(
+      otherPaths,
+      {
+        yPercent: (index) => 100 + index * 40,
+        stagger: 0.02,
+        duration: 0.8,
+      },
+      '<'
+    )
 
     // 3. wrapper vers fin puis réduit
     tl.set(logoWrap, { justifyContent: 'flex-end' })
@@ -119,6 +174,13 @@ export function initLoader() {
       document.body.appendChild(textBox)
       iconBox.remove()
       logoWrap.remove()
+      try {
+        if (syncOutlineSize) gsap.ticker.remove(syncOutlineSize)
+        if (handleResize) window.removeEventListener('resize', handleResize)
+        if (outlineEl) outlineEl.remove()
+      } catch (e) {
+        // ignore
+      }
 
       // Positionner textBox en absolu à sa position initiale
       Object.assign(textBox.style, {
@@ -237,14 +299,24 @@ export function initLoader() {
         // ignore
       }
     }, '<')
-    // Grow background videos in sync with the mask reveal
-    if (bgVideos && bgVideos.length) {
-      tl.to(
-        bgVideos,
-        { width: '120%', height: '120%', duration: 1.1, ease: loaderEase },
-        '<'
-      )
-    }
+    // Une fois le reveal lancé, initialiser le parallax du background hero
+    tl.add(() => {
+      try {
+        initHeroBackgroundParallax(document)
+      } catch (e) {
+        // ignore
+      }
+    }, '<')
+    tl.to(
+      '.background-inner',
+      {
+        scale: 1.2,
+        transformOrigin: '50% 50%',
+        duration: 1.2,
+        ease: loaderEase,
+      },
+      '<'
+    )
     tl.to(logoText, { opacity: 0, duration: 1.1, ease: loaderEase }, '<')
 
     // Fin: retirer le loader et la box texte quand le reveal est terminé

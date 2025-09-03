@@ -8,6 +8,32 @@ const easeCurve = 'M0,0 C0.6,0 0,1 1,1 '
 // Fait slider les .is-h1-span de y:110% à y:0 avec la même durée/ease que le dé-scale
 export function heroAnimation(root = document, opts = {}) {
   const scope = root && root.querySelector ? root : document
+  // Start hero background video immediately
+  try {
+    const videoEl =
+      scope.querySelector(
+        '.section_hero .background_video video, .section_hero .w-background-video video, .hero-background video'
+      ) ||
+      document.querySelector(
+        '.section_hero .background_video video, .section_hero .w-background-video video, .hero-background video'
+      )
+    if (videoEl) {
+      // Ensure autoplay-eligible state and restart from beginning
+      videoEl.muted = true
+      videoEl.playsInline = true
+      if (typeof videoEl.currentTime === 'number') videoEl.currentTime = 0
+      const p = videoEl.play()
+      if (p && typeof p.then === 'function') {
+        p.catch(() => {
+          // Retry muted play if the first attempt is blocked
+          videoEl.muted = true
+          videoEl.play().catch(() => void 0)
+        })
+      }
+    }
+  } catch (err) {
+    // ignore
+  }
   const spans = Array.from(scope.querySelectorAll('.is-h1-span'))
   const bodies = Array.from(
     scope.querySelectorAll('.section_hero .body-xl, .eyebrow-l')

@@ -432,6 +432,13 @@ export function initTechnology(root = document) {
       let openItem = null
       let openClone = null
       let resizeHandler = null
+      // Keep a persistent description overlay and its mask while open
+      let descOverlay = null
+      let descMaskSvgEl = null
+      let descMaskHoleEl = null
+      let descMaskUpdate = null
+      // Close on user interactions while open
+      let removeInteractionHandlers = null
 
       const clearItemInlineStyles = (el) => {
         try {
@@ -543,20 +550,40 @@ export function initTechnology(root = document) {
         // Create a visual duplicate to animate, keep original in flow (opacity 0)
         try {
           openClone = item.cloneNode(true)
+          // Remove the name wrap from the clone; keep it only in the original
+          try {
+            const clonedName = openClone.querySelector(
+              '.machines-grid_name-wrap'
+            )
+            if (clonedName && clonedName.parentNode)
+              clonedName.parentNode.removeChild(clonedName)
+          } catch (e0) {
+            // ignore
+          }
+          // Base rect is the image wrapper if present, else the item rect
+          const imgWrap = item.querySelector('.machines-grid_img-wrap')
+          const br = imgWrap ? imgWrap.getBoundingClientRect() : r
           openClone.classList.add('machines-grid_item-clone')
           document.body.appendChild(openClone)
           gsap.set(openClone, {
             position: 'fixed',
-            left: r.left,
-            top: r.top,
-            width: r.width,
-            height: r.height,
+            left: br.left,
+            top: br.top,
+            width: br.width,
+            height: br.height,
             padding: 0,
             margin: 0,
             zIndex: 6,
+            overflow: 'hidden',
             pointerEvents: 'none',
           })
-          gsap.set(item, { opacity: 0 })
+          // Hide the original image while opening so the clone visually takes over
+          try {
+            if (imgWrap) gsap.set(imgWrap, { opacity: 0 })
+          } catch (eimg) {
+            // ignore
+          }
+          // Keep original visible; the clone will cover it progressively
         } catch (e) {
           // Fallback: animate the original if cloning fails
           openClone = null
@@ -580,12 +607,148 @@ export function initTechnology(root = document) {
             top: 0,
             width: window.innerWidth,
             height: window.innerHeight,
-            padding: '2em',
+            padding: '1em',
             duration: 0.8,
             ease: gsap.parseEase('machinesStep') || 'power2.out',
           },
           0
         )
+        // Fade in description overlay (fixed) masked to the clone bounds
+        try {
+          const origDesc = item.querySelector('.machines-grid_desc')
+          if (origDesc) {
+            const dr = origDesc.getBoundingClientRect()
+            const NS = 'http://www.w3.org/2000/svg'
+            const svg = document.createElementNS(NS, 'svg')
+            const defs = document.createElementNS(NS, 'defs')
+            const mask = document.createElementNS(NS, 'mask')
+            const bg = document.createElementNS(NS, 'rect')
+            const hole = document.createElementNS(NS, 'rect')
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+            const maskId = `gridDescMask_${Date.now()}`
+            svg.setAttribute('width', '0')
+            svg.setAttribute('height', '0')
+            svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`)
+            svg.setAttribute('preserveAspectRatio', 'none')
+            mask.setAttribute('id', maskId)
+            mask.setAttribute('maskUnits', 'userSpaceOnUse')
+            mask.setAttribute('maskContentUnits', 'userSpaceOnUse')
+            mask.setAttribute('style', 'mask-type:luminance;')
+            bg.setAttribute('x', '0')
+            bg.setAttribute('y', '0')
+            bg.setAttribute('width', String(vw))
+            bg.setAttribute('height', String(vh))
+            bg.setAttribute('fill', 'black')
+            const br2 = openClone ? openClone.getBoundingClientRect() : r
+            hole.setAttribute('x', String(br2.left))
+            hole.setAttribute('y', String(br2.top))
+            hole.setAttribute('width', String(br2.width))
+            hole.setAttribute('height', String(br2.height))
+            hole.setAttribute('fill', 'white')
+            mask.appendChild(bg)
+            mask.appendChild(hole)
+            defs.appendChild(mask)
+            svg.appendChild(defs)
+            document.body.appendChild(svg)
+            // Build a full-viewport overlay container and place desc inside at its fixed viewport coords
+            const overlayContainer = document.createElement('div')
+            overlayContainer.className = 'grid-desc-overlay'
+            document.body.appendChild(overlayContainer)
+            gsap.set(overlayContainer, {
+              position: 'fixed',
+              left: 0,
+              top: 0,
+              width: window.innerWidth,
+              height: window.innerHeight,
+              margin: 0,
+              zIndex: 7,
+              pointerEvents: 'none',
+              opacity: 0,
+            })
+            // Use webkitMask first for Safari/WebKit compatibility; fallback to standard mask
+            overlayContainer.style.webkitMaskImage = `url(#${maskId})`
+            overlayContainer.style.maskImage = `url(#${maskId})`
+            const overlayContent = origDesc.cloneNode(true)
+            overlayContainer.appendChild(overlayContent)
+            gsap.set(overlayContent, {
+              position: 'absolute',
+              left: dr.left,
+              top: dr.top,
+              width: dr.width,
+              height: dr.height,
+              margin: 0,
+              opacity: 1,
+            })
+            // Store for later (stay visible after open)
+            descOverlay = overlayContainer
+            descMaskSvgEl = svg
+            descMaskHoleEl = hole
+            tl.to(
+              overlayContainer,
+              {
+                opacity: 1,
+                duration: 0.8,
+                ease: gsap.parseEase('machinesStep') || 'power2.out',
+              },
+              0
+            )
+            // Animate mask hole to follow the clone expansion (from clone rect to full viewport)
+            // Prepare onUpdate to keep mask hole following the clone's live bounds (with corner radius)
+            const computeRadiusPx = (el) => {
+              try {
+                const cs = window.getComputedStyle(el)
+                const v = cs.borderTopLeftRadius || '0'
+                const num = parseFloat(v) || 0
+                return num
+              } catch (e) {
+                return 0
+              }
+            }
+            descMaskUpdate = () => {
+              try {
+                const el = openClone || item
+                const rr = el.getBoundingClientRect()
+                descMaskHoleEl.setAttribute('x', String(rr.left))
+                descMaskHoleEl.setAttribute('y', String(rr.top))
+                descMaskHoleEl.setAttribute('width', String(rr.width))
+                descMaskHoleEl.setAttribute('height', String(rr.height))
+                const rad = computeRadiusPx(el)
+                if (rad > 0) {
+                  descMaskHoleEl.setAttribute('rx', String(rad))
+                  descMaskHoleEl.setAttribute('ry', String(rad))
+                }
+              } catch (e) {
+                // ignore
+              }
+            }
+            // Initial sync and hook into timeline updates
+            descMaskUpdate()
+            tl.eventCallback('onUpdate', descMaskUpdate)
+          }
+        } catch (ed) {
+          // ignore
+        }
+        // Fade out names of other items while opening
+        try {
+          gridItems.forEach((gi) => {
+            if (gi === item) return
+            const name = gi.querySelector('.machines-grid_name-wrap')
+            if (name) {
+              tl.to(
+                name,
+                {
+                  opacity: 0,
+                  duration: 0.8,
+                  ease: gsap.parseEase('machinesStep') || 'power2.out',
+                },
+                0
+              )
+            }
+          })
+        } catch (en) {
+          // ignore
+        }
         pushOthersOut(item, tl)
         // Keep sizing correct on resize while open
         resizeHandler = () => {
@@ -600,8 +763,72 @@ export function initTechnology(root = document) {
           } catch (e) {
             // ignore
           }
+          try {
+            if (descMaskUpdate) descMaskUpdate()
+          } catch (e) {
+            // ignore
+          }
         }
         window.addEventListener('resize', resizeHandler)
+
+        // Add interaction handlers (click anywhere, wheel/touchmove attempts) to close
+        try {
+          if (removeInteractionHandlers) removeInteractionHandlers()
+          const onDocClickCapture = (ev) => {
+            try {
+              // Ignore clicks on the item button itself to avoid immediate close if any event slips
+              if (
+                ev &&
+                ev.target &&
+                ev.target.closest &&
+                ev.target.closest('.machines-grid_button')
+              )
+                return
+            } catch (e) {
+              // ignore
+            }
+            closeGridItem()
+          }
+          const onWheel = () => closeGridItem()
+          const onTouchMove = () => closeGridItem()
+          // Defer adding to next frame so we don't catch the opening click
+          requestAnimationFrame(() => {
+            document.addEventListener('click', onDocClickCapture, true)
+            window.addEventListener('wheel', onWheel, {
+              passive: true,
+              capture: true,
+            })
+            window.addEventListener('touchmove', onTouchMove, {
+              passive: true,
+              capture: true,
+            })
+          })
+          removeInteractionHandlers = () => {
+            try {
+              document.removeEventListener('click', onDocClickCapture, true)
+            } catch (e) {
+              // ignore
+            }
+            try {
+              window.removeEventListener('wheel', onWheel, {
+                passive: true,
+                capture: true,
+              })
+            } catch (e) {
+              // ignore
+            }
+            try {
+              window.removeEventListener('touchmove', onTouchMove, {
+                passive: true,
+                capture: true,
+              })
+            } catch (e) {
+              // ignore
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
       }
 
       const closeGridItem = () => {
@@ -610,8 +837,17 @@ export function initTechnology(root = document) {
         openItem = null
         window.removeEventListener('resize', resizeHandler)
         resizeHandler = null
-        // Animate back to the original grid item's rect
-        const gridRect = item.getBoundingClientRect()
+        // Remove interaction handlers
+        try {
+          if (removeInteractionHandlers) removeInteractionHandlers()
+        } catch (e) {
+          // ignore
+        }
+        // Animate back to the image wrapper's rect (or item rect if missing)
+        const imgWrapClose = item.querySelector('.machines-grid_img-wrap')
+        const gridRect = imgWrapClose
+          ? imgWrapClose.getBoundingClientRect()
+          : item.getBoundingClientRect()
         const el = openClone || item
         if (!openClone) {
           // If we animated the original, ensure it starts from its current visual position
@@ -635,9 +871,38 @@ export function initTechnology(root = document) {
                 // ignore
               }
               openClone = null
-              gsap.set(item, { opacity: 1 })
             } else {
               clearItemInlineStyles(item)
+            }
+            // Clean up desc overlay and mask
+            try {
+              if (descOverlay) {
+                descOverlay.remove()
+              }
+              if (descMaskSvgEl) {
+                descMaskSvgEl.remove()
+              }
+            } catch (ecl) {
+              // ignore
+            }
+            descOverlay = null
+            descMaskSvgEl = null
+            descMaskHoleEl = null
+            // Restore names opacity for all items after closing
+            try {
+              gridItems.forEach((gi) => {
+                const name = gi.querySelector('.machines-grid_name-wrap')
+                if (name) gsap.set(name, { opacity: 1 })
+              })
+            } catch (er) {
+              // ignore
+            }
+            // Restore original image opacity after closing
+            try {
+              const imgWrap = item.querySelector('.machines-grid_img-wrap')
+              if (imgWrap) gsap.set(imgWrap, { opacity: 1 })
+            } catch (eop) {
+              // ignore
             }
             unlockScroll()
           },
@@ -655,23 +920,101 @@ export function initTechnology(root = document) {
           },
           0
         )
+        // Fade out desc overlay and move mask hole back to image rect while closing
+        try {
+          if (descOverlay) {
+            tl.to(
+              descOverlay,
+              {
+                opacity: 0,
+                duration: 0.7,
+                ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+              },
+              0
+            )
+          }
+          if (descMaskHoleEl) {
+            tl.to(
+              descMaskHoleEl,
+              {
+                attr: {
+                  x: gridRect.left,
+                  y: gridRect.top,
+                  width: gridRect.width,
+                  height: gridRect.height,
+                },
+                duration: 0.7,
+                ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+              },
+              0
+            )
+          }
+        } catch (eclose) {
+          // ignore
+        }
+        // Fade back in names of other items while closing
+        try {
+          gridItems.forEach((gi) => {
+            if (gi === item) return
+            const name = gi.querySelector('.machines-grid_name-wrap')
+            if (name) {
+              tl.to(
+                name,
+                {
+                  opacity: 1,
+                  duration: 0.8,
+                  ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+                },
+                0
+              )
+            }
+          })
+        } catch (en) {
+          // ignore
+        }
         resetOthers(tl)
       }
 
       // Assign stable unique ids to items/buttons for robust mapping
-      let gridUidCounter = 0
       try {
         const listItems = Array.from(
           gridList.querySelectorAll('.machines-grid_item')
         )
-        listItems.forEach((it) => {
-          const uid = it.dataset.gridUid || String(++gridUidCounter)
+        listItems.forEach((it, i) => {
+          const uid = it.dataset.gridUid || String(i + 1)
           it.dataset.gridUid = uid
           const b = it.querySelector('.machines-grid_button')
           if (b) b.dataset.gridUid = uid
         })
       } catch (e) {
         // ignore
+      }
+
+      // Helper: find the visually nearest item to a click point (favor vertical proximity)
+      const findNearestItemByPoint = (x, y) => {
+        try {
+          const items = Array.from(
+            gridList.querySelectorAll('.machines-grid_item')
+          )
+          let best = null
+          let bestScore = Infinity
+          items.forEach((it) => {
+            const r = it.getBoundingClientRect()
+            const cx = r.left + r.width / 2
+            const cy = r.top + r.height / 2
+            const dy = Math.abs(y - cy)
+            const dx = Math.abs(x - cx)
+            // Strongly prioritize vertical distance to avoid selecting far below in same column
+            const score = dy * 1000 + dx
+            if (score < bestScore) {
+              bestScore = score
+              best = it
+            }
+          })
+          return best
+        } catch (e) {
+          return null
+        }
       }
 
       // Per-item handler to avoid any ambiguity with ordering/duplication
@@ -693,21 +1036,10 @@ export function initTechnology(root = document) {
             } catch (e2) {
               // ignore
             }
-            // Resolve item by stable uid
-            try {
-              const uid = btn.dataset.gridUid
-              let exact = null
-              if (uid) {
-                const selector = `.machines-grid_item[data-grid-uid="${uid}"]`
-                exact = gridList.querySelector(selector)
-              }
-              const target = exact || item
-              if (openItem && openItem === target) closeGridItem()
-              else openGridItem(target)
-            } catch (e3) {
-              if (openItem && openItem === item) closeGridItem()
-              else openGridItem(item)
-            }
+            // Resolve the target by click position to avoid any overlay/duplication issues
+            const target = findNearestItemByPoint(e.clientX, e.clientY) || item
+            if (openItem && openItem === target) closeGridItem()
+            else openGridItem(target)
           })
         } catch (e) {
           // ignore

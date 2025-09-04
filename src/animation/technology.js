@@ -2,13 +2,13 @@ import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+import { animateNavbarSpreadForGrid } from './nav'
 import { initWorkshopsStickyImages } from './workshops'
 
 gsap.registerPlugin(ScrollTrigger, CustomEase)
 // Smooth, slightly springy step ease
 if (!gsap.parseEase('machinesStep')) {
-  // Gentle ease-out for lighter snap
-  CustomEase.create('machinesStep', 'M0,0 C0.25,0.46 0.45,0.94 1,1')
+  CustomEase.create('machinesStep', 'M0,0 C0.6,0 0,1 1,1')
 }
 
 export function initTechnology(root = document) {
@@ -439,6 +439,8 @@ export function initTechnology(root = document) {
       let descMaskUpdate = null
       // Close on user interactions while open
       let removeInteractionHandlers = null
+      // Track opening timeline to handle mid-open closes safely
+      let openingTimeline = null
 
       const clearItemInlineStyles = (el) => {
         try {
@@ -560,10 +562,35 @@ export function initTechnology(root = document) {
           } catch (e0) {
             // ignore
           }
+          // Remove the inner name and close button from the clone; they'll be rendered via the overlay only
+          try {
+            const cloneNameInnerEl = openClone.querySelector(
+              '.machines-grid_name-inner'
+            )
+            if (cloneNameInnerEl && cloneNameInnerEl.parentNode)
+              cloneNameInnerEl.parentNode.removeChild(cloneNameInnerEl)
+          } catch (e0a) {
+            // ignore
+          }
+          try {
+            const cloneCloseBtnEl = openClone.querySelector(
+              '.machines-grid_close-button'
+            )
+            if (cloneCloseBtnEl && cloneCloseBtnEl.parentNode)
+              cloneCloseBtnEl.parentNode.removeChild(cloneCloseBtnEl)
+          } catch (e0b) {
+            // ignore
+          }
           // Base rect is the image wrapper if present, else the item rect
           const imgWrap = item.querySelector('.machines-grid_img-wrap')
           const br = imgWrap ? imgWrap.getBoundingClientRect() : r
           openClone.classList.add('machines-grid_item-clone')
+          // Prevent first-frame flash: hide until initial layout is applied
+          try {
+            openClone.style.visibility = 'hidden'
+          } catch (evis) {
+            /* ignore */
+          }
           document.body.appendChild(openClone)
           gsap.set(openClone, {
             position: 'fixed',
@@ -600,6 +627,8 @@ export function initTechnology(root = document) {
         }
         const targetEl = openClone || item
         const tl = gsap.timeline({ defaults: { overwrite: 'auto' } })
+        // Keep a reference to the opening animation timeline
+        openingTimeline = tl
         tl.to(
           targetEl,
           {
@@ -613,6 +642,116 @@ export function initTechnology(root = document) {
           },
           0
         )
+        // Drop reference when the opening animation completes or is interrupted
+        try {
+          tl.eventCallback('onComplete', () => {
+            openingTimeline = null
+          })
+          tl.eventCallback('onInterrupt', () => {
+            openingTimeline = null
+          })
+        } catch (e) {
+          // ignore
+        }
+
+        // Ensure only the clone's close button appears (display:flex immediately, then fade to 1)
+        try {
+          if (openClone) {
+            const cloneCloseBtn = openClone.querySelector(
+              '.machines-grid_close-button'
+            )
+            if (cloneCloseBtn) {
+              tl.set(cloneCloseBtn, { display: 'flex', opacity: 0 }, 0)
+              tl.to(
+                cloneCloseBtn,
+                {
+                  opacity: 1,
+                  duration: 0.8,
+                  ease: gsap.parseEase('machinesStep') || 'power2.out',
+                },
+                0
+              )
+            }
+          }
+        } catch (eCloseBtn) {
+          // ignore
+        }
+
+        // Move clone name inner into view (translateY(0)) and ensure only it is visible
+        try {
+          if (openClone) {
+            const cloneNameInner = openClone.querySelector(
+              '.machines-grid_name-inner'
+            )
+            if (cloneNameInner) {
+              tl.set(cloneNameInner, { opacity: 1 }, 0)
+              tl.to(
+                cloneNameInner,
+                {
+                  y: 0,
+                  duration: 0.8,
+                  ease: gsap.parseEase('machinesStep') || 'power2.out',
+                },
+                0
+              )
+            }
+          }
+        } catch (eName) {
+          // ignore
+        }
+
+        // Animate the clone's image from a fixed base (left:50%, top:50%, width:24em)
+        try {
+          if (openClone) {
+            const clonedImg = openClone.querySelector('.machines-grid_img')
+            if (clonedImg) {
+              const startLeft = '50%'
+              const startTop = '50%'
+              const startWidth = '24em'
+              // Persist for reverse
+              clonedImg.dataset.gridStartLeft = startLeft
+              clonedImg.dataset.gridStartTop = startTop
+              clonedImg.dataset.gridStartWidth = startWidth
+              // Place image absolutely inside clone at its current position
+              gsap.set(clonedImg, {
+                position: 'absolute',
+                left: startLeft,
+                top: startTop,
+                width: startWidth,
+                height: 'auto',
+                margin: 0,
+                zIndex: 2,
+                pointerEvents: 'none',
+                objectFit: 'contain',
+              })
+              tl.to(
+                clonedImg,
+                {
+                  left: '80%',
+                  top: '70%',
+                  width: '60em',
+                  duration: 0.8,
+                  ease: gsap.parseEase('machinesStep') || 'power2.out',
+                },
+                0
+              )
+            }
+          }
+        } catch (eImgAnim) {
+          // ignore
+        }
+        // Reveal the clone only after initial positions are set
+        try {
+          tl.set(openClone, { visibility: 'visible' }, 0)
+        } catch (evis2) {
+          /* ignore */
+        }
+        // Spread navbar horizontally like on scroll down
+        try {
+          animateNavbarSpreadForGrid(true, root)
+        } catch (e) {
+          // ignore
+        }
         // Fade in description overlay (fixed) masked to the clone bounds
         try {
           const origDesc = item.querySelector('.machines-grid_desc')
@@ -663,15 +802,15 @@ export function initTechnology(root = document) {
               height: window.innerHeight,
               margin: 0,
               zIndex: 7,
-              pointerEvents: 'none',
+              pointerEvents: 'auto',
               opacity: 0,
             })
             // Use webkitMask first for Safari/WebKit compatibility; fallback to standard mask
             overlayContainer.style.webkitMaskImage = `url(#${maskId})`
             overlayContainer.style.maskImage = `url(#${maskId})`
-            const overlayContent = origDesc.cloneNode(true)
-            overlayContainer.appendChild(overlayContent)
-            gsap.set(overlayContent, {
+            const overlayDesc = origDesc.cloneNode(true)
+            overlayContainer.appendChild(overlayDesc)
+            gsap.set(overlayDesc, {
               position: 'absolute',
               left: dr.left,
               top: dr.top,
@@ -679,7 +818,216 @@ export function initTechnology(root = document) {
               height: dr.height,
               margin: 0,
               opacity: 1,
+              pointerEvents: 'none',
             })
+            // Also move name inner from ORIGINAL item into the same overlay so it isn't clipped by clone overflow
+            try {
+              if (openClone) {
+                const sourceNameInner = item.querySelector(
+                  '.machines-grid_name-inner'
+                )
+                if (sourceNameInner) {
+                  const overlayName = sourceNameInner.cloneNode(true)
+                  overlayContainer.appendChild(overlayName)
+                  gsap.set(overlayName, {
+                    position: 'absolute',
+                    left: '3em',
+                    top: '3em',
+                    margin: 0,
+                    display: 'block',
+                    opacity: 1,
+                    y: '-8em',
+                    pointerEvents: 'none',
+                  })
+                  // Split words, then letters inside each word (no mid-word breaks), animate letters from yPercent:-100 to 0
+                  try {
+                    const textEl =
+                      overlayName.querySelector('.body-xl') || overlayName
+                    if (textEl && !textEl.__gridSplit) {
+                      const original = textEl.textContent || ''
+                      const frag = document.createDocumentFragment()
+                      const words = original.split(' ')
+                      words.forEach((word, wIdx) => {
+                        const wordWrap = document.createElement('span')
+                        wordWrap.style.display = 'inline-block'
+                        wordWrap.style.whiteSpace = 'nowrap'
+                        // build letters inside word
+                        for (let i = 0; i < word.length; i++) {
+                          const ch = word[i]
+                          const letter = document.createElement('span')
+                          letter.textContent = ch
+                          letter.style.display = 'inline-block'
+                          wordWrap.appendChild(letter)
+                        }
+                        frag.appendChild(wordWrap)
+                        // re-add normal breaking space between words (except after last word)
+                        if (wIdx < words.length - 1) {
+                          frag.appendChild(document.createTextNode(' '))
+                        }
+                      })
+                      textEl.textContent = ''
+                      textEl.appendChild(frag)
+                      textEl.__gridSplit = true
+                    }
+                    const lettersRoot =
+                      overlayName.querySelector('.body-xl') || overlayName
+                    const letters = Array.from(
+                      lettersRoot.querySelectorAll('span > span')
+                    )
+                    if (letters.length) {
+                      gsap.set(letters, { yPercent: -100 })
+                      tl.to(
+                        letters,
+                        {
+                          yPercent: 0,
+                          duration: 0.8,
+                          ease: gsap.parseEase('machinesStep') || 'power2.out',
+                          stagger: 0.02,
+                        },
+                        0
+                      )
+                    }
+                  } catch (esplit) {
+                    // ignore
+                  }
+                  tl.to(
+                    overlayName,
+                    {
+                      y: 0,
+                      duration: 0.8,
+                      ease: gsap.parseEase('machinesStep') || 'power2.out',
+                    },
+                    0
+                  )
+                }
+                // Move clone close button into the overlay as well
+                const sourceCloseBtn = item.querySelector(
+                  '.machines-grid_close-button'
+                )
+                if (sourceCloseBtn) {
+                  const overlayClose = sourceCloseBtn.cloneNode(true)
+                  overlayContainer.appendChild(overlayClose)
+                  gsap.set(overlayClose, {
+                    position: 'absolute',
+                    left: 'auto',
+                    right: '3em',
+                    top: '3em',
+                    margin: 0,
+                    display: 'flex',
+                    opacity: 0,
+                    zIndex: 8,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer',
+                  })
+                  tl.to(
+                    overlayClose,
+                    {
+                      opacity: 1,
+                      duration: 0.8,
+                      ease: gsap.parseEase('machinesStep') || 'power2.out',
+                    },
+                    0
+                  )
+
+                  // GSAP-driven hover interactions for the overlay close button
+                  try {
+                    const ensureLetters = (labelEl) => {
+                      if (!labelEl) return []
+                      if (labelEl.__split) return labelEl.__split
+                      const text = labelEl.textContent || ''
+                      const frag = document.createDocumentFragment()
+                      const letters = []
+                      for (let i = 0; i < text.length; i++) {
+                        const ch = text[i]
+                        const span = document.createElement('span')
+                        span.textContent = ch === ' ' ? '\u00A0' : ch
+                        span.style.display = 'inline-block'
+                        frag.appendChild(span)
+                        letters.push(span)
+                      }
+                      labelEl.textContent = ''
+                      labelEl.appendChild(frag)
+                      labelEl.__split = letters
+                      return letters
+                    }
+
+                    const setupCloseHover = (btn) => {
+                      if (!btn) return
+                      const inner = btn.querySelector(
+                        '.machines-grid_close-button_inner'
+                      )
+                      const row1Label =
+                        btn.querySelector(
+                          '.machines-grid_close-button_row:nth-of-type(1) .button_label'
+                        ) ||
+                        btn.querySelector(
+                          '.machine-grid_close-button_row:nth-of-type(1) .button_label'
+                        )
+                      const row2Label =
+                        btn.querySelector(
+                          '.machines-grid_close-button_row:nth-of-type(2) .button_label'
+                        ) ||
+                        btn.querySelector(
+                          '.machine-grid_close-button_row:nth-of-type(2) .button_label'
+                        )
+                      const plus =
+                        btn.querySelector(
+                          '.machines-grid_close-button_row:nth-of-type(2) .is-plus'
+                        ) ||
+                        btn.querySelector(
+                          '.machine-grid_close-button_row:nth-of-type(2) .is-plus'
+                        )
+
+                      const letters1 = ensureLetters(row1Label)
+                      const letters2 = ensureLetters(row2Label)
+
+                      // Initial states
+                      if (inner) gsap.set(inner, { yPercent: 0 })
+                      if (plus)
+                        gsap.set(plus, {
+                          rotate: 0,
+                          transformOrigin: '50% 50%',
+                        })
+                      if (letters1.length) gsap.set(letters1, { yPercent: 0 })
+                      if (letters2.length) gsap.set(letters2, { yPercent: 100 })
+
+                      const tlHover = gsap.timeline({
+                        paused: true,
+                        defaults: {
+                          duration: 0.5,
+                          ease: gsap.parseEase('machinesStep') || 'power2.out',
+                        },
+                      })
+                      if (inner) tlHover.to(inner, { yPercent: -50 }, 0)
+                      tlHover.to(btn, { backgroundColor: 'var(--accent)' }, 0)
+                      if (plus) tlHover.to(plus, { rotate: 90 }, 0)
+                      if (letters2.length)
+                        tlHover.to(letters2, { yPercent: 0, stagger: 0.02 }, 0)
+                      if (letters1.length)
+                        tlHover.to(
+                          letters1,
+                          { yPercent: -100, stagger: 0.02 },
+                          0
+                        )
+
+                      btn.__hoverTl = tlHover
+                      btn.addEventListener('mouseenter', () => {
+                        btn.__hoverTl && btn.__hoverTl.play()
+                      })
+                      btn.addEventListener('mouseleave', () => {
+                        btn.__hoverTl && btn.__hoverTl.reverse()
+                      })
+                    }
+
+                    setupCloseHover(overlayClose)
+                  } catch (ehover) {
+                    // ignore
+                  }
+                }
+              }
+            } catch (eov) {
+              // ignore
+            }
             // Store for later (stay visible after open)
             descOverlay = overlayContainer
             descMaskSvgEl = svg
@@ -693,6 +1041,32 @@ export function initTechnology(root = document) {
               },
               0
             )
+            // Also clip the clone's name and close button with the same mask
+            try {
+              if (openClone) {
+                const nameInnerEl = openClone.querySelector(
+                  '.machines-grid_name-inner'
+                )
+                const closeBtnEl = openClone.querySelector(
+                  '.machines-grid_close-button'
+                )
+                const applyMask = (el) => {
+                  if (!el) return
+                  el.style.webkitMaskImage = `url(#${maskId})`
+                  el.style.maskImage = `url(#${maskId})`
+                  el.style.webkitMaskRepeat = 'no-repeat'
+                  el.style.maskRepeat = 'no-repeat'
+                  el.style.webkitMaskSize = '100% 100%'
+                  el.style.maskSize = '100% 100%'
+                  el.style.webkitMaskPosition = '0 0'
+                  el.style.maskPosition = '0 0'
+                }
+                applyMask(nameInnerEl)
+                applyMask(closeBtnEl)
+              }
+            } catch (em) {
+              // ignore
+            }
             // Animate mask hole to follow the clone expansion (from clone rect to full viewport)
             // Prepare onUpdate to keep mask hole following the clone's live bounds (with corner radius)
             const computeRadiusPx = (el) => {
@@ -729,10 +1103,9 @@ export function initTechnology(root = document) {
         } catch (ed) {
           // ignore
         }
-        // Fade out names of other items while opening
+        // Fade out all grid item names (wrap) and hide all name inners while opening
         try {
           gridItems.forEach((gi) => {
-            if (gi === item) return
             const name = gi.querySelector('.machines-grid_name-wrap')
             if (name) {
               tl.to(
@@ -744,6 +1117,11 @@ export function initTechnology(root = document) {
                 },
                 0
               )
+            }
+            // Hide inner names instantly so only the clone's name appears
+            const nameInner = gi.querySelector('.machines-grid_name-inner')
+            if (nameInner) {
+              tl.set(nameInner, { opacity: 0 }, 0)
             }
           })
         } catch (en) {
@@ -835,6 +1213,15 @@ export function initTechnology(root = document) {
         if (!openItem) return
         const item = openItem
         openItem = null
+        // If user closes during opening, stop the opening timeline first
+        try {
+          if (openingTimeline) {
+            openingTimeline.kill()
+            openingTimeline = null
+          }
+        } catch (e) {
+          // ignore
+        }
         window.removeEventListener('resize', resizeHandler)
         resizeHandler = null
         // Remove interaction handlers
@@ -893,6 +1280,8 @@ export function initTechnology(root = document) {
               gridItems.forEach((gi) => {
                 const name = gi.querySelector('.machines-grid_name-wrap')
                 if (name) gsap.set(name, { opacity: 1 })
+                const nameInner = gi.querySelector('.machines-grid_name-inner')
+                if (nameInner) gsap.set(nameInner, { opacity: 0 })
               })
             } catch (er) {
               // ignore
@@ -904,9 +1293,56 @@ export function initTechnology(root = document) {
             } catch (eop) {
               // ignore
             }
+            // Final sweep: remove any stray clones that might still be in the DOM
+            try {
+              const strayClones = document.querySelectorAll(
+                '.machines-grid_item-clone'
+              )
+              strayClones.forEach((node) => {
+                try {
+                  if (node && node.parentNode) node.parentNode.removeChild(node)
+                } catch (e) {
+                  // ignore
+                }
+              })
+            } catch (e) {
+              // ignore
+            }
             unlockScroll()
           },
+          onInterrupt: () => {
+            // If timeline is interrupted, ensure clone and overlays are removed soon after
+            try {
+              setTimeout(() => {
+                try {
+                  if (openClone) {
+                    openClone.remove()
+                    openClone = null
+                  }
+                } catch (e) {
+                  // ignore
+                }
+                try {
+                  if (descOverlay) descOverlay.remove()
+                  if (descMaskSvgEl) descMaskSvgEl.remove()
+                  descOverlay = null
+                  descMaskSvgEl = null
+                  descMaskHoleEl = null
+                } catch (e) {
+                  // ignore
+                }
+              }, 0)
+            } catch (e) {
+              // ignore
+            }
+          },
         })
+        // Bring navbar back to 2em in parallel with the close animation
+        try {
+          animateNavbarSpreadForGrid(false, root)
+        } catch (e) {
+          // ignore
+        }
         tl.to(
           el,
           {
@@ -920,9 +1356,35 @@ export function initTechnology(root = document) {
           },
           0
         )
+
+        // Reverse clone image back to its starting offsets/size inside clone
+        try {
+          if (openClone) {
+            const clonedImg = openClone.querySelector('.machines-grid_img')
+            if (clonedImg) {
+              const startLeft = clonedImg.dataset.gridStartLeft || '50%'
+              const startTop = clonedImg.dataset.gridStartTop || '50%'
+              const startWidth = clonedImg.dataset.gridStartWidth || '24em'
+              tl.to(
+                clonedImg,
+                {
+                  left: startLeft,
+                  top: startTop,
+                  width: startWidth,
+                  duration: 0.7,
+                  ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+                },
+                0
+              )
+            }
+          }
+        } catch (eImgRev) {
+          // ignore
+        }
         // Fade out desc overlay and move mask hole back to image rect while closing
         try {
           if (descOverlay) {
+            // Fade description overlay out during the close animation
             tl.to(
               descOverlay,
               {
@@ -949,13 +1411,33 @@ export function initTechnology(root = document) {
               0
             )
           }
+          // Move overlay name inner out of view again (translateY(-8em))
+          try {
+            if (descOverlay) {
+              const overlayNameInner = descOverlay.querySelector(
+                '.machines-grid_name-inner'
+              )
+              if (overlayNameInner) {
+                tl.to(
+                  overlayNameInner,
+                  {
+                    y: '-8em',
+                    duration: 0.7,
+                    ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+                  },
+                  0
+                )
+              }
+            }
+          } catch (eNameClose) {
+            // ignore
+          }
         } catch (eclose) {
           // ignore
         }
-        // Fade back in names of other items while closing
+        // Fade back in names (wrap) for all grid items while closing
         try {
           gridItems.forEach((gi) => {
-            if (gi === item) return
             const name = gi.querySelector('.machines-grid_name-wrap')
             if (name) {
               tl.to(
@@ -1016,6 +1498,19 @@ export function initTechnology(root = document) {
           return null
         }
       }
+
+      // Always keep all name inners hidden by default in grid view
+      const hideAllNameInners = () => {
+        try {
+          const inners = machinesGridWrapper.querySelectorAll(
+            '.machines-grid_name-inner'
+          )
+          inners.forEach((el) => gsap.set(el, { opacity: 0 }))
+        } catch (e) {
+          // ignore
+        }
+      }
+      hideAllNameInners()
 
       // Per-item handler to avoid any ambiguity with ordering/duplication
       const attachClickForItem = (item) => {

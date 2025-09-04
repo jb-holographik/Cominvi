@@ -390,6 +390,28 @@ export function initializeNavbarScroll(root = document) {
   }
 }
 
+// Direct navbar spread animation (duplicated behavior of scroll-down/up)
+// isOpen: true → send navbar left/right to -8em (off edges)
+// isOpen: false → bring navbar back to left/right 2em
+export function animateNavbarSpreadForGrid(isOpen, root = document) {
+  try {
+    const navbarElement =
+      root.querySelector('.navbar') || document.querySelector('.navbar')
+    if (!navbarElement) return
+    const cfg = isOpen
+      ? { left: '-8em', right: '-8em', pointerEvents: 'none' }
+      : { left: '2em', right: '2em', pointerEvents: 'auto' }
+    gsap.to(navbarElement, {
+      duration: 0.5,
+      ease: CustomEase.create('custom', 'M0,0 C0.6,0 0,1 1,1 '),
+      overwrite: 'auto',
+      ...cfg,
+    })
+  } catch (e) {
+    // ignore
+  }
+}
+
 export function initializeNav2(root = document) {
   initializeMenuClick({}, root)
   initializeNavbarScroll(root)

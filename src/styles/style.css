@@ -215,3 +215,20 @@ h1>.is-h1-span-wrap:last-child>span {
   pointer-events: none;
   mix-blend-mode: normal;
 }
+
+.machines-grid_name-inner .body-xl>span {
+  padding-bottom: 0.2em;
+  overflow: hidden;
+}
+
+.machines-grid_name-inner .body-xl {
+  line-height: 80%;
+}
+
+.is-plus-wrap>.is-plus {
+  width: 0.875em;
+}
+
+.machines-grid_close-button_row .button_label {
+  line-height: 0.8;
+}

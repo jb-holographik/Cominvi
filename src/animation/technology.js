@@ -487,7 +487,7 @@ export function initTechnology(root = document) {
           const anim = {
             x: toVars.x,
             y: toVars.y,
-            duration: 0.8,
+            duration: 1.2,
             ease: gsap.parseEase('machinesStep') || 'power2.inOut',
             overwrite: 'auto',
           }
@@ -502,7 +502,7 @@ export function initTechnology(root = document) {
           const anim = {
             x: 0,
             y: 0,
-            duration: 0.6,
+            duration: 1.2,
             ease: gsap.parseEase('machinesStep') || 'power2.inOut',
             clearProps: 'transform',
             overwrite: 'auto',
@@ -637,7 +637,7 @@ export function initTechnology(root = document) {
             width: window.innerWidth,
             height: window.innerHeight,
             padding: '1em',
-            duration: 0.8,
+            duration: 1.2,
             ease: gsap.parseEase('machinesStep') || 'power2.out',
           },
           0
@@ -666,7 +666,7 @@ export function initTechnology(root = document) {
                 cloneCloseBtn,
                 {
                   opacity: 1,
-                  duration: 0.8,
+                  duration: 1.2,
                   ease: gsap.parseEase('machinesStep') || 'power2.out',
                 },
                 0
@@ -689,7 +689,7 @@ export function initTechnology(root = document) {
                 cloneNameInner,
                 {
                   y: 0,
-                  duration: 0.8,
+                  duration: 1.2,
                   ease: gsap.parseEase('machinesStep') || 'power2.out',
                 },
                 0
@@ -730,7 +730,7 @@ export function initTechnology(root = document) {
                   left: '80%',
                   top: '70%',
                   width: '60em',
-                  duration: 0.8,
+                  duration: 1.2,
                   ease: gsap.parseEase('machinesStep') || 'power2.out',
                 },
                 0
@@ -880,7 +880,7 @@ export function initTechnology(root = document) {
                         letters,
                         {
                           yPercent: 0,
-                          duration: 0.8,
+                          duration: 1.2,
                           ease: gsap.parseEase('machinesStep') || 'power2.out',
                           stagger: 0.02,
                         },
@@ -894,7 +894,7 @@ export function initTechnology(root = document) {
                     overlayName,
                     {
                       y: 0,
-                      duration: 0.8,
+                      duration: 1.2,
                       ease: gsap.parseEase('machinesStep') || 'power2.out',
                     },
                     0
@@ -923,7 +923,7 @@ export function initTechnology(root = document) {
                     overlayClose,
                     {
                       opacity: 1,
-                      duration: 0.8,
+                      duration: 1.2,
                       ease: gsap.parseEase('machinesStep') || 'power2.out',
                     },
                     0
@@ -1036,7 +1036,7 @@ export function initTechnology(root = document) {
               overlayContainer,
               {
                 opacity: 1,
-                duration: 0.8,
+                duration: 1.2,
                 ease: gsap.parseEase('machinesStep') || 'power2.out',
               },
               0
@@ -1112,7 +1112,7 @@ export function initTechnology(root = document) {
                 name,
                 {
                   opacity: 0,
-                  duration: 0.8,
+                  duration: 1.2,
                   ease: gsap.parseEase('machinesStep') || 'power2.out',
                 },
                 0
@@ -1351,7 +1351,7 @@ export function initTechnology(root = document) {
             width: gridRect.width,
             height: gridRect.height,
             padding: 0,
-            duration: 0.7,
+            duration: 1.2,
             ease: gsap.parseEase('machinesStep') || 'power2.inOut',
           },
           0
@@ -1371,7 +1371,7 @@ export function initTechnology(root = document) {
                   left: startLeft,
                   top: startTop,
                   width: startWidth,
-                  duration: 0.7,
+                  duration: 1.2,
                   ease: gsap.parseEase('machinesStep') || 'power2.inOut',
                 },
                 0
@@ -1389,7 +1389,7 @@ export function initTechnology(root = document) {
               descOverlay,
               {
                 opacity: 0,
-                duration: 0.7,
+                duration: 1.2,
                 ease: gsap.parseEase('machinesStep') || 'power2.inOut',
               },
               0
@@ -1405,7 +1405,7 @@ export function initTechnology(root = document) {
                   width: gridRect.width,
                   height: gridRect.height,
                 },
-                duration: 0.7,
+                duration: 1.2,
                 ease: gsap.parseEase('machinesStep') || 'power2.inOut',
               },
               0
@@ -1422,7 +1422,7 @@ export function initTechnology(root = document) {
                   overlayNameInner,
                   {
                     y: '-8em',
-                    duration: 0.7,
+                    duration: 1.2,
                     ease: gsap.parseEase('machinesStep') || 'power2.inOut',
                   },
                   0
@@ -1444,7 +1444,7 @@ export function initTechnology(root = document) {
                 name,
                 {
                   opacity: 1,
-                  duration: 0.8,
+                  duration: 1.2,
                   ease: gsap.parseEase('machinesStep') || 'power2.inOut',
                 },
                 0

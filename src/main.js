@@ -1,4 +1,5 @@
 import './styles/style.css'
+import { initAbout } from './animation/about-us.js'
 import { initLoader } from './animation/loader.js'
 import { initMap } from './animation/map.js'
 import { initMinerals } from './animation/minerals.js'
@@ -46,6 +47,14 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {
     // ignore
   }
+
+  // About Us page behaviors
+  try {
+    initAbout(document)
+  } catch (e) {
+    // ignore
+  }
+
   // Pre-instantiate mask overlay in DOM (hidden) so it exists before any transition
   try {
     const { tl } = createViewportClipOverlay({})

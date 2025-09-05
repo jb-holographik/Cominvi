@@ -1,35 +1,39 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import SplitType from 'split-type'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function initScrollList(root = document) {
-  const section =
-    root.querySelector('.section_partners') ||
-    document.querySelector('.section_partners')
-  if (!section) return
-
-  // 1) Activate the .scroll-item which crosses the viewport center
-  initScrollItems(section)
-
-  // 2) Build ticks to fill height on each side indicators
-  const indicators = Array.from(
-    section.querySelectorAll('.content_column > .scroll-indicator')
+  // Support multiple sections that share the same behavior
+  const sections = Array.from(
+    (root || document).querySelectorAll('.section_partners, .section_values')
   )
-  if (indicators.length) {
-    buildAllIndicators(indicators)
-    setupTickHighlighting(section, indicators)
+  if (!sections.length) return
 
-    // Rebuild on resize
-    let resizeTimer
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer)
-      resizeTimer = setTimeout(() => {
-        buildAllIndicators(indicators)
-        ScrollTrigger.refresh()
-      }, 150)
-    })
-  }
+  sections.forEach((section) => {
+    // 1) Activate the .scroll-item which crosses the viewport center
+    initScrollItems(section)
+
+    // 2) Build ticks to fill height on each side indicators
+    const indicators = Array.from(
+      section.querySelectorAll('.content_column > .scroll-indicator')
+    )
+    if (indicators.length) {
+      buildAllIndicators(indicators)
+      setupTickHighlighting(section, indicators)
+
+      // Rebuild on resize
+      let resizeTimer
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer)
+        resizeTimer = setTimeout(() => {
+          buildAllIndicators(indicators)
+          ScrollTrigger.refresh()
+        }, 150)
+      })
+    }
+  })
 }
 
 function initScrollItems(section) {
@@ -38,12 +42,93 @@ function initScrollItems(section) {
   )
   if (!items.length) return
 
-  const spans = items.map((el) => el.querySelector('.body-xl')).filter(Boolean)
+  // Values section: sync descriptions visibility with active title
+  const isValues = section.classList.contains('section_values')
+  const descContainer = isValues ? section.querySelector('.scroll-desc') : null
+  const descItems = descContainer
+    ? Array.from(descContainer.querySelectorAll('.scroll-item'))
+    : []
+  // Initial state: all descriptions hidden
+  if (descItems.length) {
+    descItems.forEach((el) => {
+      el.style.display = 'none'
+    })
+  }
 
-  // Ensure initial state: all dimmed
+  const splitAndAnimateLines = (container) => {
+    const paragraphs = Array.from(container.querySelectorAll('p'))
+    const targets = paragraphs.length ? paragraphs : [container]
+    targets.forEach((el) => {
+      try {
+        if (!el.__splitLines) {
+          const split = new SplitType(el, { types: 'lines', tagName: 'span' })
+          el.__splitLines = split
+          el.__lines = split.lines || []
+        }
+        const lines = el.__lines || []
+        if (lines.length) {
+          // Wrap line contents in an inner span (once) and apply overflow hidden to line
+          const inners = []
+          lines.forEach((line) => {
+            // Ensure block and overflow hidden on the line wrapper
+            line.style.display = 'block'
+            line.style.overflow = 'hidden'
+            if (!line.__inner) {
+              const inner = document.createElement('span')
+              inner.className = 'line-inner'
+              while (line.firstChild) inner.appendChild(line.firstChild)
+              line.appendChild(inner)
+              line.__inner = inner
+            }
+            inners.push(line.__inner)
+          })
+          gsap.set(inners, {
+            display: 'block',
+            yPercent: 100,
+            willChange: 'transform',
+          })
+          gsap.to(inners, {
+            yPercent: 0,
+            duration: 0.2,
+            ease: 'power1.inOut',
+            stagger: 0.03,
+            clearProps: 'willChange',
+          })
+        }
+      } catch (e) {
+        // ignore
+      }
+    })
+  }
+
+  const showDescForIndex = (idx) => {
+    if (!descItems.length) return
+    descItems.forEach((el, i) => {
+      if (i === idx) {
+        el.style.display = 'block'
+        splitAndAnimateLines(el)
+      } else {
+        el.style.display = 'none'
+      }
+    })
+  }
+
+  // Support different typography sizes used across sections
+  const spans = items
+    .map((el) => el.querySelector('.body-xl, .body-xxl, .body-next'))
+    .filter(Boolean)
+
+  // Ensure initial state: all dimmed (respect existing dim classes)
   spans.forEach((span) => {
     span.classList.remove('is-active')
-    if (!span.classList.contains('is-o-20')) span.classList.add('is-o-20')
+    const dimClass = span.classList.contains('is-o-15') ? 'is-o-15' : 'is-o-20'
+    span.dataset.dimClass = dimClass
+    if (
+      !span.classList.contains('is-o-15') &&
+      !span.classList.contains('is-o-20')
+    ) {
+      span.classList.add(dimClass)
+    }
   })
 
   let currentActive = null
@@ -59,21 +144,39 @@ function initScrollItems(section) {
         if (self.isActive) {
           if (currentActive && currentActive !== span) {
             currentActive.classList.remove('is-active')
-            if (!currentActive.classList.contains('is-o-20'))
-              currentActive.classList.add('is-o-20')
+            const prevDim = currentActive.dataset.dimClass || 'is-o-20'
+            if (!currentActive.classList.contains(prevDim))
+              currentActive.classList.add(prevDim)
           }
-          span.classList.remove('is-o-20')
+          const dim = span.dataset.dimClass || 'is-o-20'
+          if (span.classList.contains(dim)) span.classList.remove(dim)
           span.classList.add('is-active')
           currentActive = span
+          showDescForIndex(index)
         } else if (currentActive === span) {
           // If leaving with nothing else active yet
           span.classList.remove('is-active')
-          if (!span.classList.contains('is-o-20')) span.classList.add('is-o-20')
+          const dim = span.dataset.dimClass || 'is-o-20'
+          if (!span.classList.contains(dim)) span.classList.add(dim)
           currentActive = null
         }
       },
     })
   })
+
+  // Ensure first/last desc visible when entering/leaving the section
+  if (isValues && descItems.length) {
+    const lastIndex = items.length - 1
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top bottom',
+      end: 'bottom top',
+      onEnter: () => showDescForIndex(0), // arriving from top
+      onEnterBack: () => showDescForIndex(lastIndex), // arriving from bottom
+      onLeave: () => showDescForIndex(lastIndex), // leaving at bottom keeps last
+      onLeaveBack: () => showDescForIndex(0), // leaving at top keeps first
+    })
+  }
 }
 
 function buildAllIndicators(indicators) {

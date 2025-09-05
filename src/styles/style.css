@@ -16,7 +16,9 @@
   white-space: nowrap;
 }
 
-.scroll-item>.body-xl {
+.scroll-item>.body-xl,
+.scroll-item>.body-xxl,
+.scroll-item>.body-next {
   transition: all 0.2s ease-in-out;
 }
 

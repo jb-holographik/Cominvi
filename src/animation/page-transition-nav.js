@@ -1,6 +1,7 @@
 import barba from '@barba/core'
 
 import { reinitializeWebflowAnimations } from '../utils/base.js'
+import { initBlog } from './blog.js'
 import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
 import { initializeNav2 } from './nav.js'
@@ -183,6 +184,11 @@ export function initializePageTransitionNav() {
           initTestimonials()
           initTextDisplayReveal()
           try {
+            initBlog(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             destroyVideoClipStickyTransform()
           } catch (e) {
             /* ignore */
@@ -228,6 +234,11 @@ export function initializePageTransitionNav() {
           initTestimonials()
           initTextDisplayReveal()
           try {
+            initBlog(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             destroyVideoClipStickyTransform()
           } catch (e) {
             /* ignore */
@@ -266,6 +277,11 @@ export function initializePageTransitionNav() {
     initProcessProgression(next && next.container)
     initTextReveal()
     initMinerals()
+    try {
+      initBlog(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
     try {
       destroyVideoClipStickyTransform()
     } catch (e) {

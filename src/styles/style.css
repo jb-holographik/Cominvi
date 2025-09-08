@@ -238,3 +238,11 @@ h1>.is-h1-span-wrap:last-child>span {
 .story-maskwrap>.svgtext-mask {
   padding: 0;
 }
+
+.circle.is-2 g {
+  opacity: 1;
+}
+
+.section_positions .content-bottom {
+  border: none;
+}

@@ -1,5 +1,6 @@
 import './styles/style.css'
 import { initAbout } from './animation/about-us.js'
+import { initTeam } from './animation/join-the-team.js'
 import { initLoader } from './animation/loader.js'
 import { initMap } from './animation/map.js'
 import { initMinerals } from './animation/minerals.js'
@@ -51,6 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // About Us page behaviors
   try {
     initAbout(document)
+  } catch (e) {
+    // ignore
+  }
+
+  // Join the Team page behaviors
+  try {
+    initTeam(document)
   } catch (e) {
     // ignore
   }

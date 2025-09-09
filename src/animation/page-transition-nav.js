@@ -1,7 +1,8 @@
 import barba from '@barba/core'
 
-import { reinitializeWebflowAnimations } from '../utils/base.js'
+import { reinitializeWebflowAnimations, initSticky50 } from '../utils/base.js'
 import { initBlog } from './blog.js'
+import { initTeam } from './join-the-team.js'
 import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
 import { initializeNav2 } from './nav.js'
@@ -30,6 +31,24 @@ import { slideScaleLeave, slideScaleEnter } from './transition-slide-scale.js'
 
 // Minimal Barba setup that focuses only on nav-related transitions
 export function initializePageTransitionNav() {
+  const reinitFsAttributes = () => {
+    try {
+      const fs = window && window.fsAttributes
+      if (!fs) return
+      try {
+        if (typeof fs.destroy === 'function') fs.destroy()
+      } catch (e) {
+        // ignore
+      }
+      try {
+        if (typeof fs.init === 'function') fs.init()
+      } catch (e) {
+        // ignore
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
   // Track UI visibility adjustments for pt-inner clicks
   const isVisible = (el) => {
     if (!el) return false
@@ -127,6 +146,15 @@ export function initializePageTransitionNav() {
   barba.init({
     preventRunning: true,
     schema: { namespace: 'data-barba-namespace' },
+    // Prevent Barba transitions on load more anchor links
+    prevent: ({ el }) => {
+      try {
+        const anchor = el && el.closest ? el.closest('a.load-more') : null
+        return !!anchor
+      } catch (e) {
+        return false
+      }
+    },
     transitions: [
       {
         name: 'slide-scale-inner',
@@ -145,6 +173,8 @@ export function initializePageTransitionNav() {
         leave: innerLeave,
         enter: ({ next }) => innerEnter({ next }),
         after: ({ next }) => {
+          // Re-initialize Finsweet Attributes (CMS Filter) after the new DOM is in place
+          reinitFsAttributes()
           // Mark that the transition after hook handled re-inits to avoid duplicate work in global hook
           try {
             window.__barbaAfterHandled = true
@@ -184,7 +214,17 @@ export function initializePageTransitionNav() {
           initTestimonials()
           initTextDisplayReveal()
           try {
+            initSticky50(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             initBlog(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initTeam(next && next.container)
           } catch (e) {
             /* ignore */
           }
@@ -212,6 +252,8 @@ export function initializePageTransitionNav() {
         leave: slideScaleLeave,
         enter: ({ next }) => slideScaleEnter({ next }),
         after: ({ next }) => {
+          // Re-initialize Finsweet Attributes (CMS Filter) after the new DOM is in place
+          reinitFsAttributes()
           // Mark that the transition after hook handled re-inits to avoid duplicate work in global hook
           try {
             window.__barbaAfterHandled = true
@@ -234,7 +276,17 @@ export function initializePageTransitionNav() {
           initTestimonials()
           initTextDisplayReveal()
           try {
+            initSticky50(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             initBlog(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initTeam(next && next.container)
           } catch (e) {
             /* ignore */
           }
@@ -266,6 +318,8 @@ export function initializePageTransitionNav() {
       window.__barbaAfterHandled = false
       return
     }
+    // Global fallback: ensure Finsweet Attributes are reinitialized
+    reinitFsAttributes()
 
     destroyLenis()
     initLenis(next && next.container)
@@ -278,7 +332,17 @@ export function initializePageTransitionNav() {
     initTextReveal()
     initMinerals()
     try {
+      initSticky50(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
       initBlog(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      initTeam(next && next.container)
     } catch (e) {
       /* ignore */
     }

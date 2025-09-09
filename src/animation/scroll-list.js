@@ -48,14 +48,19 @@ function initScrollItems(section) {
   const descItems = descContainer
     ? Array.from(descContainer.querySelectorAll('.scroll-item'))
     : []
-  // Initial state: all descriptions hidden
+  // Initial state: all descriptions hidden via opacity only (never display:none)
   if (descItems.length) {
     descItems.forEach((el) => {
-      el.style.display = 'none'
+      el.style.willChange = 'opacity'
+      el.style.transition = el.style.transition?.includes('opacity')
+        ? el.style.transition
+        : 'opacity 0.3s ease'
+      el.style.opacity = '0'
+      if (getComputedStyle(el).display === 'none') el.style.display = 'block'
     })
   }
 
-  const splitAndAnimateLines = (container) => {
+  const splitAndAnimateLines = (container, skipAnimation = false) => {
     const paragraphs = Array.from(container.querySelectorAll('p'))
     const targets = paragraphs.length ? paragraphs : [container]
     targets.forEach((el) => {
@@ -82,18 +87,22 @@ function initScrollItems(section) {
             }
             inners.push(line.__inner)
           })
-          gsap.set(inners, {
-            display: 'block',
-            yPercent: 100,
-            willChange: 'transform',
-          })
-          gsap.to(inners, {
-            yPercent: 0,
-            duration: 0.2,
-            ease: 'power1.inOut',
-            stagger: 0.03,
-            clearProps: 'willChange',
-          })
+          if (skipAnimation) {
+            gsap.set(inners, { display: 'block', yPercent: 0 })
+          } else {
+            gsap.set(inners, {
+              display: 'block',
+              yPercent: 100,
+              willChange: 'transform',
+            })
+            gsap.to(inners, {
+              yPercent: 0,
+              duration: 0.2,
+              ease: 'power1.inOut',
+              stagger: 0.03,
+              clearProps: 'willChange',
+            })
+          }
         }
       } catch (e) {
         // ignore
@@ -101,25 +110,51 @@ function initScrollItems(section) {
     })
   }
 
-  const showDescForIndex = (idx) => {
+  const showDescForIndex = (idx, skipAnimation = false) => {
     if (!descItems.length) return
     descItems.forEach((el, i) => {
       if (i === idx) {
-        el.style.display = 'block'
-        splitAndAnimateLines(el)
+        if (getComputedStyle(el).display === 'none') el.style.display = 'block'
+        // Skip animation only when explicitly requested
+        splitAndAnimateLines(el, skipAnimation)
+        // fade in
+        el.style.opacity = '1'
       } else {
-        el.style.display = 'none'
+        // fade out only
+        el.style.opacity = '0'
       }
     })
+    // Keep headings (.body-xxl, etc.) in sync with desc index
+    try {
+      const item = items[idx]
+      const span = item
+        ? item.querySelector('.body-xl, .body-xxl, .body-next')
+        : null
+      if (span) {
+        if (currentActive && currentActive !== span) {
+          currentActive.classList.remove('is-active')
+          const prevDim = currentActive.dataset.dimClass || 'is-o-20'
+          if (!currentActive.classList.contains(prevDim))
+            currentActive.classList.add(prevDim)
+        }
+        const dim = span.dataset.dimClass || 'is-o-20'
+        if (span.classList.contains(dim)) span.classList.remove(dim)
+        span.classList.add('is-active')
+        currentActive = span
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   // Support different typography sizes used across sections
-  const spans = items
-    .map((el) => el.querySelector('.body-xl, .body-xxl, .body-next'))
-    .filter(Boolean)
+  const spans = items.map((el) =>
+    el.querySelector('.body-xl, .body-xxl, .body-next')
+  )
 
   // Ensure initial state: all dimmed (respect existing dim classes)
   spans.forEach((span) => {
+    if (!span) return
     span.classList.remove('is-active')
     const dimClass = span.classList.contains('is-o-15') ? 'is-o-15' : 'is-o-20'
     span.dataset.dimClass = dimClass
@@ -132,6 +167,9 @@ function initScrollItems(section) {
   })
 
   let currentActive = null
+  const lastIndex = items.length - 1
+
+  // (removed unused helper)
 
   items.forEach((item, index) => {
     const span = spans[index]
@@ -152,13 +190,14 @@ function initScrollItems(section) {
           if (span.classList.contains(dim)) span.classList.remove(dim)
           span.classList.add('is-active')
           currentActive = span
-          showDescForIndex(index)
-        } else if (currentActive === span) {
-          // If leaving with nothing else active yet
-          span.classList.remove('is-active')
-          const dim = span.dataset.dimClass || 'is-o-20'
-          if (!span.classList.contains(dim)) span.classList.add(dim)
-          currentActive = null
+          // Skip animation if: scrolling upward onto the last item, OR
+          // scrolling downward onto the first item (initial downward passes)
+          const skip =
+            (self.direction === -1 && index === lastIndex) ||
+            (self.direction === 1 && index === 0)
+          showDescForIndex(index, skip)
+        } else {
+          // No-op on deactivate; active state is managed centrally by showDescForIndex
         }
       },
     })
@@ -166,15 +205,22 @@ function initScrollItems(section) {
 
   // Ensure first/last desc visible when entering/leaving the section
   if (isValues && descItems.length) {
-    const lastIndex = items.length - 1
     ScrollTrigger.create({
       trigger: section,
       start: 'top bottom',
       end: 'bottom top',
-      onEnter: () => showDescForIndex(0), // arriving from top
-      onEnterBack: () => showDescForIndex(lastIndex), // arriving from bottom
-      onLeave: () => showDescForIndex(lastIndex), // leaving at bottom keeps last
-      onLeaveBack: () => showDescForIndex(0), // leaving at top keeps first
+      onEnter: () => {
+        showDescForIndex(0, true) // arriving from top → skip first anim
+      },
+      onEnterBack: () => {
+        showDescForIndex(lastIndex, true) // arriving from bottom → last active, skip anim
+      },
+      onLeave: () => {
+        showDescForIndex(lastIndex) // leaving downward keeps last
+      },
+      onLeaveBack: () => {
+        showDescForIndex(0) // leaving upward keeps first
+      },
     })
   }
 }

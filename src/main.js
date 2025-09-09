@@ -1,5 +1,6 @@
 import './styles/style.css'
 import { initAbout } from './animation/about-us.js'
+import { initBlog } from './animation/blog.js'
 import { initTeam } from './animation/join-the-team.js'
 import { initLoader } from './animation/loader.js'
 import { initMap } from './animation/map.js'
@@ -20,6 +21,7 @@ import {
   // splitIntoWordSpans,
 } from './animation/text-display-reveal.js'
 import { initTextReveal } from './animation/text-reveal.js'
+import { initSticky50 } from './utils/base.js'
 // (deduped)
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,6 +38,18 @@ document.addEventListener('DOMContentLoaded', () => {
   initTestimonials()
   initTextDisplayReveal()
   initVideoClipStickyTransform()
+  // Sticky 50 center across site
+  try {
+    initSticky50(document)
+  } catch (e) {
+    // ignore
+  }
+  // Blog page behaviors (initial load)
+  try {
+    initBlog(document)
+  } catch (e) {
+    // ignore
+  }
   // Initialize map interactions on first load
   try {
     initMap(document)

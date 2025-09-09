@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Mon Sep 08 2025 13:20:34 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Tue Sep 09 2025 08:29:17 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="68bec585a9b5061ad00733bf" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -438,12 +438,35 @@
         </div>
       </div>
       <div bg="white" class="section_blog-inner">
-        <div class="blog-inner_categories"><button class="body-l is-active">All</button><button
-            class="body-l is-o-30">Blog</button><button class="body-l is-o-30">University</button></div>
+        <div class="blog-inner_categories">
+          <div class="w-form">
+            <form id="email-form" name="email-form" data-name="Email Form" method="get" fs-list-element="filters"
+              class="blog-categories" data-wf-page-id="68bec585a9b5061ad00733bf"
+              data-wf-element-id="1145972c-602d-c9ed-1ecf-c6cfe92c14a3">
+              <div class="blog-categories-wrap w-dyn-list">
+                <div role="list" class="blog-categories-list w-dyn-items">
+                  <div role="listitem" class="blog-category-item w-dyn-item"><label class="blog-category w-radio"><input
+                        type="radio" data-name="Blog-category" fs-list-value="" name="Blog-category"
+                        fs-list-field="Category" class="w-form-formradioinput w-radio-input" value="Radio"><span
+                        class="body-l w-dyn-bind-empty w-form-label"></span></label></div>
+                </div>
+                <div class="w-dyn-empty">
+                  <div>No items found.</div>
+                </div>
+              </div>
+            </form>
+            <div class="w-form-done">
+              <div>Thank you! Your submission has been received!</div>
+            </div>
+            <div class="w-form-fail">
+              <div>Oops! Something went wrong while submitting the form.</div>
+            </div>
+          </div>
+        </div>
         <div class="blog-main_wrap w-dyn-list">
-          <div role="list" class="blog-main_list w-dyn-items">
+          <div fs-cmsfilter-element="list" role="list" class="blog-main_list w-dyn-items">
             <div role="listitem" class="blog-main_item w-dyn-item">
-              <a bg="white" href="#" class="blog-inner_item w-inline-block">
+              <a pt-inner="" href="#" class="blog-inner_item w-inline-block">
                 <div class="blog-date"><span class="eyebrow-m is-0-50 w-dyn-bind-empty"></span></div>
                 <div id="w-node-fdd933bc-df25-4d70-c552-5333ebd22d2a-d00733bf" class="blog-name">
                   <h2 class="body-l w-dyn-bind-empty"></h2>
@@ -453,6 +476,9 @@
                 </div>
                 <div id="w-node-c12bfa98-12e2-6d75-cb1c-435edac5f54d-d00733bf" class="blog-img-sm"><img
                     src="images/aboutus_1.avif" loading="lazy" alt="" class="blog-img_img w-dyn-bind-empty"></div>
+                <div class="blog-id">
+                  <div fs-list-field="Category" class="w-dyn-bind-empty"></div>
+                </div>
               </a>
             </div>
           </div>

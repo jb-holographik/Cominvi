@@ -51,6 +51,7 @@ export function initTextDisplayReveal(root = document) {
       tl.to(
         words,
         {
+          duration: 1.2,
           yPercent: 0,
           rotation: 0,
           stagger: 0.02,

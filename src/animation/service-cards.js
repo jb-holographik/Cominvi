@@ -1,3 +1,4 @@
+import SplitType from 'split-type'
 export function initServiceCards(root = document) {
   const scope = root && root.querySelector ? root : document
   const cards = scope.querySelectorAll('.service-card')
@@ -69,38 +70,69 @@ export function initServiceCards(root = document) {
     const bloc = card.querySelector('.machine-card_inner')
     if (!bloc) return
 
+    // Find the primary text element inside the bloc
+    const textEl = bloc.querySelector('p, .body-s, .body-m, .body-l') || bloc
+
+    // Split text into visual lines (using SplitType) and prepare wrappers
     try {
-      // Start hidden below using translateY while preserving translateX(-50%) from CSS
-      bloc.style.transition = 'none'
-      const rect = bloc.getBoundingClientRect()
-      const cs = getComputedStyle(bloc)
-      const bottomPx = parseFloat(cs.bottom) || 0
-      const h = rect.height + bottomPx
-      bloc.style.transform = `translate(-50%) translateY(${h}px)`
-      void bloc.offsetWidth
-      bloc.style.transition = 'transform 0.5s ease, opacity 0.3s ease'
+      if (!textEl.__splitLines) {
+        const split = new SplitType(textEl, { types: 'lines', tagName: 'span' })
+        textEl.__splitLines = split
+        textEl.__lines = split.lines || []
+      }
+      const lines = textEl.__lines || []
+      const inners = []
+      lines.forEach((line) => {
+        // Ensure outer line wrapper constrains overflow
+        line.style.display = 'block'
+        line.style.overflow = 'hidden'
+        if (!line.__inner) {
+          const inner = document.createElement('span')
+          inner.className = 'line-inner'
+          inner.style.display = 'inline-block'
+          // Move existing children into inner once
+          while (line.firstChild) inner.appendChild(line.firstChild)
+          line.appendChild(inner)
+          line.__inner = inner
+        }
+        inners.push(line.__inner)
+      })
+      // Initial state: lines hidden below
+      inners.forEach((el) => {
+        el.style.transform = 'translateY(100%)'
+        el.style.willChange = 'transform'
+        el.style.transition = 'transform 0.4s ease'
+      })
+      bloc.__lineInners = inners
     } catch (err) {
       // ignore
     }
 
-    const slideIn = () => {
-      bloc.style.transition = 'transform 0.5s ease'
-      // Ensure we slide exactly to its resting position
-      bloc.style.transform = 'translate(-50%) translateY(0)'
+    const STAGGER_S = 0.03
+    const revealLines = () => {
+      const inners = bloc.__lineInners || []
+      inners.forEach((el, i) => {
+        el.style.transitionDelay = `${i * STAGGER_S}s`
+        el.style.transform = 'translateY(0)'
+      })
     }
-    const slideOut = () => {
-      const rect = bloc.getBoundingClientRect()
-      const cs = getComputedStyle(bloc)
-      const bottomPx = parseFloat(cs.bottom) || 0
-      const h = rect.height + bottomPx
-      bloc.style.transform = `translate(-50%) translateY(${h}px)`
+    const hideLines = () => {
+      const inners = bloc.__lineInners || []
+      // reverse for a slightly nicer closing effect
+      inners
+        .slice()
+        .reverse()
+        .forEach((el, i) => {
+          el.style.transitionDelay = `${i * STAGGER_S}s`
+          el.style.transform = 'translateY(100%)'
+        })
     }
 
-    card.addEventListener('mouseenter', slideIn)
-    card.addEventListener('mouseleave', slideOut)
+    card.addEventListener('mouseenter', revealLines)
+    card.addEventListener('mouseleave', hideLines)
     // Pointer events for broader support
-    card.addEventListener('pointerenter', slideIn)
-    card.addEventListener('pointerleave', slideOut)
+    card.addEventListener('pointerenter', revealLines)
+    card.addEventListener('pointerleave', hideLines)
 
     card.__machineCardsBound = true
   })

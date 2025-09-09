@@ -66,3 +66,55 @@ export function reinitializeWebflowAnimations() {
     // ignore
   }
 }
+
+// Centre verticalement les éléments sticky avec la classe .is-sticky-50
+export function initSticky50(root = document) {
+  try {
+    const container = root && root.nodeType === 1 ? root : document
+    const elements = Array.from(container.querySelectorAll('.is-sticky-50'))
+    if (!elements.length) return
+
+    const computeAndApply = (el) => {
+      try {
+        const height = el.offsetHeight || el.getBoundingClientRect().height || 0
+        if (!height) return
+        el.style.setProperty('--sticky-height', height + 'px')
+        el.style.top = 'calc(50vh - (var(--sticky-height) / 2))'
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    elements.forEach((el) => {
+      computeAndApply(el)
+      try {
+        if (window.ResizeObserver && !el.__sticky50Observed) {
+          const ro = new ResizeObserver(() => computeAndApply(el))
+          ro.observe(el)
+          el.__sticky50Observed = ro
+        }
+      } catch (e) {
+        // ignore
+      }
+    })
+
+    try {
+      if (!window.__sticky50ResizeBound) {
+        const onWinResize = () => {
+          try {
+            const all = document.querySelectorAll('.is-sticky-50')
+            all.forEach((el) => computeAndApply(el))
+          } catch (e) {
+            // ignore
+          }
+        }
+        window.addEventListener('resize', onWinResize)
+        window.__sticky50ResizeBound = true
+      }
+    } catch (e) {
+      // ignore
+    }
+  } catch (e) {
+    // ignore
+  }
+}

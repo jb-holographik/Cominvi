@@ -20,11 +20,11 @@ export function initAbout(root = document) {
     if (!el) return
     try {
       const cs = window.getComputedStyle(el)
-      if (!el.dataset.origDisplay) {
-        el.dataset.origDisplay =
-          cs.display && cs.display !== 'none' ? cs.display : 'block'
+      // Ensure element is not display:none; we only animate opacity
+      if (cs.display === 'none' || el.style.display === 'none') {
+        el.style.display = 'block'
       }
-      el.style.willChange = 'opacity, display'
+      el.style.willChange = 'opacity'
       if (!el.style.transition || !el.style.transition.includes('opacity')) {
         el.style.transition = 'opacity 0.5s ease'
       }
@@ -46,12 +46,7 @@ export function initAbout(root = document) {
   const fadeIn = (el) => {
     if (!el) return
     try {
-      // ensure element is displayed (do not toggle display, only opacity)
-      if (el.style.display === 'none')
-        el.style.display = el.dataset.origDisplay || 'block'
-      // force reflow to apply transition if needed
-      // eslint-disable-next-line no-unused-expressions
-      el.offsetHeight
+      // Only animate opacity; do not toggle display
       el.style.opacity = '1'
     } catch (e) {
       // ignore
@@ -69,6 +64,13 @@ export function initAbout(root = document) {
     const v4 = root.querySelector('.story_videos.is-4')
     const vids = [v1, v2, v3, v4]
     vids.forEach(withFadeHelpers)
+    // Ensure scroll-items on About page use opacity-only animations and never display:none
+    try {
+      const scrollItems = Array.from(root.querySelectorAll('.scroll-item'))
+      scrollItems.forEach(withFadeHelpers)
+    } catch (e) {
+      // ignore
+    }
     const getVideoEl = (wrap) => {
       try {
         if (!wrap) return null

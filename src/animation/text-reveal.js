@@ -6,11 +6,12 @@ gsap.registerPlugin(ScrollTrigger)
 
 function createLetterRevealTimeline(element) {
   const split = new SplitType(element, {
-    types: 'words,chars',
+    types: 'lines,words,chars',
     tagName: 'span',
   })
   const characters = split.chars || []
   const words = split.words || []
+  const lines = split.lines || []
 
   if (!characters.length) return null
 
@@ -27,35 +28,35 @@ function createLetterRevealTimeline(element) {
   })
 
   const scroller = window.__lenisWrapper || undefined
-  const timeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: element,
-      start: 'top 85%',
-      end: '+=420',
-      scrub: true,
-      scroller,
-    },
-  })
-
-  timeline.to(characters, {
-    opacity: 1,
-    stagger: { each: 0.02, from: 'start' },
-    ease: 'none',
-  })
-
-  // Clean up forced no-wrap once animation has progressed enough (optional)
-  timeline.add(() => {
+  // Create one ScrollTrigger per visual line so each line animates from 85% → 50%
+  const tweens = []
+  lines.forEach((line) => {
     try {
-      gsap.set(words, { clearProps: 'whiteSpace' })
-    } catch (err) {
+      const lineChars = characters.filter((ch) => line.contains(ch))
+      if (!lineChars.length) return
+      const tween = gsap.to(lineChars, {
+        opacity: 1,
+        stagger: { each: 0.02, from: 'start' },
+        ease: 'none',
+        scrollTrigger: {
+          trigger: line,
+          start: 'top 85%',
+          end: 'top 50%',
+          scrub: true,
+          scroller,
+        },
+      })
+      tweens.push(tween)
+    } catch (e) {
       // ignore
     }
-  }, '>=+0.1')
+  })
 
   element.__textRevealSplit = split
-  element.__textRevealTimeline = timeline
+  element.__textRevealLineTweens = tweens
 
-  return timeline
+  // Return the array for possible external bookkeeping, though caller doesn't require it
+  return tweens
 }
 
 export function initTextReveal(root = document) {
@@ -86,6 +87,24 @@ export function destroyTextReveal(root = document) {
         el.__textRevealTimeline = null
       }
     } catch (err) {
+      // ignore
+    }
+    try {
+      if (
+        el.__textRevealLineTweens &&
+        Array.isArray(el.__textRevealLineTweens)
+      ) {
+        el.__textRevealLineTweens.forEach((tw) => {
+          try {
+            if (tw && tw.scrollTrigger) tw.scrollTrigger.kill()
+            if (tw && typeof tw.kill === 'function') tw.kill()
+          } catch (e) {
+            // ignore
+          }
+        })
+        el.__textRevealLineTweens = null
+      }
+    } catch (e) {
       // ignore
     }
     try {

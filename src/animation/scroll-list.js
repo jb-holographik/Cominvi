@@ -56,7 +56,9 @@ function initScrollItems(section) {
         ? el.style.transition
         : 'opacity 0.3s ease'
       el.style.opacity = '0'
-      if (getComputedStyle(el).display === 'none') el.style.display = 'block'
+      if (getComputedStyle(el).display === 'none') {
+        el.style.display = 'block'
+      }
     })
   }
 
@@ -111,19 +113,22 @@ function initScrollItems(section) {
   }
 
   const showDescForIndex = (idx, skipAnimation = false) => {
-    if (!descItems.length) return
-    descItems.forEach((el, i) => {
-      if (i === idx) {
-        if (getComputedStyle(el).display === 'none') el.style.display = 'block'
-        // Skip animation only when explicitly requested
-        splitAndAnimateLines(el, skipAnimation)
-        // fade in
-        el.style.opacity = '1'
-      } else {
-        // fade out only
-        el.style.opacity = '0'
-      }
-    })
+    if (descItems.length) {
+      descItems.forEach((el, i) => {
+        if (i === idx) {
+          if (getComputedStyle(el).display === 'none') {
+            el.style.display = 'block'
+          }
+          // Skip animation only when explicitly requested
+          splitAndAnimateLines(el, skipAnimation)
+          // fade in
+          el.style.opacity = '1'
+        } else {
+          // fade out only
+          el.style.opacity = '0'
+        }
+      })
+    }
     // Keep headings (.body-xxl, etc.) in sync with desc index
     try {
       const item = items[idx]
@@ -203,26 +208,24 @@ function initScrollItems(section) {
     })
   })
 
-  // Ensure first/last desc visible when entering/leaving the section
-  if (isValues && descItems.length) {
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top bottom',
-      end: 'bottom top',
-      onEnter: () => {
-        showDescForIndex(0, true) // arriving from top → skip first anim
-      },
-      onEnterBack: () => {
-        showDescForIndex(lastIndex, true) // arriving from bottom → last active, skip anim
-      },
-      onLeave: () => {
-        showDescForIndex(lastIndex) // leaving downward keeps last
-      },
-      onLeaveBack: () => {
-        showDescForIndex(0) // leaving upward keeps first
-      },
-    })
-  }
+  // Ensure first/last active when entering/leaving the section
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top bottom',
+    end: 'bottom top',
+    onEnter: () => {
+      showDescForIndex(0, true) // arriving from top → skip first anim
+    },
+    onEnterBack: () => {
+      showDescForIndex(lastIndex, true) // arriving from bottom → last active, skip anim
+    },
+    onLeave: () => {
+      showDescForIndex(lastIndex) // leaving downward keeps last
+    },
+    onLeaveBack: () => {
+      showDescForIndex(0) // leaving upward keeps first
+    },
+  })
 }
 
 function buildAllIndicators(indicators) {

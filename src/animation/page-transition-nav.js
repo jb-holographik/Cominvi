@@ -1,12 +1,17 @@
 import barba from '@barba/core'
 
 import { reinitializeWebflowAnimations, initSticky50 } from '../utils/base.js'
+import { initAbout } from './about-us.js'
 import { initBlog } from './blog.js'
 import { initTeam } from './join-the-team.js'
 import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
 import { initializeNav2 } from './nav.js'
-import { initParallax, initHeroBackgroundParallax } from './parallax.js'
+import {
+  initParallax,
+  initHeroBackgroundParallax,
+  initNextBackgroundParallax,
+} from './parallax.js'
 import {
   initVideoClipStickyTransform,
   destroyVideoClipStickyTransform,
@@ -28,6 +33,7 @@ import {
   slideScaleEnter as innerEnter,
 } from './transition-inner.js'
 import { slideScaleLeave, slideScaleEnter } from './transition-slide-scale.js'
+import { destroyWorkshopsStickyImages } from './workshops.js'
 
 // Minimal Barba setup that focuses only on nav-related transitions
 export function initializePageTransitionNav() {
@@ -206,6 +212,7 @@ export function initializePageTransitionNav() {
           initializeNav2()
           initParallax(next && next.container)
           initHeroBackgroundParallax(next && next.container)
+          initNextBackgroundParallax(next && next.container)
           initServiceCards(next && next.container)
           initTextReveal()
           initMinerals()
@@ -225,6 +232,16 @@ export function initializePageTransitionNav() {
           }
           try {
             initTeam(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            destroyWorkshopsStickyImages()
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initAbout(next && next.container)
           } catch (e) {
             /* ignore */
           }
@@ -268,6 +285,7 @@ export function initializePageTransitionNav() {
           initializeNav2()
           initParallax(next && next.container)
           initHeroBackgroundParallax(next && next.container)
+          initNextBackgroundParallax(next && next.container)
           initServiceCards(next && next.container)
           initTextReveal()
           initMinerals()
@@ -287,6 +305,16 @@ export function initializePageTransitionNav() {
           }
           try {
             initTeam(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            destroyWorkshopsStickyImages()
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initAbout(next && next.container)
           } catch (e) {
             /* ignore */
           }
@@ -327,6 +355,7 @@ export function initializePageTransitionNav() {
     reinitializeWebflowAnimations()
     initParallax(next && next.container)
     initHeroBackgroundParallax(next && next.container)
+    initNextBackgroundParallax(next && next.container)
     initServiceCards(next && next.container)
     initProcessProgression(next && next.container)
     initTextReveal()
@@ -343,6 +372,16 @@ export function initializePageTransitionNav() {
     }
     try {
       initTeam(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      destroyWorkshopsStickyImages()
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      initAbout(next && next.container)
     } catch (e) {
       /* ignore */
     }

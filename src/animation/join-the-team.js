@@ -128,6 +128,26 @@ function initWorkTeamSection(section) {
     })
 
     let currentActive = null
+    const activateSpan = (span) => {
+      if (!span) return
+      if (currentActive && currentActive !== span) {
+        currentActive.classList.remove('is-active')
+        const prevDim = currentActive.dataset.dimClass || 'is-o-20'
+        if (!currentActive.classList.contains(prevDim))
+          currentActive.classList.add(prevDim)
+      }
+      const dim = span.dataset.dimClass || 'is-o-20'
+      if (span.classList.contains(dim)) span.classList.remove(dim)
+      span.classList.add('is-active')
+      currentActive = span
+    }
+    const deactivateSpan = (span) => {
+      if (!span) return
+      span.classList.remove('is-active')
+      const dim = span.dataset.dimClass || 'is-o-20'
+      if (!span.classList.contains(dim)) span.classList.add(dim)
+      if (currentActive === span) currentActive = null
+    }
     items.forEach((item, index) => {
       const span = spans[index]
       if (!span) return
@@ -137,24 +157,40 @@ function initWorkTeamSection(section) {
         end: 'bottom center',
         onToggle(self) {
           if (self.isActive) {
-            if (currentActive && currentActive !== span) {
-              currentActive.classList.remove('is-active')
-              const prevDim = currentActive.dataset.dimClass || 'is-o-20'
-              if (!currentActive.classList.contains(prevDim))
-                currentActive.classList.add(prevDim)
-            }
-            const dim = span.dataset.dimClass || 'is-o-20'
-            if (span.classList.contains(dim)) span.classList.remove(dim)
-            span.classList.add('is-active')
-            currentActive = span
+            activateSpan(span)
           } else if (currentActive === span) {
-            span.classList.remove('is-active')
-            const dim = span.dataset.dimClass || 'is-o-20'
-            if (!span.classList.contains(dim)) span.classList.add(dim)
-            currentActive = null
+            const isLast = index === items.length - 1
+            const isFirst = index === 0
+            // Keep last active when scrolling down past the list
+            if (isLast && self.direction > 0) return
+            // Keep first active when scrolling up past the list
+            if (isFirst && self.direction < 0) return
+            deactivateSpan(span)
           }
         },
       })
+    })
+
+    // Initial: first item active on page load/entering from above
+    if (spans[0]) activateSpan(spans[0])
+
+    // Section-level guard: maintain boundary actives
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top bottom',
+      end: 'bottom top',
+      onEnter: () => {
+        if (spans[0]) activateSpan(spans[0])
+      },
+      onEnterBack: () => {
+        if (spans[spans.length - 1]) activateSpan(spans[spans.length - 1])
+      },
+      onLeave: () => {
+        if (spans[spans.length - 1]) activateSpan(spans[spans.length - 1])
+      },
+      onLeaveBack: () => {
+        if (spans[0]) activateSpan(spans[0])
+      },
     })
   }
 
@@ -187,13 +223,13 @@ function initEquitySlider(section) {
     defaults: { ease: 'none' },
     scrollTrigger: {
       trigger: section,
-      start: 'top bottom', // begins when top reaches viewport bottom (100vh)
-      end: '+=200%', // next 200vh total (first 100vh to -33%, next 100vh to -67%)
+      start: 'top bottom', // begins when top reaches viewport bottom (no anim in first 100vh)
+      end: '+=200%', // 0-1: hold (no-op), 1-2: animate like before
       scrub: true,
     },
   })
-  tl.to(column, { yPercent: -33, duration: 1 })
-  tl.to(column, { yPercent: -67, duration: 1 })
+  // Hold for first 100vh (no-op), then animate column to -50% over next 100vh
+  tl.to(column, { yPercent: -50, duration: 1 }, 1)
 
   // Circle tick reveal (like minerals): drive conic mask arc (start/end) in two phases
   const darkSvg = section.querySelector('.circle.is-2')
@@ -227,7 +263,7 @@ function initEquitySlider(section) {
       arc,
       {
         end: 126, // 35% of 360°
-        duration: 1,
+        duration: 0.5,
         onUpdate: () => {
           try {
             darkSvg.style.setProperty('--start', arc.start + 'deg')
@@ -237,14 +273,14 @@ function initEquitySlider(section) {
           }
         },
       },
-      0
+      0 // animate immediately when section enters view
     )
     tl.to(
       arc,
       {
-        start: 129.6, // 36%
+        start: 234, // 65%
         end: 360, // continue to 100%
-        duration: 1,
+        duration: 1, // across the next 100vh
         onUpdate: () => {
           try {
             darkSvg.style.setProperty('--start', arc.start + 'deg')

@@ -189,9 +189,9 @@ export function initAbout(root = document) {
         })
         prevEyebrowsStarted = eyebrowsStarted
       }
-      const t100 = 1 * vh
-      const t200 = 2 * vh
-      const t300 = 3 * vh
+      const t100 = 0.5 * vh
+      const t200 = 1 * vh
+      const t300 = 1.5 * vh
       const started = s > 0
       if (started && !wasStarted) {
         if (!hasPlayed[0]) {

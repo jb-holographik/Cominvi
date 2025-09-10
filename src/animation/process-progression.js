@@ -162,28 +162,48 @@ function buildVerticalTicks(track, sticky) {
 }
 
 function setupVerticalTickHighlighting(section, sticky, track, extras = {}) {
-  // Progress is measured against the local wrap, not global wrapper
+  // Map progress exactly as requested:
+  // 0% when the first .process enters the viewport, stays 0 until its top hits the viewport top,
+  // progresses from there, and reaches 100% when the bottom of the last .process hits the viewport bottom.
 
   const ticks = Array.from(track.querySelectorAll('.scroll-tick.vertical'))
   if (!ticks.length) return
 
-  const update = () => {
-    const stickyRect = sticky.getBoundingClientRect()
-    const wrap =
-      section.querySelector('.process-progression-wrap') ||
-      sticky.parentElement ||
-      section
-    const wrapRect = wrap.getBoundingClientRect()
+  const processes = Array.from(section.querySelectorAll('.process'))
+  const firstProcess = processes.length ? processes[0] : null
+  const lastProcess = processes.length ? processes[processes.length - 1] : null
 
-    const startTop = wrapRect.top
-    const endTop = wrapRect.bottom - stickyRect.height
-    const range = Math.max(1, endTop - startTop)
-    const raw = (stickyRect.top - startTop) / range
-    const progress = Math.min(Math.max(raw, 0), 1)
-    // Use the exact fractional position and only round for class application
+  const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v)
+
+  const update = () => {
+    const scrollY =
+      window.pageYOffset ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      0
+    const viewportH =
+      window.innerHeight || document.documentElement.clientHeight || 0
+
+    // Derive start and end in absolute coordinates
+    let startAbs = 0
+    let endAbs = 0
+    if (firstProcess) {
+      const r1 = firstProcess.getBoundingClientRect()
+      startAbs = r1.top + scrollY // when first .process top reaches viewport top
+    }
+    if (lastProcess) {
+      const r2 = lastProcess.getBoundingClientRect()
+      const lastBottomAbs = r2.bottom + scrollY
+      endAbs = lastBottomAbs - viewportH // when last .process bottom reaches viewport bottom
+    }
+    if (endAbs <= startAbs) endAbs = startAbs + 1 // prevent division by zero
+
+    // Keep 0 until the first .process actually reaches the top of the viewport
+    const progress = clamp01((scrollY - startAbs) / (endAbs - startAbs))
+
+    // Highlight ticks around the current progress
     const exactIndex = progress * (ticks.length - 1)
     const activeIndex = Math.round(exactIndex)
-
     ticks.forEach((t) => t.classList.remove('is-xxl', 'is-xl', 'is-l', 'is-m'))
     const set = (i, cls) => {
       if (i >= 0 && i < ticks.length) ticks[i].classList.add(cls)
@@ -196,11 +216,10 @@ function setupVerticalTickHighlighting(section, sticky, track, extras = {}) {
     set(activeIndex - 3, 'is-m')
     set(activeIndex + 3, 'is-m')
 
-    // Drive the number indicator and readout, if present
+    // Drive the number indicator and textual %
     try {
       const pct = Math.round(progress * 100)
       if (extras && extras.numberInner) {
-        // Constrain the indicator inside its track by using pixel-based positioning
         const container = extras.numberInner.parentElement
         if (container) {
           const cw =
@@ -214,7 +233,6 @@ function setupVerticalTickHighlighting(section, sticky, track, extras = {}) {
         }
       }
       if (extras && extras.progressReadout) {
-        // The % symbol is already present in the markup/style
         extras.progressReadout.textContent = String(pct)
       }
     } catch (e) {
@@ -231,9 +249,13 @@ function setupVerticalTickHighlighting(section, sticky, track, extras = {}) {
     trigger: wrapEl,
     start: 'top bottom',
     end: 'bottom top',
-    onUpdate: update,
-    onEnter: update,
-    onEnterBack: update,
+    onUpdate: () => update(),
+    onEnter: () => update(),
+    onEnterBack: () => update(),
+    onLeave: () => update(),
+    onLeaveBack: () => update(),
+    // Explicitly avoid pinning to ensure no scroll blocking
+    pin: false,
   })
 
   // Also listen to sticky position changes (smoother reaction when sticking/unsticking)
@@ -241,7 +263,8 @@ function setupVerticalTickHighlighting(section, sticky, track, extras = {}) {
     trigger: sticky,
     start: 'top top',
     end: () => 'bottom bottom',
-    onUpdate: update,
+    onUpdate: () => update(),
+    pin: false,
   })
 
   update()

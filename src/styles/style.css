@@ -71,7 +71,6 @@
   fill: #FF9345;
   filter:
     drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 5px #FF8832) drop-shadow(0 0 12px #FF8832);
-  r: 6;
 }
 
 .marker.highlight rect {
@@ -295,4 +294,13 @@ h1>.is-h1-span-wrap:last-child>span {
 .blog-inner_item:hover>.blog-name>.body-l>.blogline-line::after {
   transform: scaleX(1);
   transform-origin: bottom left;
+}
+
+.machines-grid_item,
+.machines .machines-list-item {
+  cursor: pointer;
+}
+
+.button-white_inner .arrow-white-2_bg {
+  fill: var(--primary);
 }

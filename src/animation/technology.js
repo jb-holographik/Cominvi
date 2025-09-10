@@ -72,6 +72,10 @@ export function initTechnology(root = document) {
       } catch (e) {
         // ignore
       }
+      // Collect logo sets (page 1 = default logos, page 2 = .is-2)
+      const allLogos = Array.from(root.querySelectorAll('.logos-slider_logo'))
+      const logosSet1 = allLogos.filter((el) => !el.classList.contains('is-2'))
+      const logosSet2 = allLogos.filter((el) => el.classList.contains('is-2'))
       const moveIndicator = (idx) => {
         try {
           const baseLeft = options[0] ? options[0].offsetLeft : 0
@@ -100,25 +104,62 @@ export function initTechnology(root = document) {
           else el.classList.remove('is-active')
         })
       }
-      const setPage = (idx) => {
+      let logosTl = null
+      const showLogosSet = (idx) => {
         const i = Math.max(0, Math.min(1, idx))
         try {
           if (!gsap.parseEase('wsEase'))
             CustomEase.create('wsEase', 'M0,0 C0.6,0 0,1 1,1')
-          const target = i === 0 ? 0 : -50
-          gsap.to(inner, {
-            xPercent: target,
-            duration: 0.5,
-            ease: 'wsEase',
-          })
         } catch (e) {
-          try {
-            inner.style.transform =
-              i === 0 ? 'translate3d(0, 0, 0)' : 'translate3d(-50%, 0, 0)'
-          } catch (err) {
-            // ignore
-          }
+          // ignore
         }
+        const duration = 0.5
+        const ease = gsap.parseEase('wsEase') || ((t) => t)
+        const show = i === 0 ? logosSet1 : logosSet2
+        const hide = i === 0 ? logosSet2 : logosSet1
+        try {
+          // Cancel any in-flight sequence
+          if (logosTl) {
+            logosTl.kill()
+            logosTl = null
+          }
+          gsap.killTweensOf([show, hide])
+          const tl = gsap.timeline({ defaults: { ease, duration } })
+          logosTl = tl
+          tl.eventCallback('onComplete', () => {
+            logosTl = null
+          })
+          if (hide && hide.length) {
+            tl.to(hide, { opacity: 0 }).add(() => {
+              try {
+                hide.forEach((el) => {
+                  el.style.display = 'none'
+                })
+              } catch (e) {
+                // ignore
+              }
+            })
+          }
+          if (show && show.length) {
+            tl.add(() => {
+              try {
+                show.forEach((el) => {
+                  el.style.display = 'block'
+                })
+                gsap.set(show, { opacity: 0 })
+              } catch (e) {
+                // ignore
+              }
+            })
+            tl.to(show, { opacity: 1 })
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+      const setPage = (idx) => {
+        const i = Math.max(0, Math.min(1, idx))
+        showLogosSet(i)
         setIdsFor(i)
         moveIndicator(i)
         setButtonsFor(i)
@@ -143,10 +184,25 @@ export function initTechnology(root = document) {
       })
       // Initial state
       try {
-        gsap.set(inner, { xPercent: 0 })
+        // Ensure logos initial visibility: show default, hide .is-2
+        const allLogosInit = Array.from(
+          root.querySelectorAll('.logos-slider_logo')
+        )
+        const logos1Init = allLogosInit.filter(
+          (el) => !el.classList.contains('is-2')
+        )
+        const logos2Init = allLogosInit.filter((el) =>
+          el.classList.contains('is-2')
+        )
+        if (logos1Init.length) {
+          gsap.set(logos1Init, { opacity: 1, display: 'block' })
+        }
+        if (logos2Init.length) {
+          gsap.set(logos2Init, { opacity: 0, display: 'none' })
+        }
       } catch (e) {
         try {
-          inner.style.transform = 'translate3d(0, 0, 0)'
+          // ignore
         } catch (err) {
           // ignore
         }
@@ -299,7 +355,7 @@ export function initTechnology(root = document) {
           gsap.to(imagesRoot, {
             width: '13.5em',
             height: '11.2em',
-            duration: 0.5,
+            duration: 1.2,
             ease: gsap.parseEase('machinesStep') || ((t) => t),
           })
         },
@@ -317,17 +373,16 @@ export function initTechnology(root = document) {
       const indicator = gridToggle.querySelector('.toggle-indicator')
       const optGrid = gridToggle.querySelector('[data-toggle="grid"]')
       const optList = gridToggle.querySelector('[data-toggle="list"]')
+      let currentMode = null
+      let modeTl = null
       const setMode = (mode) => {
         const isGrid = mode === 'grid'
-        machinesWrapper.style.display = isGrid ? 'none' : 'block'
-        machinesGridWrapper.style.display = isGrid ? 'block' : 'none'
+        // Update toggle indicator and ids immediately
         try {
           const active = gridToggle.querySelector(
             `.toggle-option[data-toggle="${mode}"]`
           )
           if (indicator) {
-            // In grid mode, indicator should be on the left (base),
-            // and in list mode on the right (is-grid)
             if (isGrid) indicator.classList.remove('is-grid')
             else indicator.classList.add('is-grid')
           }
@@ -338,6 +393,71 @@ export function initTechnology(root = document) {
           if (id) id.classList.add('is-active')
         } catch (err) {
           // ignore
+        }
+        // Initial setup (no animation on first call)
+        if (currentMode == null) {
+          machinesWrapper.style.display = isGrid ? 'none' : 'block'
+          machinesGridWrapper.style.display = isGrid ? 'block' : 'none'
+          try {
+            gsap.set([machinesWrapper, machinesGridWrapper], {
+              clearProps: 'opacity,transform',
+            })
+          } catch (e) {
+            // ignore
+          }
+          currentMode = mode
+          return
+        }
+        if (currentMode === mode) return
+        const fromEl =
+          currentMode === 'grid' ? machinesGridWrapper : machinesWrapper
+        const toEl = isGrid ? machinesGridWrapper : machinesWrapper
+        try {
+          if (modeTl) {
+            modeTl.kill()
+            modeTl = null
+          }
+          gsap.killTweensOf([fromEl, toEl])
+          const ease = gsap.parseEase('machinesStep') || ((t) => t)
+          const total = 1.2
+          const outDur = 0.3
+          const inDur = Math.max(0, total - outDur)
+          // Prepare incoming lazily after fade-out to avoid layout jump/covering
+          const tl = gsap.timeline()
+          modeTl = tl
+          tl.to(fromEl, { opacity: 0, duration: outDur, ease }, 0)
+            .add(() => {
+              try {
+                fromEl.style.display = 'none'
+                gsap.set(fromEl, { clearProps: 'opacity,transform' })
+              } catch (e) {
+                // ignore
+              }
+            })
+            .add(() => {
+              try {
+                gsap.set(toEl, { display: 'block', opacity: 0, y: '8em' })
+              } catch (e) {
+                // ignore
+              }
+            })
+            .to(toEl, { opacity: 1, y: '0em', duration: inDur, ease })
+            .add(() => {
+              try {
+                gsap.set(toEl, { clearProps: 'opacity,transform' })
+              } catch (e) {
+                // ignore
+              }
+            })
+          tl.eventCallback('onComplete', () => {
+            modeTl = null
+          })
+          currentMode = mode
+        } catch (e) {
+          // Fallback without animation
+          machinesWrapper.style.display = isGrid ? 'none' : 'block'
+          machinesGridWrapper.style.display = isGrid ? 'block' : 'none'
+          currentMode = mode
         }
       }
       if (optGrid)
@@ -510,6 +630,69 @@ export function initTechnology(root = document) {
           if (tl) tl.to(item, anim, 0)
           else gsap.to(item, anim)
         })
+      }
+
+      // Split a paragraph into visual lines and return inner wrappers for animation
+      const splitLines = (textEl) => {
+        try {
+          if (!textEl || textEl.__gridLines) return textEl && textEl.__gridLines
+          const original = textEl.textContent || ''
+          const words = original.split(' ')
+          // Prime with word spans to measure natural wrapping
+          textEl.textContent = ''
+          const tempWordSpans = []
+          words.forEach((w, idx) => {
+            const span = document.createElement('span')
+            span.textContent = w
+            span.style.display = 'inline-block'
+            textEl.appendChild(span)
+            if (idx < words.length - 1)
+              textEl.appendChild(document.createTextNode(' '))
+            tempWordSpans.push(span)
+          })
+          // Group by offsetTop (tolerate 1-2px)
+          const lines = []
+          let currentTop = null
+          let current = []
+          tempWordSpans.forEach((span) => {
+            const top = span.offsetTop
+            if (currentTop == null || Math.abs(top - currentTop) < 2) {
+              current.push(span.textContent || '')
+              currentTop = top
+            } else {
+              lines.push(current)
+              current = [span.textContent || '']
+              currentTop = top
+            }
+          })
+          if (current.length) lines.push(current)
+          // Rebuild with line wrappers
+          textEl.textContent = ''
+          const innerList = []
+          lines.forEach((lineWords) => {
+            const wrap = document.createElement('span')
+            wrap.style.display = 'block'
+            wrap.style.overflow = 'hidden'
+            const inner = document.createElement('span')
+            inner.style.display = 'inline-block'
+            // compose words back with spaces
+            lineWords.forEach((w, idx) => {
+              const ws = document.createElement('span')
+              ws.textContent = w
+              ws.style.display = 'inline'
+              inner.appendChild(ws)
+              if (idx < lineWords.length - 1)
+                inner.appendChild(document.createTextNode(' '))
+            })
+            wrap.appendChild(inner)
+            textEl.appendChild(wrap)
+            innerList.push(inner)
+          })
+          textEl.__gridLines = innerList
+          return innerList
+        } catch (e) {
+          return []
+        }
       }
 
       // (removed maintainFullscreenSize; handled via resizeHandler)
@@ -752,6 +935,27 @@ export function initTechnology(root = document) {
         } catch (e) {
           // ignore
         }
+        // Animate the clone description lines from y 100% to 0%
+        try {
+          if (openClone) {
+            const cloneDescText = openClone.querySelector('.is-grid-desc')
+            const lineInners = splitLines(cloneDescText)
+            if (lineInners && lineInners.length) {
+              gsap.set(lineInners, { yPercent: 100 })
+              tl.to(
+                lineInners,
+                {
+                  yPercent: 0,
+                  duration: 1.2,
+                  ease: gsap.parseEase('machinesStep') || 'power2.out',
+                },
+                0
+              )
+            }
+          }
+        } catch (eDesc) {
+          // ignore
+        }
         // Fade in description overlay (fixed) masked to the clone bounds
         try {
           const origDesc = item.querySelector('.machines-grid_desc')
@@ -820,6 +1024,25 @@ export function initTechnology(root = document) {
               opacity: 1,
               pointerEvents: 'none',
             })
+            // Animate overlay description by lines from y 100% to 0%
+            try {
+              const overlayGridDesc = overlayDesc.querySelector('.is-grid-desc')
+              const lineInnersOverlay = splitLines(overlayGridDesc)
+              if (lineInnersOverlay && lineInnersOverlay.length) {
+                gsap.set(lineInnersOverlay, { yPercent: 100 })
+                tl.to(
+                  lineInnersOverlay,
+                  {
+                    yPercent: 0,
+                    duration: 1.2,
+                    ease: gsap.parseEase('machinesStep') || 'power2.out',
+                  },
+                  0
+                )
+              }
+            } catch (eDescOv) {
+              // ignore
+            }
             // Also move name inner from ORIGINAL item into the same overlay so it isn't clipped by clone overflow
             try {
               if (openClone) {
@@ -1384,6 +1607,25 @@ export function initTechnology(root = document) {
         // Fade out desc overlay and move mask hole back to image rect while closing
         try {
           if (descOverlay) {
+            // Animate overlay description lines out (0% -> 100%) during close
+            try {
+              const overlayGridDesc = descOverlay.querySelector('.is-grid-desc')
+              const lineInnersOverlay = splitLines(overlayGridDesc)
+              if (lineInnersOverlay && lineInnersOverlay.length) {
+                gsap.set(lineInnersOverlay, { yPercent: 0 })
+                tl.to(
+                  lineInnersOverlay,
+                  {
+                    yPercent: 100,
+                    duration: 1.2,
+                    ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+                  },
+                  0
+                )
+              }
+            } catch (eOL) {
+              // ignore
+            }
             // Fade description overlay out during the close animation
             tl.to(
               descOverlay,
@@ -1394,6 +1636,27 @@ export function initTechnology(root = document) {
               },
               0
             )
+          }
+          // Animate clone description lines out as well
+          try {
+            if (openClone) {
+              const cloneGridDesc = openClone.querySelector('.is-grid-desc')
+              const lineInnersClone = splitLines(cloneGridDesc)
+              if (lineInnersClone && lineInnersClone.length) {
+                gsap.set(lineInnersClone, { yPercent: 0 })
+                tl.to(
+                  lineInnersClone,
+                  {
+                    yPercent: 100,
+                    duration: 1.2,
+                    ease: gsap.parseEase('machinesStep') || 'power2.inOut',
+                  },
+                  0
+                )
+              }
+            }
+          } catch (eCL) {
+            // ignore
           }
           if (descMaskHoleEl) {
             tl.to(
@@ -1616,11 +1879,12 @@ export function initTechnology(root = document) {
       const pb = parseFloat(itemCS.paddingBottom || '0') || 0
       const hpx = innerHpx + pt + pb
       const hem = fs ? hpx / fs : 0
-      if (hem > 0) {
+      const openEm = hem > 0 ? hem + 1.5 : 0
+      if (openEm > 0) {
         pair.forEach((el) => {
           gsap.to(el, {
-            height: `${hem}em`,
-            duration: 0.5,
+            height: `${openEm}em`,
+            duration: 1.2,
             ease: gsap.parseEase('machinesStep') || ((t) => t),
           })
         })
@@ -1634,7 +1898,7 @@ export function initTechnology(root = document) {
       if (btns && btns.length)
         gsap.to(btns, {
           yPercent: -100,
-          duration: 0.5,
+          duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),
         })
       // Rotate the plus icon inside the close button
@@ -1644,7 +1908,7 @@ export function initTechnology(root = document) {
       if (closePlus)
         gsap.to(closePlus, {
           rotate: 135,
-          duration: 0.5,
+          duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),
         })
     } catch (err) {
@@ -1666,7 +1930,7 @@ export function initTechnology(root = document) {
         gsap.to(imagesRoot, {
           width: '28em',
           height: '23.313em',
-          duration: 0.5,
+          duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),
           onUpdate: () => {
             try {
@@ -1712,7 +1976,7 @@ export function initTechnology(root = document) {
         pair.forEach((el) => {
           gsap.to(el, {
             height: `${heightEm}em`,
-            duration: 0.5,
+            duration: 1.2,
             ease: gsap.parseEase('machinesStep') || ((t) => t),
           })
         })
@@ -1726,7 +1990,7 @@ export function initTechnology(root = document) {
       if (btns && btns.length)
         gsap.to(btns, {
           yPercent: 0,
-          duration: 0.5,
+          duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),
         })
     } catch (err) {
@@ -1737,7 +2001,7 @@ export function initTechnology(root = document) {
         gsap.to(imagesRoot, {
           width: '13.5em',
           height: '11.2em',
-          duration: 0.5,
+          duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),
           onComplete: () => {
             // Ensure images list transform is synced before restoring transform
@@ -1784,7 +2048,7 @@ export function initTechnology(root = document) {
       if (closePlus)
         gsap.to(closePlus, {
           rotate: 0,
-          duration: 0.5,
+          duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),
         })
     } catch (err) {
@@ -1801,6 +2065,42 @@ export function initTechnology(root = document) {
       const buttons = btnWrap.querySelectorAll('.machines_button')
       if (buttons[0]) buttons[0].addEventListener('click', machineOpen)
       if (buttons[1]) buttons[1].addEventListener('click', machineClose)
+    }
+    // Also toggle open/close when clicking a list item (no extra behavior)
+    try {
+      const listItems = machines.querySelectorAll('.machines-list-item')
+      listItems.forEach((item) => {
+        if (item.__listOpenAttached) return
+        item.__listOpenAttached = true
+        item.addEventListener('click', (e) => {
+          try {
+            if (
+              e &&
+              e.target &&
+              e.target.closest &&
+              e.target.closest('.machines_button')
+            )
+              return
+            e.preventDefault()
+            e.stopPropagation()
+          } catch (er) {
+            // ignore
+          }
+          try {
+            const isOpen =
+              imagesRoot && imagesRoot.classList
+                ? imagesRoot.classList.contains('is-open')
+                : false
+            if (isOpen) machineClose()
+            else machineOpen()
+          } catch (toggleErr) {
+            // fallback open
+            machineOpen()
+          }
+        })
+      })
+    } catch (e) {
+      // ignore
     }
   } catch (err) {
     // ignore

@@ -208,3 +208,124 @@ export function initHeroBackgroundParallax(root = document) {
   }
   return tween
 }
+
+// Parallax for images inside .section_next .next_background
+// Makes the background image translate on scroll while preventing edge gaps
+export function initNextBackgroundParallax(root = document) {
+  try {
+    if (
+      Array.isArray(window.__nextBgParallaxTweens) &&
+      window.__nextBgParallaxTweens.length
+    ) {
+      window.__nextBgParallaxTweens.forEach((tw) => {
+        try {
+          if (tw && tw.scrollTrigger) tw.scrollTrigger.kill()
+          if (tw) tw.kill()
+        } catch (err) {
+          // ignore
+        }
+      })
+    }
+    if (window.__nextBgParallaxResizeHandler) {
+      window.removeEventListener('resize', window.__nextBgParallaxResizeHandler)
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  const scope = root && root.querySelector ? root : document
+  const images = scope.querySelectorAll(
+    '.section_next .next_background img, .section_next .next_background picture img'
+  )
+  if (!images.length) {
+    window.__nextBgParallaxTweens = []
+    return []
+  }
+
+  const scroller = window.__lenisWrapper || undefined
+  const tweens = []
+
+  const layoutImage = (img) => {
+    try {
+      const bg = img.closest('.next_background') || img.parentElement
+      const section = img.closest('.section_next') || bg || img.parentElement
+      if (bg) {
+        const cs = window.getComputedStyle(bg)
+        if (cs.position === 'static') bg.style.position = 'absolute'
+        bg.style.inset = '0%'
+        bg.style.overflow = 'hidden'
+      }
+
+      // Calibrated overscan to avoid revealing edges during travel
+      const amplitude = 10 // percent used in tween below
+      const overscanFactor = 1 + (2 * amplitude) / 100 // 1.2 when A=10
+      const topCompPercent = -((amplitude / 100) * overscanFactor * 100) // -12 when A=10
+
+      img.style.position = 'absolute'
+      img.style.left = '0'
+      img.style.right = '0'
+      img.style.top = `${topCompPercent}%`
+      img.style.width = '100%'
+      img.style.height = `${overscanFactor * 100}%`
+      img.style.objectFit = 'cover'
+      img.style.willChange = 'transform'
+
+      return section || img
+    } catch (err) {
+      return img
+    }
+  }
+
+  const ensureLaidOut = (img) => {
+    if (img.complete && img.naturalWidth) return layoutImage(img)
+    let triggerEl = null
+    const onLoad = () => {
+      triggerEl = layoutImage(img)
+      img.removeEventListener('load', onLoad)
+      ScrollTrigger.refresh()
+    }
+    img.addEventListener('load', onLoad)
+    return triggerEl
+  }
+
+  images.forEach((img) => {
+    try {
+      gsap.set(img, { willChange: 'transform' })
+      const triggerEl =
+        ensureLaidOut(img) || img.closest('.section_next') || img
+      const tween = gsap.fromTo(
+        img,
+        { yPercent: -10 },
+        {
+          yPercent: 10,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: triggerEl,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+            scroller,
+          },
+        }
+      )
+      tweens.push(tween)
+    } catch (err) {
+      // ignore per-image failure
+    }
+  })
+
+  const resizeHandler = () => {
+    images.forEach((img) => layoutImage(img))
+    ScrollTrigger.refresh()
+  }
+  let resizeTimer
+  window.__nextBgParallaxResizeHandler = () => {
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(resizeHandler, 100)
+  }
+  window.addEventListener('resize', window.__nextBgParallaxResizeHandler)
+
+  window.__nextBgParallaxTweens = tweens
+  ScrollTrigger.refresh()
+  return tweens
+}

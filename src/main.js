@@ -7,7 +7,10 @@ import { initMap } from './animation/map.js'
 import { initMinerals } from './animation/minerals.js'
 import { initializeNav2 } from './animation/nav.js'
 import { initializePageTransitionNav } from './animation/page-transition-nav.js'
-import { initParallax } from './animation/parallax.js'
+import {
+  initParallax,
+  initNextBackgroundParallax,
+} from './animation/parallax.js'
 import { initVideoClipStickyTransform } from './animation/process-images.js'
 import { initProcessProgression } from './animation/process-progression.js'
 import { initScrollList } from './animation/scroll-list.js'
@@ -30,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLenis()
   initializeNav2()
   initParallax()
+  initNextBackgroundParallax()
   initServiceCards()
   initTextReveal()
   initMinerals()

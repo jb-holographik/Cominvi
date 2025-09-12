@@ -348,8 +348,8 @@ export function initializeNavbarScroll(root = document) {
     if (delta > 2) {
       gsap.to(navbarElement, {
         duration: 0.5,
-        left: '-8em',
-        right: '-8em',
+        left: '-9em',
+        right: '-9em',
         pointerEvents: 'none',
         overwrite: 'auto',
       })
@@ -399,7 +399,7 @@ export function animateNavbarSpreadForGrid(isOpen, root = document) {
       root.querySelector('.navbar') || document.querySelector('.navbar')
     if (!navbarElement) return
     const cfg = isOpen
-      ? { left: '-8em', right: '-8em', pointerEvents: 'none' }
+      ? { left: '-9em', right: '-9em', pointerEvents: 'none' }
       : { left: '2em', right: '2em', pointerEvents: 'auto' }
     gsap.to(navbarElement, {
       duration: 0.5,
@@ -416,6 +416,35 @@ export function initializeNav2(root = document) {
   initializeMenuClick({}, root)
   initializeNavbarScroll(root)
   initializeThemeController()
+  // If entering an article page, ensure navbar is reset to its default offsets
+  try {
+    const container = root && root.querySelector ? root : document
+    const nsEl =
+      (container.querySelector &&
+        container.querySelector('[data-barba-namespace]')) ||
+      document.querySelector('[data-barba-namespace]')
+    let ns = null
+    if (nsEl && nsEl.getAttribute) {
+      ns = nsEl.getAttribute('data-barba-namespace')
+    }
+    if (ns === 'article') {
+      const navbar =
+        (container.querySelector && container.querySelector('.navbar')) ||
+        document.querySelector('.navbar')
+      if (navbar) {
+        gsap.to(navbar, {
+          duration: 1.2,
+          ease: CustomEase.create('custom', 'M0,0 C0.6,0 0,1 1,1 '),
+          left: '2em',
+          right: '2em',
+          pointerEvents: 'auto',
+          overwrite: 'auto',
+        })
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
 }
 
 // Ajoute l'animation de "fermeture" des liens du menu dans une timeline fournie (utile pendant la transition de page)

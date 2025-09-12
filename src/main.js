@@ -1,6 +1,8 @@
 import './styles/style.css'
 import { initAbout } from './animation/about-us.js'
+import { blogArticleInit } from './animation/blog-article.js'
 import { initBlog } from './animation/blog.js'
+import { initContact } from './animation/contact.js'
 import { initTeam } from './animation/join-the-team.js'
 import { initLoader } from './animation/loader.js'
 import { initMap } from './animation/map.js'
@@ -54,6 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {
     // ignore
   }
+  // Blog article page behaviors (initial load)
+  try {
+    blogArticleInit(document)
+  } catch (e) {
+    // ignore
+  }
   // Initialize map interactions on first load
   try {
     initMap(document)
@@ -63,6 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Technology page behaviors
   try {
     initTechnology(document)
+  } catch (e) {
+    // ignore
+  }
+
+  // Contact page behaviors
+  try {
+    initContact(document)
   } catch (e) {
     // ignore
   }

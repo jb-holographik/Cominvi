@@ -209,6 +209,95 @@ export function initHeroBackgroundParallax(root = document) {
   return tween
 }
 
+// Parallax for the article hero image (.hero_blog-img > img)
+// Does not modify element sizes; only translates along Y to create depth
+export function initHeroBlogImageParallax(root = document) {
+  try {
+    if (window.__heroBlogParallax) {
+      try {
+        if (window.__heroBlogParallax.scrollTrigger)
+          window.__heroBlogParallax.scrollTrigger.kill()
+      } catch (e) {
+        // ignore
+      }
+      try {
+        window.__heroBlogParallax.kill()
+      } catch (e) {
+        // ignore
+      }
+      window.__heroBlogParallax = null
+    }
+  } catch (err) {
+    // ignore
+  }
+
+  const scope = root && root.querySelector ? root : document
+  const hero =
+    (scope.querySelector && scope.querySelector('.hero_blog-img')) ||
+    document.querySelector('.hero_blog-img')
+  if (!hero) return null
+  const img = hero.querySelector('img')
+  if (!img) return null
+
+  const scroller = window.__lenisWrapper || undefined
+  const amplitudePx = 40
+
+  try {
+    gsap.set(img, { willChange: 'transform' })
+  } catch (e) {
+    // ignore
+  }
+
+  // Resolve start offset once from CSS (padding-top of the section)
+  let startOffsetPx = 376
+  try {
+    const docEl = document.documentElement
+    const bodyEl = document.body
+    const sectionEl =
+      hero.closest('.section_hero-blog') || hero.parentElement || bodyEl
+
+    const fsSectionStr = getComputedStyle(sectionEl).fontSize
+    const fsBodyStr = getComputedStyle(bodyEl).fontSize
+    const fsHtmlStr = getComputedStyle(docEl).fontSize
+
+    const fsSection = parseFloat(fsSectionStr)
+    const fsBody = parseFloat(fsBodyStr)
+    const fsHtml = parseFloat(fsHtmlStr)
+
+    const candidates = [fsSection, fsBody, fsHtml, 16]
+    const baseFs = candidates.find((v) => Number.isFinite(v) && v > 0) || 16
+    startOffsetPx = Math.round(baseFs * 23.5)
+  } catch (e) {
+    // keep fallback
+  }
+  const startExpr = 'top top+=' + startOffsetPx
+
+  // Do not alter the initial position; animate from current state when start is reached
+  const tween = gsap.to(img, {
+    y: amplitudePx,
+    ease: 'none',
+    immediateRender: false,
+    scrollTrigger: {
+      trigger: hero,
+      start: startExpr,
+      end: 'bottom top',
+      scrub: true,
+      scroller,
+    },
+  })
+  try {
+    window.__heroBlogParallax = tween
+  } catch (e) {
+    // ignore
+  }
+  try {
+    ScrollTrigger.refresh()
+  } catch (e) {
+    // ignore
+  }
+  return tween
+}
+
 // Parallax for images inside .section_next .next_background
 // Makes the background image translate on scroll while preventing edge gaps
 export function initNextBackgroundParallax(root = document) {

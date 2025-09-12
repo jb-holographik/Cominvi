@@ -7,6 +7,13 @@
   overflow: hidden;
 }
 
+/* Allow article pages to extend beyond 100vh and be scrollable */
+[data-barba-namespace="article"] .page-wrap {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+}
+
 .service-icon,
 .icon-wrap {
   mix-blend-mode: multiply;
@@ -291,8 +298,9 @@ h1>.is-h1-span-wrap:last-child>span {
   transition: transform 0.5s cubic-bezier(0.32, 0.01, 0, 1);
 }
 
+.blog-inner_item.is-green:hover>.blog-name>.body-l>.blogline-line::after,
 .blog-inner_item:hover>.blog-name>.body-l>.blogline-line::after {
-  transform: scaleX(1);
+  transform: scaleX(1) !important;
   transform-origin: bottom left;
 }
 
@@ -303,4 +311,79 @@ h1>.is-h1-span-wrap:last-child>span {
 
 .button-white_inner .arrow-white-2_bg {
   fill: var(--primary);
+}
+
+.w-richtext {
+  font-size: var(--size-font);
+}
+
+.w-richtext figure {
+  max-width: 47.2%;
+  margin-bottom: 0.7em;
+  width: 100%;
+  height: 30em;
+}
+
+.w-richtext figure.w-richtext-align-fullwidth {
+  margin: 6em 0;
+  width: 100%;
+  height: 30em;
+}
+
+.w-richtext figure>div,
+.w-richtext figure.w-richtext-align-fullwidth>div {
+  position: relative;
+  width: 100%;
+  height: 30em;
+  overflow: hidden;
+}
+
+.w-richtext figure>div>img,
+.w-richtext figure.w-richtext-align-fullwidth>div>img {
+  object-fit: cover;
+  width: 100%;
+  height: 30em;
+}
+
+.blog-content figure>.image-wrapper {
+  overflow: hidden;
+}
+
+/* [data-barba-namespace="article"] .section_hero .body-xl {
+  opacity: 1;
+} */
+
+.blogline-line {
+  height: 1.1em;
+}
+
+figure .image-wrapper {
+  border-radius: 8px !important;
+}
+
+.w-input:focus {
+  border-color: var(--primary);
+}
+
+.is-g-map [aria-label="Passer en plein écran"],
+.is-g-map .gm-style div:nth-child(14)>div,
+.is-g-map .gm-style div:nth-child(16)>div,
+.is-g-map .gmnoprint,
+.is-g-map .gm-control-active {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.is-g-map.is-gmap-js:hover [aria-label="Passer en plein écran"],
+.is-g-map.is-gmap-js:hover .gm-style div:nth-child(14)>div,
+.is-g-map.is-gmap-js:hover .gm-style div:nth-child(16)>div,
+.is-g-map.is-gmap-js:hover .gm-control-active,
+.is-g-map.is-gmap-js:hover .gmnoprint,
+.is-g-map:hover [aria-label="Passer en plein écran"],
+.is-g-map:hover .gm-style div:nth-child(14)>div,
+.is-g-map:hover .gm-style div:nth-child(16)>div,
+.is-g-map:hover .gm-control-active,
+.is-g-map:hover .gmnoprint {
+  display: block;
+  opacity: 1;
 }

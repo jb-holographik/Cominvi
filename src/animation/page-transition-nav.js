@@ -2,7 +2,9 @@ import barba from '@barba/core'
 
 import { reinitializeWebflowAnimations, initSticky50 } from '../utils/base.js'
 import { initAbout } from './about-us.js'
+import { blogArticleInit } from './blog-article.js'
 import { initBlog } from './blog.js'
+import { initContact } from './contact.js'
 import { initTeam } from './join-the-team.js'
 import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
@@ -231,6 +233,11 @@ export function initializePageTransitionNav() {
             /* ignore */
           }
           try {
+            blogArticleInit(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             initTeam(next && next.container)
           } catch (e) {
             /* ignore */
@@ -258,6 +265,11 @@ export function initializePageTransitionNav() {
           }
           try {
             initTechnology(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initContact(next && next.container)
           } catch (e) {
             /* ignore */
           }
@@ -304,6 +316,11 @@ export function initializePageTransitionNav() {
             /* ignore */
           }
           try {
+            blogArticleInit(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             initTeam(next && next.container)
           } catch (e) {
             /* ignore */
@@ -331,6 +348,11 @@ export function initializePageTransitionNav() {
           }
           try {
             initTechnology(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initContact(next && next.container)
           } catch (e) {
             /* ignore */
           }
@@ -371,6 +393,11 @@ export function initializePageTransitionNav() {
       /* ignore */
     }
     try {
+      blogArticleInit(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
       initTeam(next && next.container)
     } catch (e) {
       /* ignore */
@@ -398,6 +425,11 @@ export function initializePageTransitionNav() {
     }
     try {
       initTechnology(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      initContact(next && next.container)
     } catch (e) {
       /* ignore */
     }

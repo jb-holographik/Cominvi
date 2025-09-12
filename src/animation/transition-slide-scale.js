@@ -71,6 +71,25 @@ export function slideScaleEnter({ next }) {
     ease: gsap.parseEase(`custom(${easeCurve})`),
   })
   tl.addLabel('lift')
+  // Ramène la navbar à 2em/2em en synchro avec le "descale" (lift)
+  let navbar = document.querySelector('.navbar')
+  if (!navbar && next && next.container && next.container.querySelector) {
+    navbar = next.container.querySelector('.navbar')
+  }
+  if (navbar) {
+    tl.to(
+      navbar,
+      {
+        left: '2em',
+        right: '2em',
+        pointerEvents: 'auto',
+        duration: 1.2,
+        ease: gsap.parseEase(`custom(${easeCurve})`),
+        overwrite: 'auto',
+      },
+      'lift'
+    )
+  }
   // Normalize background-inner scale perceptually by compensating page pre-scale
   try {
     const bgInner =

@@ -1,6 +1,7 @@
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 
+import { initContact, initContactHero } from './contact.js'
 import { heroAnimation } from './landing.js'
 import { addMenuLinksCloseToTimeline } from './nav.js'
 
@@ -93,6 +94,13 @@ export function slideScaleLeave({ current }) {
 export function slideScaleEnter({ next }) {
   const nextPage = next.container.querySelector('.page-wrap') || next.container
 
+  // Initialize Contact page SDK map as early as possible for destination
+  try {
+    initContact(next && next.container)
+  } catch (e) {
+    // ignore
+  }
+
   // Update #page-to with destination page name
   try {
     const toEl = document.querySelector('#page-to')
@@ -153,6 +161,12 @@ export function slideScaleEnter({ next }) {
     () => {
       try {
         heroAnimation(next && next.container, {
+          duration: 1.2,
+          ease: gsap.parseEase(`custom(${easeCurve})`),
+        })
+        // Contact hero width adjustment at descale with matching timing/easing
+        initContactHero(next && next.container, {
+          animate: true,
           duration: 1.2,
           ease: gsap.parseEase(`custom(${easeCurve})`),
         })

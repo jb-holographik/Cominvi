@@ -1,3 +1,4 @@
+import gsap from 'gsap'
 // Contact page initializer: Google Maps SDK only (API key required)
 
 export function initContact(root = document) {
@@ -32,6 +33,43 @@ export function initContact(root = document) {
       )
     } catch (e) {
       return null
+    }
+  }
+
+  // Pause Lenis scrolling when hovering over the map container
+  const bindMapScrollPause = () => {
+    try {
+      const el = getMapContainer()
+      if (!el) return
+      if (el.__hoverScrollBound) return
+      el.__hoverScrollBound = true
+      const onEnter = () => {
+        try {
+          if (window.lenis && typeof window.lenis.stop === 'function') {
+            window.lenis.stop()
+          }
+        } catch (err) {
+          /* ignore */
+        }
+      }
+      const onLeave = () => {
+        try {
+          if (window.lenis && typeof window.lenis.start === 'function') {
+            window.lenis.start()
+          }
+        } catch (err) {
+          /* ignore */
+        }
+      }
+      el.addEventListener('pointerenter', onEnter, { passive: true })
+      el.addEventListener('pointerleave', onLeave, { passive: true })
+      el.addEventListener('mouseenter', onEnter, { passive: true })
+      el.addEventListener('mouseleave', onLeave, { passive: true })
+      el.addEventListener('touchstart', onEnter, { passive: true })
+      el.addEventListener('touchend', onLeave, { passive: true })
+      el.addEventListener('touchcancel', onLeave, { passive: true })
+    } catch (e) {
+      // ignore
     }
   }
 
@@ -90,6 +128,17 @@ export function initContact(root = document) {
     try {
       const container = getMapContainer()
       if (!container) return false
+      // Avoid re-creating the map if it already exists (prevents flash at end of transitions)
+      try {
+        if (
+          (container.classList && container.classList.contains('is-gmap-js')) ||
+          container.__jsMapCreated
+        ) {
+          return true
+        }
+      } catch (e) {
+        // ignore
+      }
       const latlng = parseLatLng(
         container.getAttribute('data-widget-latlng')
       ) || {
@@ -134,6 +183,11 @@ export function initContact(root = document) {
       const map = new gmaps.Map(container, opts)
       // eslint-disable-next-line no-new
       new gmaps.Marker({ position: latlng, map })
+      try {
+        container.__jsMapCreated = true
+      } catch (e) {
+        // ignore
+      }
       // eslint-disable-next-line no-console
       console.debug('[contact] JS map created')
       return true
@@ -147,5 +201,71 @@ export function initContact(root = document) {
   // Fallback iframe removed
 
   // Initialize the JS Map immediately (SDK only)
+  bindMapScrollPause()
   ensureJsMap()
+}
+
+// Sets the width of `.contact_map` to 50.8em. When provided a timeline config,
+// it will animate with the same duration/ease as descale transitions.
+export function initContactHero(root = document, opts = {}) {
+  try {
+    const scope = root && root.querySelector ? root : document
+    const containerIsContact = !!(
+      root &&
+      root.matches &&
+      root.matches('[data-barba-namespace="Contact"]')
+    )
+    const isContact =
+      containerIsContact ||
+      !!scope.querySelector('[data-barba-namespace="Contact"]')
+    if (!isContact) return
+
+    const el =
+      (root && root.querySelector && root.querySelector('.contact_map')) ||
+      scope.querySelector('.contact_map')
+    if (!el) return
+
+    const widthValue = '50.8em'
+
+    const duration = typeof opts.duration === 'number' ? opts.duration : 1.2
+    const ease =
+      opts.ease ||
+      (gsap &&
+        typeof gsap.parseEase === 'function' &&
+        gsap.parseEase('custom(M0,0 C0.6,0 0,1 1,1 )')) ||
+      undefined
+
+    if (opts && opts.animate) {
+      try {
+        const computed =
+          (window.getComputedStyle && window.getComputedStyle(el)) || null
+        const fontSizePx = computed ? parseFloat(computed.fontSize) : 16
+        const targetPx = Math.max(
+          0,
+          50.8 * (Number.isFinite(fontSizePx) ? fontSizePx : 16)
+        )
+        const currentPx =
+          (el &&
+            el.getBoundingClientRect &&
+            el.getBoundingClientRect().width) ||
+          0
+        gsap.fromTo(
+          el,
+          { width: `${Math.max(0, Math.round(currentPx))}px` },
+          {
+            width: `${Math.max(0, Math.round(targetPx))}px`,
+            duration,
+            ease,
+            overwrite: 'auto',
+          }
+        )
+        return
+      } catch (e) {
+        // fallback to immediate
+      }
+    }
+    el.style.width = widthValue
+  } catch (e) {
+    // ignore
+  }
 }

@@ -51,11 +51,11 @@ export function heroAnimation(root = document, opts = {}) {
       scope.querySelector('.navbar') || document.querySelector('.navbar')
     if (navbar) {
       const cs = getComputedStyle(navbar)
-      const isOffset = cs.left !== '2rem' || cs.right !== '2rem'
+      const isOffset = cs.left !== '2em' || cs.right !== '2em'
       if (isOffset) {
         tl.to(
           navbar,
-          { left: '2rem', right: '2rem', duration, ease, overwrite: 'auto' },
+          { left: '2em', right: '2em', duration, ease, overwrite: 'auto' },
           0
         )
       }

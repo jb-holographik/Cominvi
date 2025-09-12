@@ -374,6 +374,7 @@ figure .image-wrapper {
   transition: opacity 0.3s ease-in-out;
 }
 
+/* 
 .is-g-map.is-gmap-js:hover [aria-label="Passer en plein écran"],
 .is-g-map.is-gmap-js:hover .gm-style div:nth-child(14)>div,
 .is-g-map.is-gmap-js:hover .gm-style div:nth-child(16)>div,
@@ -386,4 +387,4 @@ figure .image-wrapper {
 .is-g-map:hover .gmnoprint {
   display: block;
   opacity: 1;
-}
+} */

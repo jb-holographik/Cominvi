@@ -1,6 +1,7 @@
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 
+import { initContactHero } from './contact.js'
 import { heroAnimation } from './landing.js'
 import { initHeroBackgroundParallax } from './parallax.js'
 
@@ -296,6 +297,18 @@ export function initLoader() {
       try {
         heroAnimation()
       } catch (err) {
+        // ignore
+      }
+    }, '<')
+    // Synchroniser l'animation de la largeur de la carte Contact avec la disparition du loader
+    tl.add(() => {
+      try {
+        initContactHero(document, {
+          animate: true,
+          duration: 1.2,
+          ease: loaderEase,
+        })
+      } catch (e) {
         // ignore
       }
     }, '<')

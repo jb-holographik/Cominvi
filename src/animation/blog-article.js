@@ -153,6 +153,158 @@ export function blogArticleInit(root = document) {
     } catch (e) {
       // ignore
     }
+
+    // Hover cursor that follows mouse on related blog items (article page)
+    try {
+      const scope = root && root.nodeType === 1 ? root : document
+      const container = scope.querySelector('.section_blog-inner') || scope
+      let items = Array.from(container.querySelectorAll('.blog-main_item'))
+      const cursor = document.querySelector('.cursor-pointer')
+
+      if (cursor) {
+        cursor.style.display = 'none'
+        try {
+          cursor.style.pointerEvents = 'none'
+        } catch (e) {
+          // ignore
+        }
+        try {
+          const inner =
+            cursor.querySelector('.cursor-pointer_inner') ||
+            cursor.firstElementChild
+          if (inner) {
+            const current = getComputedStyle(inner).transition || ''
+            if (!/transform/.test(current)) {
+              inner.style.transition =
+                (current ? current + ', ' : '') +
+                'transform 300ms cubic-bezier(0.6, 0, 0, 1)'
+            }
+            inner.style.transform = 'translateY(100%)'
+
+            const prevVis = cursor.style.visibility
+            const prevDisp = cursor.style.display
+            const wasHidden = getComputedStyle(cursor).display === 'none'
+            if (wasHidden) {
+              cursor.style.visibility = 'hidden'
+              cursor.style.display = 'flex'
+            }
+            const rect = inner.getBoundingClientRect()
+            cursor.dataset.__cursorInnerW = String(Math.ceil(rect.width))
+            cursor.dataset.__cursorInnerH = String(Math.ceil(rect.height))
+            if (wasHidden) {
+              cursor.style.display = prevDisp || 'none'
+              cursor.style.visibility = prevVis || ''
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      if (items.length && cursor) {
+        let offsetPx = 8
+        let endHandler = null
+
+        const computeOffset = () => {
+          try {
+            const fs = parseFloat(getComputedStyle(cursor).fontSize) || 16
+            offsetPx = 1 * fs
+          } catch (e) {
+            offsetPx = 8
+          }
+        }
+        computeOffset()
+
+        const onEnter = () => {
+          const inner =
+            cursor.querySelector('.cursor-pointer_inner') ||
+            cursor.firstElementChild
+          try {
+            const w = cursor.dataset.__cursorInnerW
+            const h = cursor.dataset.__cursorInnerH
+            if (w) cursor.style.width = w + 'px'
+            if (h) cursor.style.height = h + 'px'
+          } catch (e) {
+            // ignore
+          }
+          cursor.style.display = 'flex'
+          if (inner) {
+            if (endHandler) {
+              try {
+                inner.removeEventListener('transitionend', endHandler)
+              } catch (e) {
+                // ignore
+              }
+              endHandler = null
+            }
+            inner.style.transform = 'translateY(100%)'
+            void inner.getBoundingClientRect()
+            inner.style.transform = 'translateY(0)'
+          }
+        }
+
+        const onLeave = () => {
+          const inner =
+            cursor.querySelector('.cursor-pointer_inner') ||
+            cursor.firstElementChild
+          if (inner) {
+            endHandler = () => {
+              cursor.style.display = 'none'
+              try {
+                inner.removeEventListener('transitionend', endHandler)
+              } catch (e) {
+                // ignore
+              }
+              endHandler = null
+              inner.style.transform = 'translateY(100%)'
+            }
+            inner.addEventListener('transitionend', endHandler, { once: true })
+            inner.style.transform = 'translateY(100%)'
+          } else {
+            cursor.style.display = 'none'
+          }
+        }
+
+        const onMove = (e) => {
+          cursor.style.left = e.pageX + offsetPx + 'px'
+          cursor.style.top = e.pageY + offsetPx + 'px'
+        }
+
+        const bindItem = (el) => {
+          if (!el || el.dataset.cursorBound === '1') return
+          el.addEventListener('mouseenter', onEnter)
+          el.addEventListener('mouseleave', onLeave)
+          el.addEventListener('mousemove', onMove)
+          el.dataset.cursorBound = '1'
+        }
+
+        items.forEach((el) => bindItem(el))
+
+        try {
+          const mo = new MutationObserver((mutations) => {
+            mutations.forEach((m) => {
+              m.addedNodes.forEach((n) => {
+                if (!(n && n.nodeType === 1)) return
+                if (n.classList && n.classList.contains('blog-main_item')) {
+                  bindItem(n)
+                }
+                const found = n.querySelectorAll
+                  ? n.querySelectorAll('.blog-main_item')
+                  : []
+                found.forEach((child) => bindItem(child))
+              })
+            })
+          })
+          mo.observe(container, { childList: true, subtree: true })
+        } catch (e) {
+          // ignore
+        }
+
+        window.addEventListener('resize', computeOffset)
+      }
+    } catch (e) {
+      // ignore
+    }
     // Apply once more on next frame to account for layout
     try {
       requestAnimationFrame(() => {

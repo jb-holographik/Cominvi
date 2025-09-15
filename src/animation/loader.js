@@ -277,11 +277,15 @@ export function initLoader() {
       top: () => `-24px`,
       width: () => `${window.innerWidth + 48}px`,
       height: () => `${window.innerHeight + 48}px`,
-      backgroundColor: 'transparent',
       marginLeft: 0,
       duration: 1.1,
       ease: loaderEase,
     })
+    tl.to(
+      textBox,
+      { backgroundColor: 'transparent', duration: 0.55, ease: loaderEase },
+      '<'
+    )
     tl.add(() => {
       if (!holeRectRef) return
       const vw = window.innerWidth

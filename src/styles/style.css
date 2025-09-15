@@ -373,18 +373,3 @@ figure .image-wrapper {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
-
-/* 
-.is-g-map.is-gmap-js:hover [aria-label="Passer en plein écran"],
-.is-g-map.is-gmap-js:hover .gm-style div:nth-child(14)>div,
-.is-g-map.is-gmap-js:hover .gm-style div:nth-child(16)>div,
-.is-g-map.is-gmap-js:hover .gm-control-active,
-.is-g-map.is-gmap-js:hover .gmnoprint,
-.is-g-map:hover [aria-label="Passer en plein écran"],
-.is-g-map:hover .gm-style div:nth-child(14)>div,
-.is-g-map:hover .gm-style div:nth-child(16)>div,
-.is-g-map:hover .gm-control-active,
-.is-g-map:hover .gmnoprint {
-  display: block;
-  opacity: 1;
-} */

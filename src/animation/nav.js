@@ -70,6 +70,7 @@ export function initializeMenuClick(options = {}, root = document) {
   let isOpen = false
   const easeCurve = CustomEase.create('custom', 'M0,0 C0.6,0 0,1 1,1 ')
   const animationDuration = 1.2
+  let onResizeWhileOpen = null
 
   const ensureLinkBaseMargins = () => {
     linkAnchors.forEach((anchor, index) => {
@@ -125,6 +126,21 @@ export function initializeMenuClick(options = {}, root = document) {
     }
   }
 
+  const applyResponsiveLayoutIfOpen = () => {
+    if (!isOpen || !pageWrapElement) return
+    const vw = window.innerWidth
+    const isTabletNow = vw >= 768 && vw <= 991
+    const topWhenOpen = isTabletNow ? '15em' : '24em'
+    const borderGapPxNow = 64
+    const desiredWidthNow = Math.max(0, vw - borderGapPxNow)
+    const scaleWhenOpen = vw > 0 ? desiredWidthNow / vw : 1
+    gsap.set(pageWrapElement, {
+      top: topWhenOpen,
+      scale: scaleWhenOpen,
+      overwrite: 'auto',
+    })
+  }
+
   const handleMenuClick = () => {
     const wasOpen = isOpen
     // Toggle pt-inner on the brand link depending on intended state
@@ -143,11 +159,12 @@ export function initializeMenuClick(options = {}, root = document) {
       if (brandLink) brandLink.setAttribute('pt-inner', '')
     }
 
-    const targetTop = isOpen ? originalTop : '24em'
     const targetOverflow = isOpen ? originalOverflow : 'hidden'
     const targetBodyOverflow = isOpen ? originalBodyOverflow : 'hidden'
     const targetBorderRadius = isOpen ? '0rem' : '1rem'
     const viewportWidth = window.innerWidth
+    const isTablet = viewportWidth >= 768 && viewportWidth <= 991
+    const targetTop = isOpen ? originalTop : isTablet ? '15em' : '24em'
     const borderGapPx = 64
     const desiredWidth = Math.max(0, viewportWidth - borderGapPx)
     const computedScaleOpen =
@@ -207,6 +224,20 @@ export function initializeMenuClick(options = {}, root = document) {
           'data-menu-open',
           isOpen ? 'true' : 'false'
         )
+        // Bind/unbind responsive resize handler when state changes
+        try {
+          if (isOpen) {
+            if (onResizeWhileOpen)
+              window.removeEventListener('resize', onResizeWhileOpen)
+            onResizeWhileOpen = () => applyResponsiveLayoutIfOpen()
+            window.addEventListener('resize', onResizeWhileOpen)
+          } else if (onResizeWhileOpen) {
+            window.removeEventListener('resize', onResizeWhileOpen)
+            onResizeWhileOpen = null
+          }
+        } catch (err) {
+          // ignore
+        }
         // When menu opens, hide page-info if visible
         try {
           if (isOpen) {

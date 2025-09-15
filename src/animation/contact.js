@@ -221,8 +221,12 @@ export function initContactHero(root = document, opts = {}) {
     if (!isContact) return
 
     const el =
-      (root && root.querySelector && root.querySelector('.contact_map')) ||
-      scope.querySelector('.contact_map')
+      (root &&
+        root.querySelector &&
+        (root.querySelector('.contact_map') ||
+          root.querySelector('.contact-map'))) ||
+      scope.querySelector('.contact_map') ||
+      scope.querySelector('.contact-map')
     if (!el) return
 
     const widthValue = '50.8em'
@@ -234,6 +238,11 @@ export function initContactHero(root = document, opts = {}) {
         typeof gsap.parseEase === 'function' &&
         gsap.parseEase('custom(M0,0 C0.6,0 0,1 1,1 )')) ||
       undefined
+    const isValidDelay =
+      typeof opts.delay === 'number' &&
+      Number.isFinite(opts.delay) &&
+      opts.delay >= 0
+    const delay = isValidDelay ? opts.delay : 0.5
 
     if (opts && opts.animate) {
       try {
@@ -257,6 +266,7 @@ export function initContactHero(root = document, opts = {}) {
             duration,
             ease,
             overwrite: 'auto',
+            delay,
           }
         )
         return
@@ -264,7 +274,9 @@ export function initContactHero(root = document, opts = {}) {
         // fallback to immediate
       }
     }
-    el.style.width = widthValue
+    setTimeout(() => {
+      el.style.width = widthValue
+    }, Math.max(0, Math.round(delay * 1000)))
   } catch (e) {
     // ignore
   }

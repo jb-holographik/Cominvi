@@ -16,12 +16,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "_buildManifest": {
-    "src/main.js": {
-      "file": "main.js",
-      "src": "src/main.js",
-      "isEntry": true
-    }
-  }
+  ]
 }

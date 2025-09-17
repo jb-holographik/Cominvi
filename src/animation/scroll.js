@@ -13,7 +13,16 @@ export function initLenis(root = document) {
     document.querySelector('.content-wrap')
   if (!wrapper || !content) return null
 
-  const lenis = new Lenis({ wrapper, content, lerp: 0.125 })
+  const lenis = new Lenis({
+    wrapper,
+    content,
+    lerp: 0.125,
+    smoothWheel: true,
+    smoothTouch: true,
+    syncTouch: true,
+    // Ensure input events are bound to the wrapper in wrapper mode
+    wheelEventsTarget: wrapper,
+  })
   window.lenis = lenis
   window.__lenisWrapper = wrapper
 

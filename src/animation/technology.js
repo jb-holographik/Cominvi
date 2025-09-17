@@ -215,6 +215,24 @@ export function initTechnology(root = document) {
     // ignore
   }
 
+  // Post-init safety: after the destination page is fully laid out, refresh ScrollTrigger once more
+  try {
+    requestAnimationFrame(() => {
+      try {
+        if (
+          window.ScrollTrigger &&
+          typeof window.ScrollTrigger.refresh === 'function'
+        ) {
+          window.ScrollTrigger.refresh()
+        }
+      } catch (e) {
+        // ignore
+      }
+    })
+  } catch (e) {
+    // ignore
+  }
+
   // Ensure we translate only scrolling content, not the sticky container itself
   // Keep `.machines_images` and `.machines_button-wrap` OUTSIDE of `.machines-inner`
   let content = machines.querySelector('.machines-inner')

@@ -74,7 +74,7 @@ export function initParallax(root = document) {
       img.style.left = '0'
       img.style.right = '0'
       img.style.top = `${topCompPercent}%`
-      img.style.width = '100%'
+      img.style.width = '120%'
       img.style.height = `${overscanFactor * 100}%`
       img.style.objectFit = 'cover'
       img.style.willChange = 'transform'
@@ -323,10 +323,8 @@ export function initNextBackgroundParallax(root = document) {
   }
 
   const scope = root && root.querySelector ? root : document
-  const images = scope.querySelectorAll(
-    '.section_next .next_background img, .section_next .next_background picture img'
-  )
-  if (!images.length) {
+  const wrappers = scope.querySelectorAll('.section_next .next_background')
+  if (!wrappers.length) {
     window.__nextBgParallaxTweens = []
     return []
   }
@@ -334,69 +332,47 @@ export function initNextBackgroundParallax(root = document) {
   const scroller = window.__lenisWrapper || undefined
   const tweens = []
 
-  const layoutImage = (img) => {
+  const layoutWrapper = (bg) => {
     try {
-      const bg = img.closest('.next_background') || img.parentElement
-      const section = img.closest('.section_next') || bg || img.parentElement
-      if (bg) {
-        const cs = window.getComputedStyle(bg)
-        if (cs.position === 'static') bg.style.position = 'absolute'
-        bg.style.inset = '0%'
-        bg.style.overflow = 'hidden'
-      }
-
-      // Calibrated overscan to avoid revealing edges during travel
-      const amplitude = 10 // percent used in tween below
-      const overscanFactor = 1 + (2 * amplitude) / 100 // 1.2 when A=10
-      const topCompPercent = -((amplitude / 100) * overscanFactor * 100) // -12 when A=10
-
-      img.style.position = 'absolute'
-      img.style.left = '0'
-      img.style.right = '0'
-      img.style.top = `${topCompPercent}%`
-      img.style.width = '100%'
-      img.style.height = `${overscanFactor * 100}%`
-      img.style.objectFit = 'cover'
-      img.style.willChange = 'transform'
-
-      return section || img
-    } catch (err) {
-      return img
+      const section = bg.closest('.section_next') || bg.parentElement
+      const cs = window.getComputedStyle(bg)
+      if (cs.position === 'static') bg.style.position = 'absolute'
+      bg.style.inset = '0%'
+      bg.style.overflow = 'hidden'
+      // Align with hero logic: animate the wrapper with a base scale(1.2)
+      gsap.set(bg, {
+        transformOrigin: '50% 50%',
+        willChange: 'transform',
+        scale: 1.2,
+      })
+      return section || bg
+    } catch (e) {
+      return bg
     }
   }
 
-  const ensureLaidOut = (img) => {
-    if (img.complete && img.naturalWidth) return layoutImage(img)
-    let triggerEl = null
-    const onLoad = () => {
-      triggerEl = layoutImage(img)
-      img.removeEventListener('load', onLoad)
-      ScrollTrigger.refresh()
-    }
-    img.addEventListener('load', onLoad)
-    return triggerEl
-  }
+  const ensureLaidOut = (bg) => layoutWrapper(bg)
 
-  images.forEach((img) => {
+  wrappers.forEach((bg) => {
     try {
-      gsap.set(img, { willChange: 'transform' })
-      const triggerEl =
-        ensureLaidOut(img) || img.closest('.section_next') || img
-      const tween = gsap.fromTo(
-        img,
-        { yPercent: -10 },
-        {
-          yPercent: 10,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: triggerEl,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-            scroller,
+      const triggerEl = ensureLaidOut(bg) || bg
+      let baseY = Number(gsap.getProperty(bg, 'y')) || 0
+      const tween = gsap.to(bg, {
+        y: () => baseY + 40,
+        ease: 'none',
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: triggerEl,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+          scroller,
+          invalidateOnRefresh: true,
+          onRefresh: () => {
+            baseY = Number(gsap.getProperty(bg, 'y')) || 0
           },
-        }
-      )
+        },
+      })
       tweens.push(tween)
     } catch (err) {
       // ignore per-image failure
@@ -404,7 +380,7 @@ export function initNextBackgroundParallax(root = document) {
   })
 
   const resizeHandler = () => {
-    images.forEach((img) => layoutImage(img))
+    wrappers.forEach((bg) => layoutWrapper(bg))
     ScrollTrigger.refresh()
   }
   let resizeTimer

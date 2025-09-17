@@ -5,6 +5,19 @@ import { initContact, initContactHero } from './contact.js'
 import { heroAnimation } from './landing.js'
 import { addMenuLinksCloseToTimeline } from './nav.js'
 
+// Helper local pour éviter les retours d'import/order
+function getNavbarBaseOffset() {
+  try {
+    const isTabletOrBelow =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 991px)').matches
+    return isTabletOrBelow ? '1em' : '2em'
+  } catch (e) {
+    return '2em'
+  }
+}
+
 gsap.registerPlugin(CustomEase)
 
 let lastTopOffsetPx = 0
@@ -79,7 +92,7 @@ export function slideScaleEnter({ next }) {
     ease: gsap.parseEase(`custom(${easeCurve})`),
   })
   tl.addLabel('lift')
-  // Ramène la navbar à 2em/2em en synchro avec le "descale" (lift)
+  // Ramène la navbar à son offset de base (responsive) en synchro avec le "descale" (lift)
   let navbar = document.querySelector('.navbar')
   if (!navbar && next && next.container && next.container.querySelector) {
     navbar = next.container.querySelector('.navbar')
@@ -88,8 +101,8 @@ export function slideScaleEnter({ next }) {
     tl.to(
       navbar,
       {
-        left: '2em',
-        right: '2em',
+        left: getNavbarBaseOffset(),
+        right: getNavbarBaseOffset(),
         pointerEvents: 'auto',
         duration: 1.2,
         ease: gsap.parseEase(`custom(${easeCurve})`),

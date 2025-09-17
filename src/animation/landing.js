@@ -1,6 +1,19 @@
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 
+// Helper local pour éviter les retours d'import/order
+function getNavbarBaseOffset() {
+  try {
+    const isTabletOrBelow =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 991px)').matches
+    return isTabletOrBelow ? '1em' : '2em'
+  } catch (e) {
+    return '2em'
+  }
+}
+
 gsap.registerPlugin(CustomEase)
 
 const easeCurve = 'M0,0 C0.6,0 0,1 1,1 '
@@ -51,11 +64,12 @@ export function heroAnimation(root = document, opts = {}) {
       scope.querySelector('.navbar') || document.querySelector('.navbar')
     if (navbar) {
       const cs = getComputedStyle(navbar)
-      const isOffset = cs.left !== '2em' || cs.right !== '2em'
+      const base = getNavbarBaseOffset()
+      const isOffset = cs.left !== base || cs.right !== base
       if (isOffset) {
         tl.to(
           navbar,
-          { left: '2em', right: '2em', duration, ease, overwrite: 'auto' },
+          { left: base, right: base, duration, ease, overwrite: 'auto' },
           0
         )
       }

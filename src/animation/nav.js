@@ -39,6 +39,18 @@ function getCurrentScrollPosition(contentEl) {
   return contentEl.scrollTop || 0
 }
 
+export function getNavbarBaseOffset() {
+  try {
+    const isTabletOrBelow =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 991px)').matches
+    return isTabletOrBelow ? '1em' : '2em'
+  } catch (e) {
+    return '2em'
+  }
+}
+
 // Animation de l'ouverture du menu
 export function initializeMenuClick(options = {}, root = document) {
   const menuElements = root.querySelectorAll('.is-menu')
@@ -387,8 +399,8 @@ export function initializeNavbarScroll(root = document) {
     } else if (delta < -2) {
       gsap.to(navbarElement, {
         duration: 0.5,
-        left: '2em',
-        right: '2em',
+        left: getNavbarBaseOffset(),
+        right: getNavbarBaseOffset(),
         pointerEvents: 'auto',
         overwrite: 'auto',
       })
@@ -429,14 +441,14 @@ export function animateNavbarSpreadForGrid(isOpen, root = document) {
     const navbarElement =
       root.querySelector('.navbar') || document.querySelector('.navbar')
     if (!navbarElement) return
-    const cfg = isOpen
-      ? { left: '-9em', right: '-9em', pointerEvents: 'none' }
-      : { left: '2em', right: '2em', pointerEvents: 'auto' }
+    const base = getNavbarBaseOffset()
     gsap.to(navbarElement, {
       duration: 0.5,
       ease: CustomEase.create('custom', 'M0,0 C0.6,0 0,1 1,1 '),
       overwrite: 'auto',
-      ...cfg,
+      left: isOpen ? '-9em' : base,
+      right: isOpen ? '-9em' : base,
+      pointerEvents: isOpen ? 'none' : 'auto',
     })
   } catch (e) {
     // ignore
@@ -447,6 +459,27 @@ export function initializeNav2(root = document) {
   initializeMenuClick({}, root)
   initializeNavbarScroll(root)
   initializeThemeController()
+  // Keep navbar base offsets in sync with breakpoint changes when menu is closed
+  try {
+    const onResizeRebase = () => {
+      try {
+        if (document.documentElement.getAttribute('data-menu-open') === 'true')
+          return
+        const scope = root && root.querySelector ? root : document
+        const navbar =
+          (scope.querySelector && scope.querySelector('.navbar')) ||
+          document.querySelector('.navbar')
+        if (!navbar) return
+        const base = getNavbarBaseOffset()
+        gsap.set(navbar, { left: base, right: base, overwrite: 'auto' })
+      } catch (e) {
+        // ignore
+      }
+    }
+    window.addEventListener('resize', onResizeRebase)
+  } catch (e) {
+    // ignore
+  }
   // If entering an article page, ensure navbar is reset to its default offsets
   try {
     const container = root && root.querySelector ? root : document
@@ -466,13 +499,49 @@ export function initializeNav2(root = document) {
         gsap.to(navbar, {
           duration: 1.2,
           ease: CustomEase.create('custom', 'M0,0 C0.6,0 0,1 1,1 '),
-          left: '2em',
-          right: '2em',
+          left: getNavbarBaseOffset(),
+          right: getNavbarBaseOffset(),
           pointerEvents: 'auto',
           overwrite: 'auto',
         })
       }
     }
+  } catch (e) {
+    // ignore
+  }
+  // Always normalize navbar offsets to base on init (responsive)
+  try {
+    const scope = root && root.querySelector ? root : document
+    const navbar =
+      (scope.querySelector && scope.querySelector('.navbar')) ||
+      document.querySelector('.navbar')
+    if (navbar) {
+      gsap.set(navbar, {
+        left: getNavbarBaseOffset(),
+        right: getNavbarBaseOffset(),
+        overwrite: 'auto',
+      })
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
+// Réinitialise l'état inline des liens du menu (utile après transitions)
+export function resetMenuLinksAnimationState(root = document) {
+  try {
+    const scope = root && root.querySelector ? root : document
+    const links = scope.querySelectorAll('.links .link-item a')
+    if (!links || !links.length) return
+    links.forEach((a) => {
+      try {
+        a.style.transform = ''
+        a.style.marginTop = ''
+        a.style.willChange = ''
+      } catch (e) {
+        // ignore
+      }
+    })
   } catch (e) {
     // ignore
   }

@@ -8,15 +8,33 @@ export function initServiceCards(root = document) {
     const bloc = card.querySelector('.card-inner') || desc
     if (!desc || !bloc) return
 
+    // Detect tablet/mobile viewport
+    let isTabletOrBelow = false
+    try {
+      isTabletOrBelow =
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(max-width: 991px)').matches
+    } catch (e) {
+      isTabletOrBelow = false
+    }
+
     // Set initial hidden state (no flicker on arrival)
     try {
-      bloc.style.transition = 'none'
-      const rect = desc.getBoundingClientRect()
-      const h =
-        rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
-      bloc.style.transform = `translateY(${h}px)`
-      void bloc.offsetWidth
-      bloc.style.transition = 'transform 0.5s ease, opacity 0.3s ease'
+      if (!isTabletOrBelow) {
+        bloc.style.transition = 'none'
+        const rect = desc.getBoundingClientRect()
+        const h =
+          rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
+        bloc.style.transform = `translateY(${h}px)`
+        void bloc.offsetWidth
+        bloc.style.transition = 'transform 0.5s ease, opacity 0.3s ease'
+      } else {
+        // On tablet/mobile: no transform on .card-inner
+        bloc.style.transition = ''
+        bloc.style.transform = ''
+        bloc.style.willChange = ''
+      }
       // Prepare background-color transition on the card itself
       const existing = card.style.transition?.trim()
       card.style.transition = existing
@@ -29,36 +47,38 @@ export function initServiceCards(root = document) {
     } catch (err) {
       // ignore
     }
-    card.addEventListener('mouseenter', () => {
-      const height = desc.getBoundingClientRect().height
-      bloc.style.transition = 'transform 0.5s ease'
-      bloc.style.transform = `translateY(${height}px)`
-      // Force reflow pour que la transition parte bien du bas
-      void desc.offsetWidth
-      bloc.style.transform = 'translateY(0)'
-      // bg to accent on hover
-      card.style.backgroundColor = 'var(--accent)'
-    })
-    card.addEventListener('mouseleave', () => {
-      const rect = desc.getBoundingClientRect()
-      const height =
-        rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
-      bloc.style.transform = `translateY(${height}px)`
-      // bg back to white
-      card.style.backgroundColor = 'var(--white)'
-    })
-    // Pointer events for broader support
-    card.addEventListener('pointerenter', () => {
-      bloc.style.transform = 'translateY(0)'
-      card.style.backgroundColor = 'var(--accent)'
-    })
-    card.addEventListener('pointerleave', () => {
-      const rect = desc.getBoundingClientRect()
-      const height =
-        rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
-      bloc.style.transform = `translateY(${height}px)`
-      card.style.backgroundColor = 'var(--white)'
-    })
+    if (!isTabletOrBelow) {
+      card.addEventListener('mouseenter', () => {
+        const height = desc.getBoundingClientRect().height
+        bloc.style.transition = 'transform 0.5s ease'
+        bloc.style.transform = `translateY(${height}px)`
+        // Force reflow pour que la transition parte bien du bas
+        void desc.offsetWidth
+        bloc.style.transform = 'translateY(0)'
+        // bg to accent on hover
+        card.style.backgroundColor = 'var(--accent)'
+      })
+      card.addEventListener('mouseleave', () => {
+        const rect = desc.getBoundingClientRect()
+        const height =
+          rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
+        bloc.style.transform = `translateY(${height}px)`
+        // bg back to white
+        card.style.backgroundColor = 'var(--white)'
+      })
+      // Pointer events for broader support
+      card.addEventListener('pointerenter', () => {
+        bloc.style.transform = 'translateY(0)'
+        card.style.backgroundColor = 'var(--accent)'
+      })
+      card.addEventListener('pointerleave', () => {
+        const rect = desc.getBoundingClientRect()
+        const height =
+          rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
+        bloc.style.transform = `translateY(${height}px)`
+        card.style.backgroundColor = 'var(--white)'
+      })
+    }
 
     card.__serviceCardsBound = true
   })
@@ -149,6 +169,17 @@ export function serviceCardsHover(root = document) {
 
   if (viewer.__serviceViewerBound) return
 
+  // Detect tablet/mobile viewport
+  let isTabletOrBelow = false
+  try {
+    isTabletOrBelow =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 991px)').matches
+  } catch (e) {
+    isTabletOrBelow = false
+  }
+
   const images = Array.from(viewer.querySelectorAll('.service-image'))
   const OPACITY_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)'
   const viewerButton = viewer.querySelector('.button')
@@ -179,6 +210,12 @@ export function serviceCardsHover(root = document) {
     viewerButton.style.transition = `opacity 0.5s ${OPACITY_EASING}`
     viewerButton.style.opacity = '1'
     viewerButton.style.display = 'block'
+  }
+
+  // On tablet/mobile: keep base state only, do not bind hover handlers
+  if (isTabletOrBelow) {
+    viewer.__serviceViewerBound = true
+    return
   }
   const cards = Array.from(scope.querySelectorAll('.service-card'))
 

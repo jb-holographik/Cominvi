@@ -88,31 +88,43 @@ export function initProcessProgression(root = document) {
     // ignore
   }
 
-  buildVerticalTicks(track, sticky)
+  const doInit = () => {
+    buildVerticalTicks(track, sticky)
 
-  // De-dupe resize listener across transitions
-  try {
-    if (window.__processResizeHandler) {
-      window.removeEventListener('resize', window.__processResizeHandler)
+    // De-dupe resize listener across transitions
+    try {
+      if (window.__processResizeHandler) {
+        window.removeEventListener('resize', window.__processResizeHandler)
+      }
+    } catch (e) {
+      // ignore
     }
-  } catch (e) {
-    // ignore
-  }
-  let resizeTimer
-  window.__processResizeHandler = () => {
-    clearTimeout(resizeTimer)
-    resizeTimer = setTimeout(() => {
-      buildVerticalTicks(track, sticky)
-      ScrollTrigger.refresh()
-    }, 150)
-  }
-  window.addEventListener('resize', window.__processResizeHandler)
+    let resizeTimer
+    window.__processResizeHandler = () => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(() => {
+        buildVerticalTicks(track, sticky)
+        ScrollTrigger.refresh()
+      }, 150)
+    }
+    window.addEventListener('resize', window.__processResizeHandler)
 
-  setupVerticalTickHighlighting(section, sticky, track, {
-    numberTrack,
-    numberInner,
-    progressReadout,
-  })
+    setupVerticalTickHighlighting(section, sticky, track, {
+      numberTrack,
+      numberInner,
+      progressReadout,
+    })
+
+    // Ensure triggers calculate with settled layout
+    try {
+      ScrollTrigger.refresh()
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  // Defer initialization slightly to let the destination layout settle after transition-next
+  requestAnimationFrame(() => requestAnimationFrame(doInit))
 }
 
 function buildVerticalTicks(track, sticky) {
@@ -176,30 +188,29 @@ function setupVerticalTickHighlighting(section, sticky, track, extras = {}) {
   const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v)
 
   const update = () => {
-    const scrollY =
-      window.pageYOffset ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop ||
-      0
     const viewportH =
       window.innerHeight || document.documentElement.clientHeight || 0
 
-    // Derive start and end in absolute coordinates
-    let startAbs = 0
-    let endAbs = 0
+    // Mesure purement via getBoundingClientRect (indépendant de Lenis)
+    let startRel = 0
+    let endRel = 1
     if (firstProcess) {
       const r1 = firstProcess.getBoundingClientRect()
-      startAbs = r1.top + scrollY // when first .process top reaches viewport top
+      startRel = Math.round(r1.top) // top du premier .process vs viewport top (0)
     }
     if (lastProcess) {
       const r2 = lastProcess.getBoundingClientRect()
-      const lastBottomAbs = r2.bottom + scrollY
-      endAbs = lastBottomAbs - viewportH // when last .process bottom reaches viewport bottom
+      endRel = Math.round(r2.bottom - viewportH) // bottom du dernier .process vs viewport bottom (0)
     }
-    if (endAbs <= startAbs) endAbs = startAbs + 1 // prevent division by zero
+    if (endRel <= startRel) endRel = startRel + 1 // éviter division par 0
 
-    // Keep 0 until the first .process actually reaches the top of the viewport
-    const progress = clamp01((scrollY - startAbs) / (endAbs - startAbs))
+    // Progression basée sur la position actuelle du viewport (0)
+    let progress = clamp01((0 - startRel) / (endRel - startRel))
+    // Lorsque le bas du dernier .process atteint (ou dépasse) le bas du viewport, verrouiller à 1
+    if (lastProcess) {
+      const r2 = lastProcess.getBoundingClientRect()
+      if (Math.round(r2.bottom - viewportH) <= 1) progress = 1
+    }
 
     // Highlight ticks around the current progress
     const exactIndex = progress * (ticks.length - 1)
@@ -240,23 +251,47 @@ function setupVerticalTickHighlighting(section, sticky, track, extras = {}) {
     }
   }
 
-  const wrapEl =
-    section.querySelector('.process-progression-wrap') ||
-    sticky.parentElement ||
-    section
+  // Drive updates on real scroll events (Lenis or native), decoupled from triggers
+  try {
+    // Cleanup any previous scroll listener
+    if (window.__processScrollListenerCleanup) {
+      window.__processScrollListenerCleanup()
+      window.__processScrollListenerCleanup = null
+    }
+  } catch (e) {
+    // ignore
+  }
 
-  ScrollTrigger.create({
-    trigger: wrapEl,
-    start: 'top bottom',
-    end: 'bottom top',
-    onUpdate: () => update(),
-    onEnter: () => update(),
-    onEnterBack: () => update(),
-    onLeave: () => update(),
-    onLeaveBack: () => update(),
-    // Explicitly avoid pinning to ensure no scroll blocking
-    pin: false,
-  })
+  const rafUpdate = () => requestAnimationFrame(update)
+  const bind = () => {
+    if (window.lenis && typeof window.lenis.on === 'function') {
+      const handler = () => rafUpdate()
+      window.lenis.on('scroll', handler)
+      return () => {
+        try {
+          if (typeof window.lenis.off === 'function')
+            window.lenis.off('scroll', handler)
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+    const handler = () => rafUpdate()
+    window.addEventListener('scroll', handler, { passive: true })
+    return () => {
+      try {
+        window.removeEventListener('scroll', handler)
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
+  try {
+    window.__processScrollListenerCleanup = bind()
+  } catch (e) {
+    // ignore
+  }
 
   // Also listen to sticky position changes (smoother reaction when sticking/unsticking)
   ScrollTrigger.create({

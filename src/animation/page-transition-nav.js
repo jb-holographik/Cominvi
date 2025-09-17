@@ -8,7 +8,7 @@ import { initContact } from './contact.js'
 import { initTeam } from './join-the-team.js'
 import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
-import { initializeNav2 } from './nav.js'
+import { initializeNav2, resetMenuLinksAnimationState } from './nav.js'
 import {
   initParallax,
   initHeroBackgroundParallax,
@@ -34,6 +34,7 @@ import {
   slideScaleLeave as innerLeave,
   slideScaleEnter as innerEnter,
 } from './transition-inner.js'
+import { nextLeave, nextEnter } from './transition-next.js'
 import { slideScaleLeave, slideScaleEnter } from './transition-slide-scale.js'
 import { destroyWorkshopsStickyImages } from './workshops.js'
 
@@ -57,6 +58,18 @@ export function initializePageTransitionNav() {
       // ignore
     }
   }
+  // Flag history navigations so we can route them to the same transition as pt-inner
+  try {
+    window.addEventListener('popstate', () => {
+      try {
+        window.__barbaHistoryNav = true
+      } catch (e) {
+        // ignore
+      }
+    })
+  } catch (e) {
+    // ignore
+  }
   // Track UI visibility adjustments for pt-inner clicks
   const isVisible = (el) => {
     if (!el) return false
@@ -68,6 +81,181 @@ export function initializePageTransitionNav() {
   const cache = {
     wasNavVisible: false,
     forcedPageInfoFlex: false,
+  }
+  const setPageInfoLabels = ({ from, to }) => {
+    try {
+      const apply = (root) => {
+        if (!root || !root.querySelector) return
+        const fromEl = root.querySelector('#page-from')
+        const toEl = root.querySelector('#page-to')
+        if (fromEl && typeof from === 'string') fromEl.textContent = from
+        if (toEl && typeof to === 'string') toEl.textContent = to
+      }
+      apply(document)
+      try {
+        const overlay = document.querySelector('.mask-overlay')
+        if (overlay) {
+          const clone = overlay.querySelector('.mask-overlay_page-info')
+          if (clone) apply(clone)
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  }
+  const getCurrentLabel = () => {
+    try {
+      const el =
+        document.querySelector('#page-to') ||
+        document.querySelector('#page-from')
+      if (el && el.textContent) return el.textContent.trim()
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      return (document.title || '').trim()
+    } catch (e) {
+      return ''
+    }
+  }
+  const getLabelFromTrigger = (trigger) => {
+    try {
+      if (!trigger) return ''
+      // Prefer closest anchor
+      const a = trigger.closest ? trigger.closest('a') : null
+      const root = a || trigger
+      const label =
+        (root.querySelector && root.querySelector('.navlink_label')) ||
+        (root.querySelector && root.querySelector('.button-white_label')) ||
+        (root.querySelector && root.querySelector('.button_label')) ||
+        root
+      const txt = (label.textContent || '').trim()
+      return txt
+    } catch (e) {
+      return ''
+    }
+  }
+  const getLabelFromNext = (root) => {
+    try {
+      const container = root && root.querySelector ? root : document
+      const path = (location && location.pathname ? location.pathname : '')
+        .split('/')
+        .pop()
+      if (path) {
+        const a =
+          container.querySelector(`a[href$="${path}"]`) ||
+          container.querySelector(`a[href$='/${path}']`)
+        if (a) {
+          const label = a.querySelector('.navlink_label') || a
+          const txt = (label.textContent || '').trim()
+          if (txt) return txt
+        }
+      }
+      return (document.title || '').trim()
+    } catch (e) {
+      return ''
+    }
+  }
+
+  // Namespaces helpers (source of truth for page names)
+  const getNamespaceFromContainer = (container) => {
+    try {
+      if (container && container.getAttribute) {
+        const ns = container.getAttribute('data-barba-namespace')
+        return (ns || '').trim()
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return ''
+  }
+  // Note: we derive namespaces directly from containers to avoid ambiguity
+
+  const rememberFromLabel = (from) => {
+    try {
+      window.__pageInfoFromLabel = from || ''
+    } catch (e) {
+      /* ignore */
+    }
+  }
+  const ensureNavbarInteractive = (root = document) => {
+    try {
+      const scope = root && root.querySelector ? root : document
+      const navbar =
+        (scope.querySelector && scope.querySelector('.navbar')) ||
+        document.querySelector('.navbar')
+      if (navbar) navbar.style.pointerEvents = 'auto'
+    } catch (e) {
+      /* ignore */
+    }
+  }
+  const consumeFromLabel = () => {
+    try {
+      const v = window.__pageInfoFromLabel || ''
+      window.__pageInfoFromLabel = ''
+      return v
+    } catch (e) {
+      return ''
+    }
+  }
+  const performPreInnerUI = () => {
+    try {
+      const isVisible = (el) => {
+        if (!el) return false
+        const cs = getComputedStyle(el)
+        return (
+          cs.display !== 'none' &&
+          cs.visibility !== 'hidden' &&
+          cs.opacity !== '0'
+        )
+      }
+      const navInner = document.querySelector('.nav-inner')
+      const pageInfo = document.querySelector('.page-info')
+      cache.wasNavVisible = isVisible(navInner)
+      cache.forcedPageInfoFlex = false
+      if (cache.wasNavVisible && navInner) navInner.style.display = 'none'
+      if (pageInfo && !isVisible(pageInfo)) {
+        pageInfo.style.display = 'flex'
+        cache.forcedPageInfoFlex = true
+      }
+      let overlay = document.querySelector('.mask-overlay')
+      if (!overlay) {
+        const created = createViewportClipOverlay({ repeat: 0, yoyo: false })
+        overlay = created && created.container
+        try {
+          window.__maskOverlay = {
+            container: overlay,
+            tl: created && created.tl,
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      }
+      if (overlay) {
+        try {
+          resetOverlayClipBaseState()
+        } catch (e) {
+          /* ignore */
+        }
+        try {
+          overlay.classList.add('is-active')
+        } catch (e) {
+          overlay.className += ' is-active'
+        }
+        overlay.style.left = '0px'
+        try {
+          const clone = overlay.querySelector('.mask-overlay_page-info')
+          if (clone) clone.style.display = 'flex'
+        } catch (e) {
+          /* ignore */
+        }
+      }
+      window.__ptInnerFlags = { ...cache }
+    } catch (e) {
+      /* ignore */
+    }
   }
   document.addEventListener(
     'click',
@@ -165,6 +353,309 @@ export function initializePageTransitionNav() {
     },
     transitions: [
       {
+        name: 'next-scroll-and-reveal',
+        sync: true,
+        custom: ({ trigger }) => {
+          try {
+            if (!trigger) return false
+            const match = trigger.closest ? trigger.closest('[pt-next]') : null
+            return !!match
+          } catch (err) {
+            return false
+          }
+        },
+        leave: (data) => {
+          // Ensure page-info/mask behavior mirrors inner on pt-next clicks
+          performPreInnerUI()
+          try {
+            const fromNs = getNamespaceFromContainer(
+              data && data.current && data.current.container
+            )
+            const toNs = getNamespaceFromContainer(
+              data && data.next && data.next.container
+            )
+            const from = fromNs || getCurrentLabel()
+            const to = toNs || getLabelFromTrigger(data && data.trigger)
+            setPageInfoLabels({ from, to })
+            rememberFromLabel(from)
+          } catch (e) {
+            /* ignore */
+          }
+          return nextLeave(data)
+        },
+        enter: (data) => {
+          try {
+            const nextContainer = data && data.next && data.next.container
+            const toNs = getNamespaceFromContainer(nextContainer)
+            const to = toNs || getLabelFromNext(nextContainer)
+            const fromStored = consumeFromLabel()
+            const fromFallback = getNamespaceFromContainer(
+              data && data.current && data.current.container
+            )
+            const from = fromStored || fromFallback || getCurrentLabel()
+            setPageInfoLabels({ from, to })
+          } catch (e) {
+            /* ignore */
+          }
+          return nextEnter({ next: data && data.next })
+        },
+        after: ({ next }) => {
+          // Re-initialize Finsweet Attributes (CMS Filter) after the new DOM is in place
+          reinitFsAttributes()
+          // Mark that the transition after hook handled re-inits to avoid duplicate work in global hook
+          try {
+            window.__barbaAfterHandled = true
+          } catch (err) {
+            // ignore
+          }
+
+          // Restore UI according to pre-click state for pt-next
+          try {
+            const flags = window.__ptInnerFlags || {}
+            const navInner = document.querySelector('.nav-inner')
+            const pageInfo = document.querySelector('.page-info')
+            if (flags.wasNavVisible && navInner) {
+              navInner.style.display = 'flex'
+              // Keep pageInfo visible until transition ends
+            }
+            if (flags.forcedPageInfoFlex && pageInfo) {
+              // Keep pageInfo visible until transition ends
+            }
+            window.__ptInnerFlags = undefined
+          } catch (err) {
+            // ignore
+          }
+
+          destroyLenis()
+          initLenis(next && next.container)
+          // Re-init Webflow first, then (re)bind nav handlers/animations
+          reinitializeWebflowAnimations()
+          resetMenuLinksAnimationState(next && next.container)
+          initializeNav2()
+          ensureNavbarInteractive(next && next.container)
+          initParallax(next && next.container)
+          initHeroBackgroundParallax(next && next.container)
+          initNextBackgroundParallax(next && next.container)
+          initServiceCards(next && next.container)
+          initTextReveal()
+          initMinerals()
+          initScrollList()
+          initProcessProgression(next && next.container)
+          initTestimonials()
+          initTextDisplayReveal()
+          try {
+            initSticky50(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initBlog(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            blogArticleInit(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initTeam(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            destroyWorkshopsStickyImages()
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initAbout(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            destroyVideoClipStickyTransform()
+          } catch (e) {
+            /* ignore */
+          }
+          initVideoClipStickyTransform(next && next.container)
+          try {
+            initMap(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initTechnology(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initContact(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            const st = window.ScrollTrigger
+            if (st && typeof st.refresh === 'function') {
+              requestAnimationFrame(() => st.refresh())
+            }
+          } catch (e) {
+            /* ignore */
+          }
+        },
+      },
+      {
+        name: 'slide-scale-history-inner',
+        sync: true,
+        custom: ({ trigger }) => {
+          try {
+            // Browser back/forward → Barba trigger is often null/undefined
+            // Also honor explicit flag set on popstate
+            return !trigger || window.__barbaHistoryNav === true
+          } catch (err) {
+            return false
+          }
+        },
+        leave: (data) => {
+          performPreInnerUI()
+          const fromNs = getNamespaceFromContainer(
+            data && data.current && data.current.container
+          )
+          const toNs = getNamespaceFromContainer(
+            data && data.next && data.next.container
+          )
+          const from = fromNs || getCurrentLabel()
+          const to = toNs || getCurrentLabel()
+          rememberFromLabel(from)
+          setPageInfoLabels({ from, to })
+          return innerLeave(data)
+        },
+        enter: (data) => {
+          try {
+            const nextContainer = data && data.next && data.next.container
+            const toNs = getNamespaceFromContainer(nextContainer)
+            const to = toNs || getLabelFromNext(nextContainer)
+            const fromStored = consumeFromLabel()
+            const fromFallback = getNamespaceFromContainer(
+              data && data.current && data.current.container
+            )
+            const from = fromStored || fromFallback || getCurrentLabel()
+            setPageInfoLabels({ from, to })
+          } catch (e) {
+            /* ignore */
+          }
+          return innerEnter({ next: data && data.next })
+        },
+        after: ({ next }) => {
+          // Re-initialize Finsweet Attributes (CMS Filter) after the new DOM is in place
+          reinitFsAttributes()
+          // Mark that the transition after hook handled re-inits to avoid duplicate work in global hook
+          try {
+            window.__barbaAfterHandled = true
+          } catch (err) {
+            // ignore
+          }
+
+          // Restore UI according to pre-click state for history nav (inner-like)
+          try {
+            const flags = window.__ptInnerFlags || {}
+            const navInner = document.querySelector('.nav-inner')
+            const pageInfo = document.querySelector('.page-info')
+            if (flags && flags.wasNavVisible && navInner) {
+              navInner.style.display = 'flex'
+            }
+            if (flags && flags.forcedPageInfoFlex && pageInfo) {
+              // Keep pageInfo visible until transition ends
+            }
+            window.__ptInnerFlags = undefined
+          } catch (err) {
+            // ignore
+          }
+
+          destroyLenis()
+          initLenis(next && next.container)
+          // Re-init Webflow first, then (re)bind nav handlers/animations
+          reinitializeWebflowAnimations()
+          resetMenuLinksAnimationState(next && next.container)
+          initializeNav2()
+          ensureNavbarInteractive(next && next.container)
+          initParallax(next && next.container)
+          initHeroBackgroundParallax(next && next.container)
+          initNextBackgroundParallax(next && next.container)
+          initServiceCards(next && next.container)
+          initTextReveal()
+          initMinerals()
+          initScrollList()
+          initProcessProgression(next && next.container)
+          initTestimonials()
+          initTextDisplayReveal()
+          try {
+            initSticky50(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initBlog(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            blogArticleInit(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initTeam(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            destroyWorkshopsStickyImages()
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initAbout(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            destroyVideoClipStickyTransform()
+          } catch (e) {
+            /* ignore */
+          }
+          initVideoClipStickyTransform(next && next.container)
+          try {
+            initMap(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initTechnology(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initContact(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            const st = window.ScrollTrigger
+            if (st && typeof st.refresh === 'function') {
+              requestAnimationFrame(() => st.refresh())
+            }
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            window.__barbaHistoryNav = false
+          } catch (e) {
+            /* ignore */
+          }
+        },
+      },
+      {
         name: 'slide-scale-inner',
         sync: true,
         custom: ({ trigger }) => {
@@ -178,8 +669,39 @@ export function initializePageTransitionNav() {
             return false
           }
         },
-        leave: innerLeave,
-        enter: ({ next }) => innerEnter({ next }),
+        leave: (data) => {
+          try {
+            const fromNs = getNamespaceFromContainer(
+              data && data.current && data.current.container
+            )
+            const toNs = getNamespaceFromContainer(
+              data && data.next && data.next.container
+            )
+            const from = fromNs || getCurrentLabel()
+            const to = toNs || getLabelFromTrigger(data && data.trigger)
+            setPageInfoLabels({ from, to })
+            rememberFromLabel(from)
+          } catch (e) {
+            /* ignore */
+          }
+          return innerLeave(data)
+        },
+        enter: (data) => {
+          try {
+            const nextContainer = data && data.next && data.next.container
+            const toNs = getNamespaceFromContainer(nextContainer)
+            const to = toNs || getLabelFromNext(nextContainer)
+            const fromStored = consumeFromLabel()
+            const fromFallback = getNamespaceFromContainer(
+              data && data.current && data.current.container
+            )
+            const from = fromStored || fromFallback || getCurrentLabel()
+            setPageInfoLabels({ from, to })
+          } catch (e) {
+            /* ignore */
+          }
+          return innerEnter({ next: data && data.next })
+        },
         after: ({ next }) => {
           // Re-initialize Finsweet Attributes (CMS Filter) after the new DOM is in place
           reinitFsAttributes()
@@ -211,7 +733,9 @@ export function initializePageTransitionNav() {
           initLenis(next && next.container)
           // Re-init Webflow first, then (re)bind nav handlers/animations
           reinitializeWebflowAnimations()
+          resetMenuLinksAnimationState(next && next.container)
           initializeNav2()
+          ensureNavbarInteractive(next && next.container)
           initParallax(next && next.container)
           initHeroBackgroundParallax(next && next.container)
           initNextBackgroundParallax(next && next.container)
@@ -373,7 +897,9 @@ export function initializePageTransitionNav() {
 
     destroyLenis()
     initLenis(next && next.container)
+    resetMenuLinksAnimationState(next && next.container)
     initializeNav2()
+    ensureNavbarInteractive(next && next.container)
     reinitializeWebflowAnimations()
     initParallax(next && next.container)
     initHeroBackgroundParallax(next && next.container)

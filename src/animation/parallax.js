@@ -74,7 +74,14 @@ export function initParallax(root = document) {
       img.style.left = '0'
       img.style.right = '0'
       img.style.top = `${topCompPercent}%`
-      img.style.width = '120%'
+      if (
+        container.classList &&
+        container.classList.contains('machine-card_bg')
+      ) {
+        img.style.width = '100%'
+      } else {
+        img.style.width = '120%'
+      }
       img.style.height = `${overscanFactor * 100}%`
       img.style.objectFit = 'cover'
       img.style.willChange = 'transform'

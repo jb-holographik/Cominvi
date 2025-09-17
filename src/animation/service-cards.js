@@ -1,4 +1,15 @@
+import gsap from 'gsap'
+import { CustomEase } from 'gsap/CustomEase'
 import SplitType from 'split-type'
+
+// Ensure the same custom ease as Technology
+if (!gsap.parseEase('machinesStep')) {
+  try {
+    CustomEase.create('machinesStep', 'M0,0 C0.6,0 0,1 1,1')
+  } catch (e) {
+    // ignore
+  }
+}
 export function initServiceCards(root = document) {
   const scope = root && root.querySelector ? root : document
   const cards = scope.querySelectorAll('.service-card')
@@ -159,6 +170,145 @@ export function initServiceCards(root = document) {
 
   // Also bind the hover → viewer image logic
   serviceCardsHover(scope)
+
+  // Mobile: click a .machine-card to expand its .machine-bottom-wrap to reveal content
+  const isTabletOrBelowViewport = () => {
+    try {
+      return (
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(max-width: 991px)').matches
+      )
+    } catch (e) {
+      return false
+    }
+  }
+
+  const machineCardsForToggle = scope.querySelectorAll('.machine-card')
+  machineCardsForToggle.forEach((card) => {
+    if (card.__machineMobileBound) return
+    const bottomWrap = card.querySelector('.machine-bottom-wrap')
+    const labelRow = bottomWrap && bottomWrap.querySelector('.machines_label')
+    if (!bottomWrap || !labelRow) {
+      card.__machineMobileBound = true
+      return
+    }
+
+    const getCollapsedHeightPx = () => {
+      try {
+        const rect = labelRow.getBoundingClientRect()
+        return Math.max(0, Math.round(rect.height)) || 24
+      } catch (e) {
+        return 24
+      }
+    }
+
+    const toggleButtons = (isOpen) => {
+      try {
+        const btnWrap = bottomWrap.querySelector('.machine_button-wrap')
+        const btns = btnWrap
+          ? btnWrap.querySelectorAll('.machine_button, .machines_button')
+          : []
+        if (btns && btns.length) {
+          gsap.to(btns, {
+            yPercent: isOpen ? -100 : 0,
+            duration: 1.2,
+            ease: gsap.parseEase('machinesStep') || ((t) => t),
+          })
+        }
+        const closePlus = btnWrap
+          ? btnWrap.querySelector('.machines_button.is-close > .is-plus')
+          : null
+        if (closePlus) {
+          gsap.to(closePlus, {
+            rotate: isOpen ? 135 : 0,
+            duration: 1.2,
+            ease: gsap.parseEase('machinesStep') || ((t) => t),
+          })
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    const ensureMobileState = () => {
+      const isMobile = isTabletOrBelowViewport()
+      if (!isMobile) {
+        // Reset inline styles on desktop
+        bottomWrap.style.transition = ''
+        bottomWrap.style.height = ''
+        bottomWrap.style.willChange = ''
+        card.classList.remove('is-open')
+        toggleButtons(false)
+        return
+      }
+      bottomWrap.style.overflow = 'hidden'
+      // Do not set CSS transition; GSAP will handle animations
+      if (card.classList.contains('is-open')) {
+        // Maintain natural height when already open
+        bottomWrap.style.height = 'auto'
+        toggleButtons(true)
+      } else {
+        bottomWrap.style.height = getCollapsedHeightPx() + 'px'
+        toggleButtons(false)
+      }
+    }
+
+    // No CSS transitionend handler needed when animating via GSAP
+
+    const onClick = () => {
+      if (!isTabletOrBelowViewport()) return
+      const isOpen = card.classList.contains('is-open')
+      if (!isOpen) {
+        // Opening: animate height with GSAP using Technology timings/ease
+        const collapsed = getCollapsedHeightPx()
+        const target = bottomWrap.scrollHeight
+        // Normalize start height
+        if (bottomWrap.style.height === 'auto') {
+          bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
+        }
+        bottomWrap.style.height = collapsed + 'px'
+        card.classList.add('is-open')
+        gsap.to(bottomWrap, {
+          height: target,
+          duration: 1.2,
+          ease: gsap.parseEase('machinesStep') || ((t) => t),
+          onComplete: () => {
+            bottomWrap.style.height = 'auto'
+          },
+        })
+        toggleButtons(true)
+      } else {
+        // Closing: animate back to collapsed height with same timings/ease
+        const collapsed = getCollapsedHeightPx()
+        const currentAuto = bottomWrap.style.height === 'auto'
+        if (currentAuto) {
+          bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
+        }
+        card.classList.remove('is-open')
+        gsap.to(bottomWrap, {
+          height: collapsed,
+          duration: 1.2,
+          ease: gsap.parseEase('machinesStep') || ((t) => t),
+        })
+        toggleButtons(false)
+      }
+    }
+
+    if (!card.__machineMobileClickBound) {
+      card.addEventListener('click', onClick)
+      card.__machineMobileClickBound = true
+    }
+
+    const onResize = () => ensureMobileState()
+    if (!card.__machineMobileResizeBound) {
+      window.addEventListener('resize', onResize)
+      card.__machineMobileResizeBound = true
+    }
+
+    ensureMobileState()
+    card.__machineMobileBound = true
+  })
 }
 
 export function serviceCardsHover(root = document) {

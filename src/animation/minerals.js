@@ -58,6 +58,65 @@ export function initMinerals(root = document) {
     const nameItems = Array.from(
       section.querySelectorAll('.minerals-names .body-xl')
     )
+    const isMobileViewport = () => {
+      const mm =
+        window.matchMedia && window.matchMedia('(max-width: 767px)').matches
+      return mm || window.innerWidth <= 767
+    }
+
+    const ensureNamesScrollStyles = (container, items) => {
+      try {
+        if (!container) return
+        container.style.overflowX = 'auto'
+        container.style.overflowY = 'hidden'
+        container.style.flexWrap = 'nowrap'
+        container.style.webkitOverflowScrolling = 'touch'
+        items.forEach((el) => {
+          el.style.flex = '0 0 auto'
+        })
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    const centerActiveNameMobile = (activeIndex) => {
+      try {
+        if (!isMobileViewport()) return
+        const container = section.querySelector('.minerals-names')
+        const item = nameItems[activeIndex]
+        if (!container || !item) return
+
+        // Ensure the list can scroll horizontally on mobile
+        ensureNamesScrollStyles(container, nameItems)
+
+        // Skip if no horizontal overflow
+        if (container.scrollWidth <= container.clientWidth) return
+
+        const containerRect = container.getBoundingClientRect()
+        const itemRect = item.getBoundingClientRect()
+        const current = container.scrollLeft || 0
+        const delta =
+          itemRect.left -
+          containerRect.left +
+          itemRect.width / 2 -
+          container.clientWidth / 2
+        const targetScrollLeft = Math.round(current + delta)
+        const maxScrollLeft = Math.max(
+          0,
+          container.scrollWidth - container.clientWidth
+        )
+        const clamped = Math.max(0, Math.min(targetScrollLeft, maxScrollLeft))
+
+        gsap.to(container, {
+          scrollLeft: clamped,
+          duration: 1.2,
+          ease: mineralsEase,
+          overwrite: 'auto',
+        })
+      } catch (err) {
+        // ignore
+      }
+    }
     const eyebrowSliders = Array.from(
       section.querySelectorAll('.eyebrow-slider')
     )
@@ -78,6 +137,8 @@ export function initMinerals(root = document) {
           overwrite: 'auto',
         })
       })
+      // Center the active name horizontally on mobile
+      centerActiveNameMobile(activeIndex)
     }
 
     const setActiveSlideIndex = (activeIndex) => {
@@ -202,9 +263,23 @@ export function initMinerals(root = document) {
           section.querySelector('.minerals_right .eyebrow-wrapper.is-a') ||
           section.querySelector('.minerals_right .is-a')
         if (!left || !right) return
+
+        // Disable absolute positioning on mobile viewports
+        const isMobile =
+          (window.matchMedia &&
+            window.matchMedia('(max-width: 767px)').matches) ||
+          window.innerWidth <= 767
+
+        if (isMobile) {
+          // Reset any previously applied absolute positioning
+          right.style.position = ''
+          right.style.top = ''
+          return
+        }
+
         const parent = right.offsetParent || right.parentElement
         if (!parent) return
-        // Ensure parent is positioning context
+        // Ensure parent is positioning context (desktop/tablet only)
         const cps = getComputedStyle(parent)
         if (cps.position === 'static') {
           parent.style.position = 'relative'
@@ -222,6 +297,19 @@ export function initMinerals(root = document) {
     window.addEventListener('resize', () =>
       requestAnimationFrame(alignRightEyebrow)
     )
+
+    // Recenter active name on viewport changes
+    const handleResize = () => {
+      requestAnimationFrame(() => {
+        let idx = 0
+        const current = section.__mineralsActiveIndex
+        if (typeof current === 'number' && current >= 0) {
+          idx = current
+        }
+        centerActiveNameMobile(idx)
+      })
+    }
+    window.addEventListener('resize', handleResize)
 
     section.__mineralsActiveIndex = -1
 

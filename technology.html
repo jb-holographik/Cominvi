@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Thu Sep 04 2025 08:08:35 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Thu Sep 18 2025 13:16:16 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="68ada22c8efaceb435b9cb9a" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -68,216 +68,261 @@
     <div class="grid-column"></div>
     <div class="grid-column"></div>
   </div>
-  <div class="global w-embed">
-    <style>
-      /* ------------------------- Scaling System by Osmo [https://osmo.supply/] -------------------------  */
-      :root {
-        --size-unit: 16;
-        --size-container-ideal: 1440;
-        --size-container-min: 992px;
-        --size-container-max: 1920px;
-        --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
-        --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
-        --dot-shadow: 0px 0px 6px 0px rgba(0, 254, 165, 1), 0px 0px 11px 0px rgba(79, 255, 193, 1);
-      }
-
-      /* Tablet */
-      @media screen and (max-width: 991px) {
-        :root {
-          --size-container-ideal: 834;
-          --size-container-min: 768px;
-          --size-container-max: 991px;
-        }
-      }
-
-      /* Mobile Landscape */
-      @media screen and (max-width: 767px) {
-        :root {
-          --size-container-ideal: 550;
-          --size-container-min: 480px;
-          --size-container-max: 767px;
-        }
-      }
-
-      /* Mobile Portrait */
-      @media screen and (max-width: 479px) {
-        :root {
-          --size-container-ideal: 390;
-          --size-container-min: 320px;
-          --size-container-max: 479px;
-        }
-      }
-
-      body {
-        font-size: var(--size-font);
-      }
-
-      html,
-      body {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-smoothing: antialiased;
-        text-rendering: optimizeLegibility;
-      }
-
-      /* ------------------------- Hide Scrollbar -------------------------------------------------- */
-      body ::-webkit-scrollbar {
-        display: none;
-      }
-
-      body {
-        -ms-overflow-style: none;
-      }
-
-      html {
-        scrollbar-width: none;
-      }
-
-      /* ------------------------- body -------------------------------------------------- */
-      *,
-      *:after,
-      *:before {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: initial;
-      }
-
-      svg {
-        max-width: none;
-        height: auto;
-        box-sizing: border-box;
-        vertical-align: middle;
-      }
-
-      button {
-        padding: 0px;
-        background: transparent;
-        text-align: inherit;
-      }
-
-      ::selection {
-        background-color: black;
-        color: white;
-        text-shadow: none;
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      a,
-      button {
-        cursor: pointer;
-      }
-
-      textarea {
-        resize: none;
-      }
-
-      .is-eyebrow.is-black>.eyebrow-s {
-        color: var(--white);
-      }
-
-      .section_hero .body-xl {
-        opacity: 0;
-      }
-
-      .section_safety {
-        padding-top: 0rem;
-      }
-
-      .section_safety>.intro,
-      .section_technology>.intro {
-        padding-right: 0;
-      }
-
-      .svg-text {
-        width: 100%;
-        height: 100%;
-      }
-    </style>
+  <div class="site-grid is-tablet">
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
   </div>
-  <div class="animations w-embed">
-    <style>
-      .video-inner {
-        position: relative;
-        /* nécessaire pour le masquage */
-        overflow: hidden;
-        /* on cache ce qui dépasse */
-        /*height: 400px;             juste pour l’exemple */
-        z-index: 0;
-        /* s'assurer que le pseudo passe derrière le contenu */
-      }
+  <div class="global">
+    <div class="css-styles w-embed">
+      <style>
+        /* ------------------------- Scaling System by Osmo [https://osmo.supply/] -------------------------  */
+        :root {
+          --size-unit: 16;
+          --size-container-ideal: 1440;
+          --size-container-min: 992px;
+          --size-container-max: 1920px;
+          --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+          --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+          --dot-shadow: 0px 0px 6px 0px rgba(0, 254, 165, 1), 0px 0px 11px 0px rgba(79, 255, 193, 1);
+        }
 
-      .video-fixed {
-        content: "";
-        position: fixed;
-        /* fixé au viewport */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        z-index: -1;
-        /* passe derrière le contenu de la div */
-      }
+        /* Tablet */
+        @media screen and (max-width: 991px) {
+          :root {
+            --size-container-ideal: 834;
+            --size-container-min: 768px;
+            --size-container-max: 991px;
+          }
+        }
 
-      #video-1::before {
-        background-image: url("https://cdn.prod.website-files.com/68a6f1839c241fc65368dbab/68a6f438f5b35c6c42118678_project-3.jpg");
-      }
+        /* Mobile Landscape */
+        @media screen and (max-width: 767px) {
+          :root {
+            --size-container-ideal: 550;
+            --size-container-min: 480px;
+            --size-container-max: 767px;
+          }
+        }
 
-      #video-2::before {
-        background-image: url("https://cdn.prod.website-files.com/68a6f1839c241fc65368dbab/68a6f4264df0addd22673621_project-1.jpg");
-      }
+        /* Mobile Portrait */
+        @media screen and (max-width: 479px) {
+          :root {
+            --size-container-ideal: 390;
+            --size-container-min: 320px;
+            --size-container-max: 479px;
+          }
+        }
 
-      #video-3::before {
-        background-image: url("https://cdn.prod.website-files.com/68a6f1839c241fc65368dbab/68a6f4343fd221a2e41bdf94_project-2.jpg");
-      }
+        body {
+          font-size: var(--size-font);
+        }
 
-      .toggle.is-green>.toggle-option>.toggle-id {
-        color: var(--primary);
-      }
+        html,
+        body {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          font-smoothing: antialiased;
+          text-rendering: optimizeLegibility;
+        }
 
-      .toggle.is-green>.toggle-option>.toggle-id.is-active {
-        color: var(--white);
-      }
+        /* ------------------------- Hide Scrollbar -------------------------------------------------- */
+        body ::-webkit-scrollbar {
+          display: none;
+        }
 
-      .toggle.is-white>.toggle-option>.toggle-id {
-        color: var(--primary);
-      }
+        body {
+          -ms-overflow-style: none;
+        }
 
-      .toggle.is-white>.toggle-option>.toggle-id.is-active {
-        color: var(--white);
-      }
+        html {
+          scrollbar-width: none;
+        }
 
-      .toggle.is-white>.toggle-indicator {
-        background-color: var(--primary);
-      }
+        /* ------------------------- body -------------------------------------------------- */
+        *,
+        *:after,
+        *:before {
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+        }
 
-      .toggle.is-white {
-        width: 8.75em;
-      }
+        html {
+          scroll-behavior: initial;
+        }
 
-      .toggle.is-white>.toggle-option,
-      .toggle.is-white>.toggle-indicator {
-        width: 4em;
-      }
+        svg {
+          max-width: none;
+          height: auto;
+          box-sizing: border-box;
+          vertical-align: middle;
+        }
 
-      html.wf-design-mode>body>div.page-wrap>div>div.section_latest-technology>div.content>div {
-        overflow: hidden;
-      }
+        button {
+          padding: 0px;
+          background: transparent;
+          text-align: inherit;
+        }
 
-      html.wf-design-mode>body>.loader {
-        display: none;
-      }
-    </style>
+        ::selection {
+          background-color: black;
+          color: white;
+          text-shadow: none;
+        }
+
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+
+        a,
+        button {
+          cursor: pointer;
+        }
+
+        textarea {
+          resize: none;
+        }
+
+        .is-eyebrow.is-black>.eyebrow-s {
+          color: var(--white);
+        }
+
+        .section_hero .body-xl {
+          opacity: 0;
+        }
+
+        .section_safety {
+          padding-top: 0rem;
+        }
+
+        .svg-text {
+          width: 100%;
+          height: 100%;
+        }
+      </style>
+    </div>
+    <div class="css-animations w-embed">
+      <style>
+        .video-inner {
+          position: relative;
+          overflow: hidden;
+          z-index: 0;
+        }
+
+        .toggle.is-green>.toggle-option>.toggle-id {
+          color: var(--primary);
+        }
+
+        .toggle.is-green>.toggle-option>.toggle-id.is-active {
+          color: var(--white);
+        }
+
+        .toggle.is-white>.toggle-option>.toggle-id {
+          color: var(--primary);
+        }
+
+        .toggle.is-white>.toggle-option>.toggle-id.is-active {
+          color: var(--white);
+        }
+
+        .toggle.is-white>.toggle-indicator {
+          background-color: var(--primary);
+        }
+
+        .toggle.is-white {
+          width: 8.75em;
+        }
+
+        .toggle.is-white>.toggle-option,
+        .toggle.is-white>.toggle-indicator {
+          width: 4em;
+        }
+
+        html.wf-design-mode>body>div.page-wrap>div>div.section_latest-technology>div.content>div {
+          overflow: hidden;
+        }
+
+        html.wf-design-mode>body>.loader {
+          display: none;
+        }
+
+        .section_positions .sissmac_inner>.sissmac-row:last-child {
+          padding-bottom: 4em
+        }
+      </style>
+    </div>
+    <div class="css-responsive w-embed">
+      <style>
+        @media screen and (max-width: 991px) {
+          .section_values .body-xxl {
+            font-size: 4em;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .service-card .body-s {
+            display: none;
+          }
+
+          .services-viewer .button {
+            margin-top: 3em;
+          }
+
+          .minerals_right .button {
+            display: none;
+          }
+
+          .minerals_left .body-xl {
+            font-size: 3.5em;
+          }
+
+          .section_safety .content>.content_column:nth-of-type(2) {
+            order: 2;
+          }
+
+          .section_technology .text-button {
+            padding: 0 1em;
+          }
+
+          .footer .is-eyebrow {
+            padding: 0.25em;
+          }
+
+          .footer-links_col .eyebrow-s {
+            font-size: 0.75em;
+          }
+
+          .section_about .button {
+            margin-bottom: 5em;
+          }
+        }
+
+        @media (max-width: 479px) {
+          .minerals-inner .col-3:nth-child(2) {
+            order: 3;
+          }
+
+          .minerals-inner .col-6 {
+            order: 2;
+          }
+
+          .minerals-inner .col-3:last-of-type {
+            order: 1;
+          }
+
+          .minerals-names .body-xl {
+            padding-bottom: 0.125em;
+          }
+        }
+      </style>
+    </div>
   </div>
   <div class="navbar">
     <a aria-label="home" href="index.html" class="is-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg"
@@ -303,9 +348,8 @@
           d="M85.7826 12.8989C85.6561 13.1879 85.5458 13.4711 85.4518 13.7485C85.3578 14.0236 85.2823 14.2894 85.2197 14.5482C85.1698 14.3045 85.0978 14.048 85.0084 13.7799C84.9202 13.5094 84.8077 13.217 84.673 12.8989L82.3715 7.42773H80.6387L85.2185 18.0962L89.7984 7.42773H88.0725L85.7814 12.8989H85.7826Z"
           fill="var(--white)" class="logo-path"></path>
         <path d="M92.4678 7.62695H90.7988V17.895H92.4678V7.62695Z" fill="var(--white)" class="logo-path"></path>
-      </svg></a>
-    <link rel="prefetch" href="/"><button aria-expanded="false" aria-controls="nav-inner" class="is-menu"><span
-        class="is-label">Menu</span>
+      </svg></a><button aria-expanded="false" aria-controls="nav-inner" class="is-menu"><span
+        class="is-label is-menu">Menu</span>
       <div class="menu-icon">
         <div class="menu-icon_bar is-1"></div>
         <div class="menu-icon_bar is-2"></div>
@@ -315,7 +359,7 @@
   <div id="nav-inner" class="nav-inner">
     <ul role="list" class="links">
       <li class="link-item">
-        <a data-w-id="a4e76833-20d0-3f69-847c-e4a0dc68cc22" href="our-services.html" class="navlink w-inline-block"><svg
+        <a data-w-id="1bb2d4ce-1036-11f0-8f9d-92dc0700ba18" href="our-services.html" class="navlink w-inline-block"><svg
             xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
@@ -344,7 +388,7 @@
     </ul>
     <ul role="list" class="links">
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="about-us.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
@@ -353,7 +397,7 @@
           </svg><span class="navlink_label">About us</span></a>
       </li>
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="blog.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
@@ -362,24 +406,25 @@
           </svg><span class="navlink_label">Blog</span></a>
       </li>
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="contact.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
               d="M14.0293 9.26572C14.0293 8.67179 14.7474 8.37434 15.1674 8.79432L22.8716 16.4986C23.1319 16.7589 23.1319 17.181 22.8716 17.4414L15.1674 25.1456C14.7474 25.5656 14.0293 25.2681 14.0293 24.6742V9.26572Z"
               fill="currentColor" class="icon--inner"></path>
           </svg><span class="navlink_label">Contact</span></a>
+        <link rel="prerender" href="/contact">
       </li>
     </ul>
     <ul role="list" class="links">
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="join-the-team.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
               d="M14.0293 9.26572C14.0293 8.67179 14.7474 8.37434 15.1674 8.79432L22.8716 16.4986C23.1319 16.7589 23.1319 17.181 22.8716 17.4414L15.1674 25.1456C14.7474 25.5656 14.0293 25.2681 14.0293 24.6742V9.26572Z"
               fill="currentColor" class="icon--inner"></path>
-          </svg><span class="navlink_label">Civil construction</span></a>
+          </svg><span class="navlink_label">Join the Team</span></a>
       </li>
       <li class="link-item">
         <a href="#" class="navlink-locale w-inline-block"><span class="navlink_label">ES</span></a>
@@ -419,7 +464,7 @@
   </div>
   <div class="page-info">
     <div class="page-info_wrap">
-      <div class="page-info_inner"><span id="page-from" class="body-xl is-black">Homey</span><span id="page-to"
+      <div class="page-info_inner"><span id="page-from" class="body-xl is-black">Home</span><span id="page-to"
           class="body-xl is-black">Home</span></div>
     </div>
   </div>
@@ -447,10 +492,8 @@
           <div id="w-node-_856ffc81-c0d5-5e76-e729-7b745be6dc6e-35b9cb9a" class="w-layout-hflex hero-bottom_cards">
             <div id="w-node-c93c8f4e-7912-3b01-975e-897eec858b94-35b9cb9a"
               class="w-layout-hflex hero-bottom_cards-wrapper">
-              <a pt-inner="" href="safety.html" class="card w-inline-block"><img src="images/safety_1.avif"
-                  loading="lazy" sizes="(max-width: 2880px) 100vw, 2880px"
-                  srcset="images/safety_1safety.avif 500w, images/safety_1safety.avif 800w, images/safety_1.avif 2880w"
-                  alt="" class="card_bg">
+              <a pt-inner="" href="safety.html" class="card w-inline-block"><img src="images/safety-sm_2.avif"
+                  loading="lazy" alt="" class="card_bg">
                 <div class="button-sm">
                   <div class="button-sm_inner">
                     <div class="w-layout-hflex button-sm_inner-left"><svg xmlns="http://www.w3.org/2000/svg"
@@ -467,8 +510,8 @@
                   </div>
                 </div>
               </a>
-              <a pt-inner="" href="#" class="card w-inline-block"><img src="images/card-2_1.avif" loading="lazy" alt=""
-                  class="card_bg">
+              <a pt-inner="" href="about-us.html" class="card w-inline-block"><img src="images/about-us-sm_1.avif"
+                  loading="lazy" alt="" class="card_bg">
                 <div class="button-sm">
                   <div class="button-sm_inner">
                     <div class="w-layout-hflex button-sm_inner-left"><svg xmlns="http://www.w3.org/2000/svg"
@@ -476,7 +519,7 @@
                         <path
                           d="M0.343262 1.60947C0.343262 1.01554 1.06136 0.718095 1.48133 1.13807L5.52871 5.18545C5.78906 5.4458 5.78906 5.86791 5.52871 6.12826L1.48133 10.1756C1.06136 10.5956 0.343262 10.2982 0.343262 9.70423V1.60947Z"
                           fill="#151515"></path>
-                      </svg><span class="button-sm_label">Technology</span></div><svg xmlns="http://www.w3.org/2000/svg"
+                      </svg><span class="button-sm_label">About Us</span></div><svg xmlns="http://www.w3.org/2000/svg"
                       width="100%" viewbox="0 0 6 11" fill="none" class="is-arrow">
                       <path
                         d="M0.343262 1.60947C0.343262 1.01554 1.06136 0.718095 1.48133 1.13807L5.52871 5.18545C5.78906 5.4458 5.78906 5.86791 5.52871 6.12826L1.48133 10.1756C1.06136 10.5956 0.343262 10.2982 0.343262 9.70423V1.60947Z"
@@ -495,7 +538,7 @@
               alt="" class="background_image"></div>
         </div>
       </div>
-      <div bg="lightgreen" class="section_latest-technology">
+      <div bg="white" class="section_latest-technology">
         <div class="intro">
           <div class="eyebrows">
             <div class="is-eyebrow"><span class="eyebrow-s">S.01</span></div>
@@ -506,6 +549,7 @@
             in challenging underground environments.</p>
         </div>
         <div class="w-layout-vflex display-text">
+          <div class="eyebrow-wrapper-a"><span class="eyebrow-m">Over 360 machines</span></div>
           <div class="title-big">
             <div class="w-layout-vflex display"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
                 viewbox="0 0 558 196" fill="currentColor" class="svg-t-bottom">
@@ -639,12 +683,11 @@
                     </defs>
                     <!--  Fond blanc avec un trou  -->
                     <rect width="100%" height="100%" fill="#ebf0ed" mask="url(#text-mask-2)"></rect>
-                  </svg></div>
+                  </svg></div><span class="body-xxl">Our latest technology</span>
               </div>
               <div class="mask-fill"></div>
             </div>
           </div>
-          <div class="eyebrow-wrapper-a"><span class="eyebrow-m">for underground performance</span></div>
         </div>
         <div class="content is-v">
           <div class="is-grid-toggle">
@@ -880,21 +923,57 @@
               <div class="machines_grid">
                 <div class="machines-grid_wrapper w-dyn-list">
                   <div role="list" class="machines-grid_list w-dyn-items">
-                    <div role="listitem" class="machines-grid_item w-dyn-item"><button class="machines-grid_button">
+                    <div role="listitem" class="machines-grid_item w-dyn-item">
+                      <div class="machines-grid_button">
                         <div class="machines-grid_item-inner">
                           <div class="machines-grid_img-wrap"><img
                               src="https://d3e54v103j8qbb.cloudfront.net/plugins/Basic/assets/placeholder.60f9b1840c.svg"
                               loading="lazy" alt="" class="machines-grid_img w-dyn-bind-empty"></div>
-                          <div class="machines-grid_name-wrap"><span class="body-m w-dyn-bind-empty"></span></div>
-                          <div class="machines-grid_desc">
-                            <p class="is-grid-desc w-dyn-bind-empty"></p>
-                          </div>
-                          <div class="machines-grid_close-button">
-                            <div class="machines-grid_button_label">Close</div>
-                          </div>
-                          <div class="machines-grid_name-inner"><span class="body-xl w-dyn-bind-empty"></span></div>
                         </div>
-                      </button></div>
+                        <div class="machines-grid_name-wrap"><span class="body-m w-dyn-bind-empty"></span></div>
+                        <div class="machines-grid_desc">
+                          <p class="is-grid-desc w-dyn-bind-empty"></p>
+                        </div><button class="machines-grid_close-button">
+                          <div class="w-layout-vflex machines-grid_close-button_inner">
+                            <div class="w-layout-hflex machines-grid_close-button_row">
+                              <div class="button_label is-black">Close</div>
+                              <div class="is-plus-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                                  viewbox="0 0 14 14" fill="none" class="is-plus is-white">
+                                  <g clip-path="url(#clip0_4380_27029)">
+                                    <path d="M13 1L1 13" stroke="white" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"></path>
+                                    <path d="M1 1L13 13" stroke="white" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"></path>
+                                  </g>
+                                  <defs>
+                                    <clippath id="clip0_4380_27029">
+                                      <rect width="14" height="14" fill="currentColor"></rect>
+                                    </clippath>
+                                  </defs>
+                                </svg></div>
+                            </div>
+                            <div class="w-layout-hflex machines-grid_close-button_row">
+                              <div class="is-plus-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                                  viewbox="0 0 14 14" fill="none" class="is-plus is-white">
+                                  <g clip-path="url(#clip0_4380_27029)">
+                                    <path d="M13 1L1 13" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"></path>
+                                    <path d="M1 1L13 13" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"></path>
+                                  </g>
+                                  <defs>
+                                    <clippath id="clip0_4380_27029">
+                                      <rect width="14" height="14" fill="currentColor"></rect>
+                                    </clippath>
+                                  </defs>
+                                </svg></div>
+                              <div class="button_label is-black">Close</div>
+                            </div>
+                          </div>
+                        </button>
+                        <div class="machines-grid_name-inner"><span class="body-xl w-dyn-bind-empty"></span></div>
+                      </div>
+                    </div>
                   </div>
                   <div class="w-dyn-empty">
                     <div>No items found.</div>
@@ -939,9 +1018,8 @@
                           <rect width="200" height="32.72" fill="currentColor"></rect>
                         </clippath>
                       </defs>
-                    </svg></div>
-                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 200 33" fill="none"
+                      class="logos-slider_logo is-2">
                       <g clip-path="url(#clip0_4380_26528)">
                         <path
                           d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
@@ -979,9 +1057,8 @@
                           <rect width="200" height="32.72" fill="currentColor"></rect>
                         </clippath>
                       </defs>
-                    </svg></div>
-                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 200 33" fill="none"
+                      class="logos-slider_logo is-2">
                       <g clip-path="url(#clip0_4380_26528)">
                         <path
                           d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
@@ -1019,31 +1096,8 @@
                           <rect width="200" height="32.72" fill="currentColor"></rect>
                         </clippath>
                       </defs>
-                    </svg></div>
-                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
-                      <g clip-path="url(#clip0_4380_26528)">
-                        <path
-                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
-                          fill="currentColor"></path>
-                        <path
-                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
-                          fill="currentColor"></path>
-                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
-                        <path
-                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
-                          fill="currentColor"></path>
-                      </g>
-                      <defs>
-                        <clippath id="clip0_4380_26528">
-                          <rect width="200" height="32.72" fill="currentColor"></rect>
-                        </clippath>
-                      </defs>
-                    </svg></div>
-                </div>
-                <div class="logos-slider_grid">
-                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 200 33" fill="none"
+                      class="logos-slider_logo is-2">
                       <g clip-path="url(#clip0_4380_26528)">
                         <path
                           d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
@@ -1081,9 +1135,8 @@
                           <rect width="200" height="32.72" fill="currentColor"></rect>
                         </clippath>
                       </defs>
-                    </svg></div>
-                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 200 33" fill="none"
+                      class="logos-slider_logo is-2">
                       <g clip-path="url(#clip0_4380_26528)">
                         <path
                           d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
@@ -1121,9 +1174,8 @@
                           <rect width="200" height="32.72" fill="currentColor"></rect>
                         </clippath>
                       </defs>
-                    </svg></div>
-                  <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                      viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 200 33" fill="none"
+                      class="logos-slider_logo is-2">
                       <g clip-path="url(#clip0_4380_26528)">
                         <path
                           d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
@@ -1144,6 +1196,25 @@
                     </svg></div>
                   <div class="logos-slider_logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
                       viewbox="0 0 200 33" fill="none" class="logos-slider_logo">
+                      <g clip-path="url(#clip0_4380_26528)">
+                        <path
+                          d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
+                          fill="currentColor"></path>
+                        <path
+                          d="M127.418 32.6915V0.634469H134.479V26.6056H141.841V32.6915H127.418ZM143.538 32.6915V0.634469H150.599V26.6056H157.96V32.6915H143.538ZM114.248 10.307C114.248 15.9363 113.178 19.9785 106.839 19.9785H102.978L102.953 14.2764L105.059 14.3014C106.839 14.3014 107.14 13.3392 107.14 10.3075C107.14 7.37264 106.839 6.14548 105.046 6.14548H102.953V14.2764L102.978 19.9785V32.7062H96.0741L96.0731 0.636508H106.839C113.178 0.636508 114.248 4.67676 114.248 10.307ZM62.898 6.74632V13.0977H70.2126V19.3767H62.898V26.4981L71.5809 26.495L71.5839 32.6813L55.8316 32.6869V0.629883H55.825H71.2955V6.74632H62.898ZM41.8345 28.0142V6.86709H37.2158V0.635489H53.9359V6.86709H49.2922V32.6002H47.3129L41.8345 28.0142Z"
+                          fill="currentColor"></path>
+                        <path d="M44.8296 32.6453L28.5473 19.0044L11.6738 32.6453H44.8296Z" fill="currentColor"></path>
+                        <path
+                          d="M26.7476 15.3229L28.5511 6.10901L30.3434 15.3229H26.7476L28.5511 16.8869L39.1028 25.7278L33.1948 0.671387H23.8667L18.4316 25.053L28.5511 16.8869L26.7476 15.3229Z"
+                          fill="currentColor"></path>
+                      </g>
+                      <defs>
+                        <clippath id="clip0_4380_26528">
+                          <rect width="200" height="32.72" fill="currentColor"></rect>
+                        </clippath>
+                      </defs>
+                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 200 33" fill="none"
+                      class="logos-slider_logo is-2">
                       <g clip-path="url(#clip0_4380_26528)">
                         <path
                           d="M81.7136 13.4098L83.532 13.368C85.3131 13.368 85.8905 12.3574 85.8905 9.83074C85.8905 7.30405 85.3727 6.14926 83.797 6.14926H81.7147V32.7116H74.8241L74.8231 0.6408H85.1683C90.9408 0.6408 92.7219 3.71991 92.7219 8.67594C92.7219 12.1892 91.8321 14.9315 88.5599 15.7973C91.374 16.3029 92.6857 18.4504 92.6857 22.1375V29.9199C92.6857 31.3397 93.0593 32.4466 93.2993 32.7116H86.3344C86.1427 32.4343 85.8538 31.3876 85.8538 29.9683V21.4393C85.8538 19.912 85.071 18.7694 83.4107 18.7694H81.7131V13.4098M15.4435 27.2581C16.6752 26.2318 16.8862 24.9582 16.8862 23.8192V19.0248H10.1918V25.5305C10.1918 26.4601 9.4371 27.2143 8.50807 27.2143C7.57904 27.2143 6.88749 26.4596 6.88749 25.5305V7.09919C6.88749 6.16862 7.57904 5.41541 8.50807 5.41541C9.4371 5.41541 10.1918 6.16862 10.1918 7.09919V13.6442H16.878V6.85457C16.878 3.10225 14.4258 0.0139706 8.45252 0.00683594C2.31876 0.00683594 0 3.10837 0 6.8612V26.1044C0 29.8241 2.95273 32.6382 6.72899 32.6382H8.80314L15.4435 27.2581ZM188.404 13.3502V6.13244H190.497C192.072 6.13244 192.59 7.28724 192.59 9.81392C192.59 12.3391 192.013 13.3502 190.232 13.3502H188.404L188.428 18.7516H190.111C191.771 18.7516 192.553 19.8942 192.553 21.4215V29.951C192.553 31.3708 192.842 32.4175 193.034 32.6942H200C199.758 32.4292 199.386 31.3229 199.386 29.9036V22.1197C199.386 18.4326 198.075 16.285 195.261 15.7795C198.531 14.9142 199.423 12.1714 199.423 8.65913C199.423 3.70309 197.641 0.623983 191.868 0.623983H181.523L181.524 32.6937H188.428V18.7516L188.404 13.3502ZM171.463 27.0212L170.762 21.156L168.971 6.19207L167.183 21.1575L170.762 21.156L171.463 27.0212L166.48 27.0247L165.802 32.6937H158.825L164.329 0.563848H173.592L179.118 32.6937H172.141L171.463 27.0212ZM127.417 32.6912V0.634175H134.479V26.6053H141.841V32.6912H127.417ZM116.615 32.6912H123.677V0.634175H116.615V32.6912Z"
@@ -1213,6 +1284,61 @@
                   deliver to our clients.</p>
               </div>
             </div>
+            <div id="w-node-_38822541-ce1e-deba-233c-8fee72e327f8-35b9cb9a" class="workshops_left-sm">
+              <div class="workshops_left_top">
+                <div class="eyebrows">
+                  <div class="is-eyebrow"><span class="eyebrow-s">S.03</span></div>
+                  <div class="is-eyebrow is-black"><span class="eyebrow-s">Workshops</span></div>
+                </div>
+                <div class="toggle is-green">
+                  <div class="toggle-option"><span class="toggle-id is-active">01</span></div>
+                  <div class="toggle-option"><span class="toggle-id">02</span></div>
+                  <div class="toggle-option"><span class="toggle-id">03</span></div>
+                  <div class="toggle-indicator is-black"></div>
+                </div>
+              </div>
+              <div class="w-layout-vflex workshops-sm-wrap">
+                <div class="workshops_left_middle">
+                  <h3 class="body-xl is-black">Maintenance<br>Infrastructure</h3>
+                  <h3 class="body-xl is-black">Central service<br>workshop</h3>
+                  <h3 class="body-xl is-black">On-Site service<br>workshops</h3>
+                </div>
+                <div class="workshops_left_bottom">
+                  <p class="body-s">At our company, maintenance is not just an operational function, it’s a strategic
+                    commitment to safety, mechanical availability, and equipment reliability across every project. Our
+                    comprehensive approach integrates preventive and corrective maintenance, life cycle-based component
+                    replacements, major repairs, and rebuilds, all aimed at maximizing performance and minimizing
+                    downtime.</p>
+                  <p class="body-s">Our central facility is equipped to carry out complete overhauls, major repairs, and
+                    life cycle-driven component change-outs. Using advanced diagnostics and OEM-certified parts, we
+                    restore equipment to peak efficiency, ensuring the highest standards of safety, quality, and
+                    durability.</p>
+                  <p class="body-s">Each of our project sites features a fully equipped on-site workshop for scheduled
+                    maintenance, daily inspections, and rapid response to mechanical issues. This decentralized model
+                    allows us to maintain high levels of operational availability and ensure continuous operations
+                    across all shifts. Our commitment to maintenance excellence is a core part of the high-quality
+                    service we deliver to our clients.</p>
+                </div>
+              </div>
+              <div class="workshops-sm_img">
+                <div class="worskshops_img-wrap">
+                  <div class="workshops_img-view_sm"><img src="images/workshops-1_1.avif" loading="lazy"
+                      sizes="(max-width: 812px) 100vw, 812px"
+                      srcset="images/workshops-1_1workshops-1.avif 500w, images/workshops-1_1.avif 812w" alt=""
+                      class="workshops_img"></div>
+                </div>
+                <div class="worskshops_img-wrap">
+                  <div class="workshops_img-view_sm"><img src="images/workshops-2_1.avif" loading="lazy"
+                      sizes="(max-width: 812px) 100vw, 812px"
+                      srcset="images/workshops-2_1workshops-2.avif 500w, images/workshops-2_1.avif 812w" alt=""
+                      class="workshops_img"></div>
+                </div>
+                <div class="worskshops_img-wrap">
+                  <div class="workshops_img-view_sm"><img src="images/safety-sm_1.avif" loading="lazy" alt=""
+                      class="workshops_img"></div>
+                </div>
+              </div>
+            </div>
             <div id="w-node-b1106990-f814-7568-5b60-b415de92643a-35b9cb9a" class="workshops_right">
               <div class="worskshops_img-wrap">
                 <div class="workshops_img-view"><img src="images/workshops-1_1.avif" loading="lazy"
@@ -1243,7 +1369,8 @@
           <p tr="1" class="body-next">Next page</p>
         </div>
         <div class="next-button-wrapper">
-          <a data-w-id="687c3d2f-385d-93aa-43fe-a460e90d552d" href="#" class="button-white w-inline-block">
+          <a pt-next="" data-w-id="687c3d2f-385d-93aa-43fe-a460e90d552d" href="safety.html"
+            class="button-white w-inline-block">
             <div class="button-white_inner">
               <div class="w-layout-hflex button-white_inner-content"><svg xmlns="http://www.w3.org/2000/svg"
                   width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
@@ -1251,8 +1378,8 @@
                   <path
                     d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
                     fill="currentColor" class="arrow-white-1_arrow"></path>
-                </svg><span class="button-white_label">Our Services</span><svg xmlns="http://www.w3.org/2000/svg"
-                  width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square">
+                </svg><span class="button-white_label">Safety</span><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                  viewbox="0 0 34 34" fill="none" class="is-arrow-square">
                   <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-2_bg"></rect>
                   <path
                     d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
@@ -1260,11 +1387,14 @@
                 </svg></div>
             </div>
           </a>
+          <link rel="prefetch" href="/safety">
         </div>
-        <div class="next_background"><img src="images/Services_1.avif" loading="lazy"
-            sizes="(max-width: 2160px) 100vw, 2160px"
-            srcset="images/Services_1Services.avif 500w, images/Services_1Services.avif 800w, images/Services_1Services.avif 1080w, images/Services_1.avif 2160w"
-            alt="" class="background"></div>
+        <div class="next_background-wrap">
+          <div class="next_background"><img src="images/safety_1.avif" loading="lazy"
+              sizes="(max-width: 2880px) 100vw, 2880px"
+              srcset="images/safety_1safety.avif 500w, images/safety_1safety.avif 800w, images/safety_1safety.avif 1080w, images/safety_1safety.avif 1600w, images/safety_1.avif 2880w"
+              alt="" class="background"></div>
+        </div>
       </div>
       <div class="footer">
         <div class="footer-inner">
@@ -1321,7 +1451,7 @@
             </div>
           </div>
           <div id="w-node-_1f5661f6-8f20-019f-338a-f39a75305b95-75305b7a" class="footer_right">
-            <div class="footer-links_col">
+            <div id="w-node-_1f5661f6-8f20-019f-338a-f39a75305b96-75305b7a" class="footer-links_col">
               <div class="is-eyebrow"><span class="eyebrow-s">Explore</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
@@ -1337,7 +1467,7 @@
                   <a href="#" class="footer-link">About us</a>
                 </li>
                 <li>
-                  <a href="#" class="footer-link">Job Offers</a>
+                  <a href="join-the-team.html" class="footer-link">Join the team</a>
                 </li>
               </ul>
             </div>
@@ -1345,18 +1475,18 @@
               <div class="is-eyebrow"><span class="eyebrow-s">Library</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a href="#" class="footer-link">News</a>
+                  <a pt-inner="" href="blog.html" class="footer-link">News</a>
                 </li>
                 <li>
                   <a href="#" class="footer-link">CoMinVi University</a>
                 </li>
               </ul>
             </div>
-            <div class="footer-links_col">
+            <div id="w-node-_1f5661f6-8f20-019f-338a-f39a75305bb5-75305b7a" class="footer-links_col">
               <div class="is-eyebrow"><span class="eyebrow-s">Legal</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a href="#" class="footer-link">Notice of Privacy</a>
+                  <a href="notice-of-privacy.html" class="footer-link">Notice of Privacy</a>
                 </li>
               </ul>
             </div>

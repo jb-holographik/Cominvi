@@ -183,17 +183,39 @@ function ensureState() {
       running: false,
       offsetPx: pxFromEm(2),
       resizeHandler: null,
+      scope: null,
       titles: [],
       descs: [],
       currentTextIndex: -1,
+      // Tablet-specific state
+      tabletStickyStartY: null,
+      tabletActiveIndex: 0,
+      tabletZIndexed: false,
+      debug: false,
+      tabletLoggedElements: false,
+      tabletStickyStarted: false,
+      tabletSectionStartTop: null,
     }
   }
   return window.__workshopsSticky
 }
 
-function updateGreenToggle(index) {
+function updateGreenToggle(index, root) {
   try {
-    const toggle = document.querySelector('.toggle.is-green')
+    const scope = root && root.querySelector ? root : document
+    const toggle = scope.querySelector('.toggle.is-green')
+    const state = ensureState()
+    if (state.debug) {
+      try {
+        console.log('[WS] updateGreenToggle', {
+          index,
+          hasToggle: !!toggle,
+          scopeTag: scope && scope.tagName,
+        })
+      } catch (e) {
+        // ignore
+      }
+    }
     if (!toggle) return
     const options = toggle.querySelectorAll('.toggle-option')
     const ids = toggle.querySelectorAll('.toggle-id')
@@ -261,6 +283,323 @@ function startLoop() {
       const base = pxFromEm(2)
       const contentTop = getContentTopOffsetPx()
       state.offsetPx = base + contentTop
+
+      // Tablet breakpoint handling (991px -> 767px)
+      const isTablet = (() => {
+        try {
+          if (window.matchMedia) {
+            const maxOk = window.matchMedia('(max-width: 991px)').matches
+            const minOk = window.matchMedia('(min-width: 767px)').matches
+            return maxOk && minOk
+          }
+          const w =
+            window.innerWidth || document.documentElement.clientWidth || 0
+          return w <= 991 && w >= 767
+        } catch (e) {
+          return false
+        }
+      })()
+
+      if (state.debug) {
+        try {
+          const w = window.innerWidth || document.documentElement.clientWidth
+          console.log('[WS] tick', {
+            isTablet,
+            width: w,
+            offsetPx: state.offsetPx,
+          })
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      if (isTablet) {
+        // Scope to .workshops_left-sm
+        const container = (state.scope || document).querySelector(
+          '.workshops_left-sm'
+        )
+        if (state.debug) {
+          try {
+            console.log('[WS] tablet path', {
+              hasContainer: !!container,
+              scopeIsDoc: state.scope === document,
+            })
+          } catch (e) {
+            // ignore
+          }
+        }
+        if (!container) {
+          state.tabletStickyStartY = null
+          state.tabletActiveIndex = 0
+          state.currentTextIndex = -1
+          state.rafId = requestAnimationFrame(tick)
+          return
+        }
+
+        // Ensure z-index ordering once
+        if (!state.tabletZIndexed) {
+          try {
+            const wraps = container.querySelectorAll('.worskshops_img-wrap')
+            if (wraps && wraps.length) {
+              wraps.forEach((w, i) => {
+                // First -> zIndex 2, second -> 1, third -> 0
+                const z = Math.max(0, 2 - i)
+                w.style.position = 'absolute'
+                w.style.zIndex = String(z)
+              })
+              if (state.debug)
+                console.log('[WS] z-index applied to wraps', wraps.length)
+            }
+          } catch (e) {
+            // ignore
+          }
+          state.tabletZIndexed = true
+        }
+
+        // One-time elements found log
+        if (!state.tabletLoggedElements) {
+          try {
+            const titles = (state.titles || []).length
+            const descs = (state.descs || []).length
+            const wraps = container.querySelectorAll('.worskshops_img-wrap')
+            console.log('[WS] elements found', {
+              container: true,
+              titles,
+              descs,
+              wraps: wraps.length,
+            })
+          } catch (e) {
+            // ignore
+          }
+          state.tabletLoggedElements = true
+        }
+
+        // Detect sticky start (top <= offset)
+        let started = false
+        try {
+          const cr = container.getBoundingClientRect()
+          started = cr.top <= state.offsetPx
+          if (started && !state.tabletStickyStarted)
+            console.log('[WS] sticky start')
+          state.tabletStickyStarted = state.tabletStickyStarted || started
+        } catch (e) {
+          started = false
+        }
+
+        if (!started) {
+          // Reset to initial state before sticky
+          if (state.tabletStickyStartY !== null) {
+            state.tabletStickyStartY = null
+          }
+          if (state.tabletActiveIndex !== 0) {
+            // Reset texts visibility to first
+            const titles = state.titles || []
+            const descs = state.descs || []
+            if (state.debug) {
+              try {
+                console.log('[WS] reset before sticky', {
+                  titles: titles.length,
+                  descs: descs.length,
+                })
+              } catch (e) {
+                // ignore
+              }
+            }
+            titles.forEach((el, i) => {
+              const on = i === 0
+              if (on) {
+                el.style.display = ''
+                el.style.opacity = '1'
+                el.style.visibility = 'visible'
+                el.style.pointerEvents = 'auto'
+              } else {
+                el.style.opacity = '0'
+                el.style.visibility = 'hidden'
+                el.style.pointerEvents = 'none'
+                el.style.display = 'none'
+              }
+            })
+            descs.forEach((el, i) => {
+              const on = i === 0
+              if (on) {
+                el.style.display = ''
+                el.style.opacity = '1'
+                el.style.visibility = 'visible'
+                el.style.pointerEvents = 'auto'
+              } else {
+                el.style.opacity = '0'
+                el.style.visibility = 'hidden'
+                el.style.pointerEvents = 'none'
+                el.style.display = 'none'
+              }
+            })
+            // Reset images opacity
+            try {
+              const wraps = container.querySelectorAll('.worskshops_img-wrap')
+              wraps.forEach((w) => {
+                w.style.opacity = '1'
+              })
+              if (state.debug)
+                console.log('[WS] reset wraps opacity to 1', wraps.length)
+            } catch (e) {
+              // ignore
+            }
+            state.currentTextIndex = 0
+            state.tabletActiveIndex = 0
+            updateGreenToggle(0, container)
+          }
+          state.rafId = requestAnimationFrame(tick)
+          return
+        }
+
+        if (state.tabletSectionStartTop === null) {
+          try {
+            const workshops =
+              (container.closest && container.closest('.workshops')) ||
+              (state.scope || document).querySelector('.workshops')
+            const wr = workshops ? workshops.getBoundingClientRect() : null
+            state.tabletSectionStartTop = wr ? wr.top : 0
+          } catch (e) {
+            state.tabletSectionStartTop = 0
+          }
+        }
+
+        const vh =
+          (window && window.innerHeight) ||
+          document.documentElement.clientHeight ||
+          0
+        let delta = 0
+        try {
+          const workshops =
+            (container.closest && container.closest('.workshops')) ||
+            (state.scope || document).querySelector('.workshops')
+          const wr = workshops ? workshops.getBoundingClientRect() : null
+          const currentTop = wr ? wr.top : 0
+          delta = Math.max(0, (state.tabletSectionStartTop || 0) - currentTop)
+        } catch (e) {
+          delta = 0
+        }
+
+        // Compute index at 50vh intervals
+        const step = Math.max(1, vh * 0.5)
+        let idx = Math.floor(delta / step)
+        const titles = state.titles || []
+        const descs = state.descs || []
+        const imgWraps = container.querySelectorAll('.worskshops_img-wrap')
+        const maxLen = Math.max(
+          0,
+          Math.min(
+            titles.length || 0,
+            descs.length || 0,
+            imgWraps && imgWraps.length ? imgWraps.length : 0
+          ) - 1
+        )
+        if (!Number.isFinite(idx) || idx < 0) idx = 0
+        if (maxLen >= 0) idx = Math.min(idx, maxLen)
+        else idx = 0
+
+        if (state.debug) {
+          try {
+            console.log('[WS] compute index', {
+              step,
+              idx,
+              maxLen,
+              titles: titles.length,
+              descs: descs.length,
+              wraps: imgWraps.length,
+            })
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        if (idx !== state.tabletActiveIndex) {
+          console.log('[WS] switch', { from: state.tabletActiveIndex, to: idx })
+          // Update green toggle to reflect active index (scope to tablet container)
+          updateGreenToggle(idx, container)
+
+          // Hide previous
+          if (state.currentTextIndex >= 0) {
+            const prevTitle = titles[state.currentTextIndex]
+            const prevDesc = descs[state.currentTextIndex]
+            if (prevTitle) {
+              prevTitle.style.opacity = '0'
+              prevTitle.style.visibility = 'hidden'
+              prevTitle.style.pointerEvents = 'none'
+              prevTitle.style.display = 'none'
+            }
+            if (prevDesc) {
+              prevDesc.style.opacity = '0'
+              prevDesc.style.visibility = 'hidden'
+              prevDesc.style.pointerEvents = 'none'
+              prevDesc.style.display = 'none'
+            }
+          }
+
+          // Show new
+          const titleIn = titles[idx]
+          const descIn = descs[idx]
+          if (titleIn) {
+            titleIn.style.display = ''
+            titleIn.style.opacity = '1'
+            titleIn.style.visibility = 'visible'
+            titleIn.style.pointerEvents = 'auto'
+            prepareSplitLines(titleIn)
+          }
+          if (descIn) {
+            descIn.style.display = ''
+            descIn.style.opacity = '1'
+            descIn.style.visibility = 'visible'
+            descIn.style.pointerEvents = 'auto'
+            prepareSplitLines(descIn)
+          }
+
+          // Animate lines like desktop
+          const animateLines = (el) => {
+            try {
+              const inners = el.querySelectorAll('.ws-line-inner')
+              let delay = 0
+              const stepDelay = 0.06
+              if (!gsap.parseEase('wsEase'))
+                CustomEase.create('wsEase', 'M0,0 C0.6,0 0,1 1,1')
+              inners.forEach((inner) => {
+                gsap.fromTo(
+                  inner,
+                  { y: '1em', opacity: 0 },
+                  { y: 0, opacity: 1, duration: 0.5, ease: 'wsEase', delay }
+                )
+                delay += stepDelay
+              })
+            } catch (e) {
+              // ignore
+            }
+          }
+          if (titleIn) animateLines(titleIn)
+          if (descIn) animateLines(descIn)
+
+          // Fade images sequentially: when idx=1 fade out first; when idx=2 fade out first two
+          try {
+            if (!gsap.parseEase('wsEase'))
+              CustomEase.create('wsEase', 'M0,0 C0.6,0 0,1 1,1')
+            imgWraps.forEach((wrap, i) => {
+              const target = i < idx ? 0 : 1
+              gsap.to(wrap, { opacity: target, duration: 0.5, ease: 'wsEase' })
+            })
+            if (state.debug) console.log('[WS] fade wraps up to', idx)
+          } catch (e) {
+            // Fallback without gsap
+            imgWraps.forEach((wrap, i) => {
+              wrap.style.opacity = i < idx ? '0' : '1'
+            })
+          }
+
+          state.currentTextIndex = idx
+          state.tabletActiveIndex = idx
+        }
+
+        state.rafId = requestAnimationFrame(tick)
+        return
+      }
 
       // Détermine si la première (la plus haute) a atteint le seuil (50% viewport)
       let earliestTop = Infinity
@@ -556,7 +895,22 @@ function stopLoopIfIdle() {
 export function initWorkshopsStickyImages(root = document) {
   const state = ensureState()
   const scope = root && root.querySelector ? root : document
-  const els = scope.querySelectorAll('.workshops_img-view')
+  state.scope = scope
+  // Skip desktop image pinning on tablet; do not register items
+  const isTablet = (() => {
+    try {
+      if (window.matchMedia) {
+        const maxOk = window.matchMedia('(max-width: 991px)').matches
+        const minOk = window.matchMedia('(min-width: 767px)').matches
+        return maxOk && minOk
+      }
+      const w = window.innerWidth || document.documentElement.clientWidth || 0
+      return w <= 991 && w >= 767
+    } catch (e) {
+      return false
+    }
+  })()
+  const els = isTablet ? [] : scope.querySelectorAll('.workshops_img-view')
   const added = []
   els.forEach((el) => {
     let exists = false
@@ -574,7 +928,7 @@ export function initWorkshopsStickyImages(root = document) {
     added.push(el)
   })
 
-  if (state.items.size) startLoop()
+  if (isTablet || state.items.size) startLoop()
 
   try {
     if (state.resizeHandler)
@@ -598,17 +952,35 @@ export function initWorkshopsStickyImages(root = document) {
     }
   })()
   window.addEventListener('resize', state.resizeHandler)
-  if (!added.length) stopLoopIfIdle()
+  if (!isTablet && !added.length) stopLoopIfIdle()
   // Init texts visibility: show first, hide others
   try {
-    state.titles = Array.from(
-      (scope || document).querySelectorAll(
-        '.workshops_left_middle .body-xl.is-black'
+    const isTabletInit = isTablet
+    // Reset tablet flags on (re)init
+    state.tabletZIndexed = false
+    state.tabletStickyStartY = null
+    state.tabletActiveIndex = 0
+    if (isTabletInit) {
+      state.titles = Array.from(
+        (scope || document).querySelectorAll(
+          '.workshops_left-sm .workshops_left_middle .body-xl.is-black'
+        )
       )
-    )
-    state.descs = Array.from(
-      (scope || document).querySelectorAll('.workshops_left_bottom .body-s')
-    )
+      state.descs = Array.from(
+        (scope || document).querySelectorAll(
+          '.workshops_left-sm .workshops_left_bottom .body-s'
+        )
+      )
+    } else {
+      state.titles = Array.from(
+        (scope || document).querySelectorAll(
+          '.workshops_left_middle .body-xl.is-black'
+        )
+      )
+      state.descs = Array.from(
+        (scope || document).querySelectorAll('.workshops_left_bottom .body-s')
+      )
+    }
     const setVis = (idx) => {
       state.titles.forEach((el, i) => {
         const on = i === idx

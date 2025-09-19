@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Thu Sep 18 2025 13:16:16 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Fri Sep 19 2025 14:58:12 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="68ada22c8efaceb435b9cb9a" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -89,7 +89,6 @@
           --size-container-max: 1920px;
           --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
           --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
-          --dot-shadow: 0px 0px 6px 0px rgba(0, 254, 165, 1), 0px 0px 11px 0px rgba(79, 255, 193, 1);
         }
 
         /* Tablet */
@@ -264,6 +263,14 @@
           .section_values .body-xxl {
             font-size: 4em;
           }
+
+          .workshops .body-xl {
+            font-size: 3.5em;
+          }
+
+          .workshops .body-s {
+            font-size: 1em;
+          }
         }
 
         @media (max-width: 767px) {
@@ -302,6 +309,32 @@
           .section_about .button {
             margin-bottom: 5em;
           }
+
+          .workshops .body-xl {
+            font-size: 2em;
+          }
+
+          .workshops .body-s {
+            font-size: 0.875em;
+            font-weight: 500;
+          }
+
+          .machine-grid_mobile .machine_button {
+            background-color: var(--light-green);
+          }
+
+          .workshops-sm-wrap .body-xl,
+          .workshops-sm-wrap p {
+            text-align: left;
+          }
+
+          .workshops-sm-wrap .body-xl {
+            font-size: 1.5em;
+          }
+
+          .workshops-sm-wrap .body-s {
+            font-size: 0.75em;
+          }
         }
 
         @media (max-width: 479px) {
@@ -319,6 +352,11 @@
 
           .minerals-names .body-xl {
             padding-bottom: 0.125em;
+          }
+
+          .workshops-sm-wrap .body-xl,
+          .workshops-sm-wrap p {
+            text-align: center;
           }
         }
       </style>
@@ -978,6 +1016,228 @@
                   <div class="w-dyn-empty">
                     <div>No items found.</div>
                   </div>
+                </div>
+              </div>
+            </div>
+            <div class="machine-grid_mobile">
+              <div class="machine_category_m"><span class="eyebrow-m">Development &amp; Drilling</span></div>
+              <div class="machine-mobile_wrap w-dyn-list">
+                <div role="list" class="machine-grid_coll machines-grid-sm w-dyn-items">
+                  <div role="listitem" class="machine-mobile_item machine-card w-dyn-item">
+                    <div class="machine-card_content">
+                      <div class="machine-card_bg_mobile"><img src="images/Machine-card-4.avif" loading="lazy" alt=""
+                          class="image-p_m w-dyn-bind-empty"></div>
+                      <div class="machine-card_inner">
+                        <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus
+                          pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
+                      </div>
+                    </div>
+                    <div class="w-layout-vflex machine-bottom-wrap">
+                      <div class="w-layout-hflex machines_label"><span class="body-m w-dyn-bind-empty"></span>
+                        <div class="machine_button-wrap">
+                          <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg
+                              xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none"
+                              class="is-plus">
+                              <g clip-path="url(#clip0_4895_136)">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                                  fill="currentColor"></path>
+                              </g>
+                              <defs>
+                                <clippath id="clip0_4895_136">
+                                  <rect width="10" height="10" fill="currentColor"></rect>
+                                </clippath>
+                              </defs>
+                            </svg></div>
+                          <div class="machines_button is-close"><span
+                              class="machines_button-label body-xs">CLOSE</span><svg xmlns="http://www.w3.org/2000/svg"
+                              width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
+                              <g clip-path="url(#clip0_4895_136)">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                                  fill="currentColor"></path>
+                              </g>
+                              <defs>
+                                <clippath id="clip0_4895_136">
+                                  <rect width="10" height="10" fill="currentColor"></rect>
+                                </clippath>
+                              </defs>
+                            </svg></div>
+                        </div>
+                      </div>
+                      <div class="machine-desc">
+                        <p class="body-s w-dyn-bind-empty"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-dyn-empty">
+                  <div>No items found.</div>
+                </div>
+              </div>
+              <div class="machine_category_m"><span class="eyebrow-m">Haulage &amp; Loading</span></div>
+              <div class="machine-mobile_wrap w-dyn-list">
+                <div role="list" class="machine-grid_coll machines-grid-sm w-dyn-items">
+                  <div role="listitem" class="machine-mobile_item machine-card w-dyn-item">
+                    <div class="machine-card_content">
+                      <div class="machine-card_bg_mobile"><img src="images/Machine-card-4.avif" loading="lazy" alt=""
+                          class="image-p_m w-dyn-bind-empty"></div>
+                      <div class="machine-card_inner">
+                        <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus
+                          pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
+                      </div>
+                    </div>
+                    <div class="w-layout-vflex machine-bottom-wrap">
+                      <div class="w-layout-hflex machines_label"><span class="body-m w-dyn-bind-empty"></span>
+                        <div class="machine_button-wrap">
+                          <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg
+                              xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none"
+                              class="is-plus">
+                              <g clip-path="url(#clip0_4895_136)">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                                  fill="currentColor"></path>
+                              </g>
+                              <defs>
+                                <clippath id="clip0_4895_136">
+                                  <rect width="10" height="10" fill="currentColor"></rect>
+                                </clippath>
+                              </defs>
+                            </svg></div>
+                          <div class="machines_button is-close"><span
+                              class="machines_button-label body-xs">CLOSE</span><svg xmlns="http://www.w3.org/2000/svg"
+                              width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
+                              <g clip-path="url(#clip0_4895_136)">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                                  fill="currentColor"></path>
+                              </g>
+                              <defs>
+                                <clippath id="clip0_4895_136">
+                                  <rect width="10" height="10" fill="currentColor"></rect>
+                                </clippath>
+                              </defs>
+                            </svg></div>
+                        </div>
+                      </div>
+                      <div class="machine-desc">
+                        <p class="body-s w-dyn-bind-empty"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-dyn-empty">
+                  <div>No items found.</div>
+                </div>
+              </div>
+              <div class="machine_category_m"><span class="eyebrow-m">Ground Support &amp; Construction</span></div>
+              <div class="machine-mobile_wrap w-dyn-list">
+                <div role="list" class="machine-grid_coll machines-grid-sm w-dyn-items">
+                  <div role="listitem" class="machine-mobile_item machine-card w-dyn-item">
+                    <div class="machine-card_content">
+                      <div class="machine-card_bg_mobile"><img src="images/Machine-card-4.avif" loading="lazy" alt=""
+                          class="image-p_m w-dyn-bind-empty"></div>
+                      <div class="machine-card_inner">
+                        <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus
+                          pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
+                      </div>
+                    </div>
+                    <div class="w-layout-vflex machine-bottom-wrap">
+                      <div class="w-layout-hflex machines_label"><span class="body-m w-dyn-bind-empty"></span>
+                        <div class="machine_button-wrap">
+                          <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg
+                              xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none"
+                              class="is-plus">
+                              <g clip-path="url(#clip0_4895_136)">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                                  fill="currentColor"></path>
+                              </g>
+                              <defs>
+                                <clippath id="clip0_4895_136">
+                                  <rect width="10" height="10" fill="currentColor"></rect>
+                                </clippath>
+                              </defs>
+                            </svg></div>
+                          <div class="machines_button is-close"><span
+                              class="machines_button-label body-xs">CLOSE</span><svg xmlns="http://www.w3.org/2000/svg"
+                              width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
+                              <g clip-path="url(#clip0_4895_136)">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                                  fill="currentColor"></path>
+                              </g>
+                              <defs>
+                                <clippath id="clip0_4895_136">
+                                  <rect width="10" height="10" fill="currentColor"></rect>
+                                </clippath>
+                              </defs>
+                            </svg></div>
+                        </div>
+                      </div>
+                      <div class="machine-desc">
+                        <p class="body-s w-dyn-bind-empty"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-dyn-empty">
+                  <div>No items found.</div>
+                </div>
+              </div>
+              <div class="machine_category_m"><span class="eyebrow-m">Operational Support</span></div>
+              <div class="machine-mobile_wrap w-dyn-list">
+                <div role="list" class="machine-grid_coll machines-grid-sm w-dyn-items">
+                  <div role="listitem" class="machine-mobile_item machine-card w-dyn-item">
+                    <div class="machine-card_content">
+                      <div class="machine-card_bg_mobile"><img src="images/Machine-card-4.avif" loading="lazy" alt=""
+                          class="image-p_m w-dyn-bind-empty"></div>
+                      <div class="machine-card_inner">
+                        <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus
+                          pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
+                      </div>
+                    </div>
+                    <div class="w-layout-vflex machine-bottom-wrap">
+                      <div class="w-layout-hflex machines_label"><span class="body-m w-dyn-bind-empty"></span>
+                        <div class="machine_button-wrap">
+                          <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg
+                              xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none"
+                              class="is-plus">
+                              <g clip-path="url(#clip0_4895_136)">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                                  fill="currentColor"></path>
+                              </g>
+                              <defs>
+                                <clippath id="clip0_4895_136">
+                                  <rect width="10" height="10" fill="currentColor"></rect>
+                                </clippath>
+                              </defs>
+                            </svg></div>
+                          <div class="machines_button is-close"><span
+                              class="machines_button-label body-xs">CLOSE</span><svg xmlns="http://www.w3.org/2000/svg"
+                              width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
+                              <g clip-path="url(#clip0_4895_136)">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M5.66061 5.66346L9.92963 5.66343L9.92961 4.22111L5.66061 4.22112L5.66061 -0.0478878L4.2183 -0.0478919L4.21827 4.22112L-0.0507161 4.22113L-0.0507279 5.66345L4.21831 5.66342L4.21827 9.93245L5.66061 9.93245L5.66061 5.66346Z"
+                                  fill="currentColor"></path>
+                              </g>
+                              <defs>
+                                <clippath id="clip0_4895_136">
+                                  <rect width="10" height="10" fill="currentColor"></rect>
+                                </clippath>
+                              </defs>
+                            </svg></div>
+                        </div>
+                      </div>
+                      <div class="machine-desc">
+                        <p class="body-s w-dyn-bind-empty"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-dyn-empty">
+                  <div>No items found.</div>
                 </div>
               </div>
             </div>

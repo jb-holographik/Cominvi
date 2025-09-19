@@ -36,6 +36,30 @@ export function initTechnology(root = document) {
   const machines = root.querySelector('.machines')
   if (!machinesWrapper || !machines) return
 
+  // Tablet detection for responsive animation values
+  const getViewportWidth = () => {
+    try {
+      if (typeof window === 'undefined') return 0
+      if (typeof window.innerWidth === 'number') return window.innerWidth
+      let docEl = null
+      if (typeof document !== 'undefined') {
+        if (document.documentElement) {
+          docEl = document.documentElement
+        }
+      }
+      if (docEl && typeof docEl.clientWidth === 'number') {
+        return docEl.clientWidth
+      }
+      return 0
+    } catch (err) {
+      return 0
+    }
+  }
+  const isTablet = () => {
+    const w = getViewportWidth()
+    return w >= 768 && w <= 991
+  }
+
   // Workshops images pin (2em from top)
   try {
     initWorkshopsStickyImages(root)
@@ -371,7 +395,7 @@ export function initTechnology(root = document) {
         once: true,
         onEnter: () => {
           gsap.to(imagesRoot, {
-            width: '13.5em',
+            width: isTablet() ? '11.8em' : '13.5em',
             height: '11.2em',
             duration: 1.2,
             ease: gsap.parseEase('machinesStep') || ((t) => t),
@@ -1946,8 +1970,8 @@ export function initTechnology(root = document) {
         }
         imagesRoot.classList.add('is-open')
         gsap.to(imagesRoot, {
-          width: '28em',
-          height: '23.313em',
+          width: isTablet() ? '18.1em' : '28em',
+          height: isTablet() ? '13.2em' : '23.313em',
           duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),
           onUpdate: () => {
@@ -2017,7 +2041,7 @@ export function initTechnology(root = document) {
     try {
       if (imagesRoot && imagesRoot !== machines) {
         gsap.to(imagesRoot, {
-          width: '13.5em',
+          width: isTablet() ? '11.8em' : '13.5em',
           height: '11.2em',
           duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),

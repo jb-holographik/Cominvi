@@ -284,17 +284,12 @@ function startLoop() {
       const contentTop = getContentTopOffsetPx()
       state.offsetPx = base + contentTop
 
-      // Tablet breakpoint handling (991px -> 767px)
-      const isTablet = (() => {
+      // Handheld breakpoint handling (<= 991px)
+      const isHandheld = (() => {
         try {
-          if (window.matchMedia) {
-            const maxOk = window.matchMedia('(max-width: 991px)').matches
-            const minOk = window.matchMedia('(min-width: 767px)').matches
-            return maxOk && minOk
-          }
           const w =
             window.innerWidth || document.documentElement.clientWidth || 0
-          return w <= 991 && w >= 767
+          return w <= 991
         } catch (e) {
           return false
         }
@@ -304,7 +299,7 @@ function startLoop() {
         try {
           const w = window.innerWidth || document.documentElement.clientWidth
           console.log('[WS] tick', {
-            isTablet,
+            isHandheld,
             width: w,
             offsetPx: state.offsetPx,
           })
@@ -313,14 +308,14 @@ function startLoop() {
         }
       }
 
-      if (isTablet) {
+      if (isHandheld) {
         // Scope to .workshops_left-sm
         const container = (state.scope || document).querySelector(
           '.workshops_left-sm'
         )
         if (state.debug) {
           try {
-            console.log('[WS] tablet path', {
+            console.log('[WS] handheld path', {
               hasContainer: !!container,
               scopeIsDoc: state.scope === document,
             })
@@ -523,12 +518,14 @@ function startLoop() {
             const prevTitle = titles[state.currentTextIndex]
             const prevDesc = descs[state.currentTextIndex]
             if (prevTitle) {
+              prevTitle.classList.remove('is-active')
               prevTitle.style.opacity = '0'
               prevTitle.style.visibility = 'hidden'
               prevTitle.style.pointerEvents = 'none'
               prevTitle.style.display = 'none'
             }
             if (prevDesc) {
+              prevDesc.classList.remove('is-active')
               prevDesc.style.opacity = '0'
               prevDesc.style.visibility = 'hidden'
               prevDesc.style.pointerEvents = 'none'
@@ -536,61 +533,64 @@ function startLoop() {
             }
           }
 
-          // Show new
+          // Show new (prepare but keep opacity 0 for timeline sync with images)
           const titleIn = titles[idx]
           const descIn = descs[idx]
           if (titleIn) {
             titleIn.style.display = ''
-            titleIn.style.opacity = '1'
+            titleIn.style.opacity = '0'
             titleIn.style.visibility = 'visible'
             titleIn.style.pointerEvents = 'auto'
+            titleIn.classList.add('is-active')
             prepareSplitLines(titleIn)
           }
           if (descIn) {
             descIn.style.display = ''
-            descIn.style.opacity = '1'
+            descIn.style.opacity = '0'
             descIn.style.visibility = 'visible'
             descIn.style.pointerEvents = 'auto'
+            descIn.classList.add('is-active')
             prepareSplitLines(descIn)
           }
 
-          // Animate lines like desktop
-          const animateLines = (el) => {
-            try {
-              const inners = el.querySelectorAll('.ws-line-inner')
-              let delay = 0
-              const stepDelay = 0.06
-              if (!gsap.parseEase('wsEase'))
-                CustomEase.create('wsEase', 'M0,0 C0.6,0 0,1 1,1')
-              inners.forEach((inner) => {
-                gsap.fromTo(
-                  inner,
-                  { y: '1em', opacity: 0 },
-                  { y: 0, opacity: 1, duration: 0.5, ease: 'wsEase', delay }
-                )
-                delay += stepDelay
-              })
-            } catch (e) {
-              // ignore
-            }
-          }
-          if (titleIn) animateLines(titleIn)
-          if (descIn) animateLines(descIn)
-
-          // Fade images sequentially: when idx=1 fade out first; when idx=2 fade out first two
+          // Build a single timeline to sync text and image switches exactly
           try {
             if (!gsap.parseEase('wsEase'))
               CustomEase.create('wsEase', 'M0,0 C0.6,0 0,1 1,1')
+            const tl = gsap.timeline({
+              defaults: { duration: 0.5, ease: 'wsEase' },
+            })
+            // Image fades (hide previous wraps, keep current and next visible)
             imgWraps.forEach((wrap, i) => {
               const target = i < idx ? 0 : 1
-              gsap.to(wrap, { opacity: target, duration: 0.5, ease: 'wsEase' })
+              tl.to(wrap, { opacity: target }, 0)
             })
-            if (state.debug) console.log('[WS] fade wraps up to', idx)
+            // Text lines animation in sync
+            const addLineAnim = (el) => {
+              if (!el) return
+              try {
+                const inners = el.querySelectorAll('.ws-line-inner')
+                gsap.set(el, { opacity: 1 })
+                if (inners && inners.length) {
+                  gsap.set(inners, { y: '1em', opacity: 0 })
+                  tl.to(inners, { y: 0, opacity: 1, stagger: 0.06 }, 0)
+                }
+              } catch (e) {
+                // ignore
+              }
+            }
+            addLineAnim(titleIn)
+            addLineAnim(descIn)
+            if (state.debug) console.log('[WS] synced text+image switch', idx)
           } catch (e) {
-            // Fallback without gsap
-            imgWraps.forEach((wrap, i) => {
-              wrap.style.opacity = i < idx ? '0' : '1'
-            })
+            // Fallback without gsap timeline
+            try {
+              imgWraps.forEach((wrap, i) => {
+                wrap.style.opacity = i < idx ? '0' : '1'
+              })
+            } catch (e2) {
+              // ignore
+            }
           }
 
           state.currentTextIndex = idx
@@ -896,21 +896,16 @@ export function initWorkshopsStickyImages(root = document) {
   const state = ensureState()
   const scope = root && root.querySelector ? root : document
   state.scope = scope
-  // Skip desktop image pinning on tablet; do not register items
-  const isTablet = (() => {
+  // Skip desktop image pinning on handheld (<=991px); do not register items
+  const isHandheld = (() => {
     try {
-      if (window.matchMedia) {
-        const maxOk = window.matchMedia('(max-width: 991px)').matches
-        const minOk = window.matchMedia('(min-width: 767px)').matches
-        return maxOk && minOk
-      }
       const w = window.innerWidth || document.documentElement.clientWidth || 0
-      return w <= 991 && w >= 767
+      return w <= 991
     } catch (e) {
       return false
     }
   })()
-  const els = isTablet ? [] : scope.querySelectorAll('.workshops_img-view')
+  const els = isHandheld ? [] : scope.querySelectorAll('.workshops_img-view')
   const added = []
   els.forEach((el) => {
     let exists = false
@@ -928,7 +923,7 @@ export function initWorkshopsStickyImages(root = document) {
     added.push(el)
   })
 
-  if (isTablet || state.items.size) startLoop()
+  if (isHandheld || state.items.size) startLoop()
 
   try {
     if (state.resizeHandler)
@@ -952,34 +947,40 @@ export function initWorkshopsStickyImages(root = document) {
     }
   })()
   window.addEventListener('resize', state.resizeHandler)
-  if (!isTablet && !added.length) stopLoopIfIdle()
+  if (!isHandheld && !added.length) stopLoopIfIdle()
   // Init texts visibility: show first, hide others
   try {
-    const isTabletInit = isTablet
+    const isTabletInit = isHandheld
     // Reset tablet flags on (re)init
     state.tabletZIndexed = false
     state.tabletStickyStartY = null
     state.tabletActiveIndex = 0
+    // Prefer mobile/tablet specific blocks when available; fallback to default
+    const titlesSm = Array.from(
+      (scope || document).querySelectorAll(
+        '.workshops_left-sm .workshops_left_middle .body-xl.is-black'
+      )
+    )
+    const descsSm = Array.from(
+      (scope || document).querySelectorAll(
+        '.workshops_left-sm .workshops_left_bottom .body-s'
+      )
+    )
+    const titlesDefault = Array.from(
+      (scope || document).querySelectorAll(
+        '.workshops_left_middle .body-xl.is-black'
+      )
+    )
+    const descsDefault = Array.from(
+      (scope || document).querySelectorAll('.workshops_left_bottom .body-s')
+    )
     if (isTabletInit) {
-      state.titles = Array.from(
-        (scope || document).querySelectorAll(
-          '.workshops_left-sm .workshops_left_middle .body-xl.is-black'
-        )
-      )
-      state.descs = Array.from(
-        (scope || document).querySelectorAll(
-          '.workshops_left-sm .workshops_left_bottom .body-s'
-        )
-      )
+      state.titles = titlesSm.length ? titlesSm : titlesDefault
+      state.descs = descsSm.length ? descsSm : descsDefault
     } else {
-      state.titles = Array.from(
-        (scope || document).querySelectorAll(
-          '.workshops_left_middle .body-xl.is-black'
-        )
-      )
-      state.descs = Array.from(
-        (scope || document).querySelectorAll('.workshops_left_bottom .body-s')
-      )
+      // On mobile, DOM often uses the -sm variants; use them if present
+      state.titles = titlesSm.length ? titlesSm : titlesDefault
+      state.descs = descsSm.length ? descsSm : descsDefault
     }
     const setVis = (idx) => {
       state.titles.forEach((el, i) => {

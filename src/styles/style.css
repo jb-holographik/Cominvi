@@ -373,3 +373,27 @@ figure .image-wrapper {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
+
+/* Hide machines sections on mobile and large mobile */
+@media (max-width: 767px) {
+
+  .machines-wrapper,
+  .machines-grid-wrapper {
+    display: none !important;
+  }
+
+  /* Workshops (mobile): ensure first items are visible immediately */
+  .workshops_left-sm .workshops_left_middle .body-xl.is-black,
+  .workshops_left-sm .workshops_left_bottom .body-s {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .workshops_left-sm .workshops_left_middle .body-xl.is-black:not(.is-active),
+  .workshops_left-sm .workshops_left_bottom .body-s:not(.is-active) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}

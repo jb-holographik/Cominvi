@@ -19,6 +19,19 @@ function pxFromEm(em = 2) {
   return em * 16
 }
 
+function isMobileViewport() {
+  try {
+    if (window.matchMedia) {
+      if (window.matchMedia('(max-width: 767px)').matches) return true
+      if (window.matchMedia('(hover: none) and (pointer: coarse)').matches)
+        return true
+    }
+  } catch (e) {
+    // ignore
+  }
+  return false
+}
+
 function ensureState() {
   if (!window.__videoClipSticky) {
     window.__videoClipSticky = {
@@ -27,6 +40,7 @@ function ensureState() {
       running: false,
       offsetPx: pxFromEm(2),
       resizeHandler: null,
+      breakpointHandler: null,
       firstVideo: null,
       lastVideo: null,
       firstFixedApplied: false,
@@ -325,6 +339,45 @@ function stopLoopIfIdle() {
 export function initVideoClipStickyTransform(root = document) {
   const state = ensureState()
   const scope = root && root.querySelector ? root : document
+  // Gestion responsive: désactive sur mobile et réactive au changement de breakpoint
+  try {
+    if (state.breakpointHandler) {
+      window.removeEventListener('resize', state.breakpointHandler)
+      window.removeEventListener('orientationchange', state.breakpointHandler)
+    }
+  } catch (e) {
+    // ignore
+  }
+  const startIsMobile = isMobileViewport()
+  state.breakpointHandler = (() => {
+    let wasMobile = startIsMobile
+    return () => {
+      const nowMobile = isMobileViewport()
+      if (nowMobile === wasMobile) return
+      wasMobile = nowMobile
+      if (nowMobile) {
+        try {
+          destroyVideoClipStickyTransform()
+        } catch (e) {
+          // ignore
+        }
+      } else {
+        try {
+          initVideoClipStickyTransform(document)
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+  })()
+  window.addEventListener('resize', state.breakpointHandler)
+  window.addEventListener('orientationchange', state.breakpointHandler)
+
+  if (startIsMobile) {
+    // Désactivation complète sur mobile
+    destroyVideoClipStickyTransform()
+    return []
+  }
   const els = scope.querySelectorAll('.video.is-fixed .video-clip-inner')
   // Références pour les toggles auto first/last
   try {

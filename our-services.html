@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Mon Sep 01 2025 09:04:10 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Mon Sep 22 2025 11:24:47 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="689b3603a6ed82269ee752f7" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -54,187 +54,313 @@
       </div>
     </div>
   </div>
-  <div class="global w-embed">
-    <style>
-      /* ------------------------- Scaling System by Osmo [https://osmo.supply/] -------------------------  */
-      :root {
-        --size-unit: 16;
-        --size-container-ideal: 1440;
-        --size-container-min: 992px;
-        --size-container-max: 1920px;
-        --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
-        --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
-        --dot-shadow: 0px 0px 6px 0px rgba(0, 254, 165, 1), 0px 0px 11px 0px rgba(79, 255, 193, 1);
-      }
-
-      /* Tablet */
-      @media screen and (max-width: 991px) {
-        :root {
-          --size-container-ideal: 834;
-          --size-container-min: 768px;
-          --size-container-max: 991px;
-        }
-      }
-
-      /* Mobile Landscape */
-      @media screen and (max-width: 767px) {
-        :root {
-          --size-container-ideal: 550;
-          --size-container-min: 480px;
-          --size-container-max: 767px;
-        }
-      }
-
-      /* Mobile Portrait */
-      @media screen and (max-width: 479px) {
-        :root {
-          --size-container-ideal: 390;
-          --size-container-min: 320px;
-          --size-container-max: 479px;
-        }
-      }
-
-      body {
-        font-size: var(--size-font);
-      }
-
-      html,
-      body {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-smoothing: antialiased;
-        text-rendering: optimizeLegibility;
-      }
-
-      /* ------------------------- Hide Scrollbar -------------------------------------------------- */
-      body ::-webkit-scrollbar {
-        display: none;
-      }
-
-      body {
-        -ms-overflow-style: none;
-      }
-
-      html {
-        scrollbar-width: none;
-      }
-
-      /* ------------------------- body -------------------------------------------------- */
-      *,
-      *:after,
-      *:before {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: initial;
-      }
-
-      svg {
-        max-width: none;
-        height: auto;
-        box-sizing: border-box;
-        vertical-align: middle;
-      }
-
-      button {
-        padding: 0px;
-        background: transparent;
-        text-align: inherit;
-      }
-
-      ::selection {
-        background-color: black;
-        color: white;
-        text-shadow: none;
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      a,
-      button {
-        cursor: pointer;
-      }
-
-      textarea {
-        resize: none;
-      }
-
-      .is-eyebrow.is-black>.eyebrow-s {
-        color: var(--white);
-      }
-
-      .section_hero .body-xl {
-        opacity: 0;
-      }
-
-      .section_safety {
-        padding-top: 0rem;
-      }
-
-      .section_safety>.intro,
-      .section_technology>.intro {
-        padding-right: 0;
-      }
-
-      .svg-text {
-        width: 100%;
-        height: 100%;
-      }
-    </style>
+  <div class="site-grid">
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
   </div>
-  <div class="animations w-embed">
-    <style>
-      .video-inner {
-        position: relative;
-        /* nécessaire pour le masquage */
-        overflow: hidden;
-        /* on cache ce qui dépasse */
-        /*height: 400px;             juste pour l’exemple */
-        z-index: 0;
-        /* s'assurer que le pseudo passe derrière le contenu */
-      }
+  <div class="site-grid is-tablet">
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+    <div class="grid-column"></div>
+  </div>
+  <div class="global">
+    <div class="css-styles w-embed">
+      <style>
+        /* ------------------------- Scaling System by Osmo [https://osmo.supply/] -------------------------  */
+        :root {
+          --size-unit: 16;
+          --size-container-ideal: 1440;
+          --size-container-min: 992px;
+          --size-container-max: 1920px;
+          --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+          --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+        }
 
-      .video-fixed {
-        content: "";
-        position: fixed;
-        /* fixé au viewport */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        z-index: -1;
-        /* passe derrière le contenu de la div */
-      }
+        /* Tablet */
+        @media screen and (max-width: 991px) {
+          :root {
+            --size-container-ideal: 834;
+            --size-container-min: 768px;
+            --size-container-max: 991px;
+          }
+        }
 
-      #video-1::before {
-        background-image: url("https://cdn.prod.website-files.com/68a6f1839c241fc65368dbab/68a6f438f5b35c6c42118678_project-3.jpg");
-      }
+        /* Mobile Landscape */
+        @media screen and (max-width: 767px) {
+          :root {
+            --size-container-ideal: 550;
+            --size-container-min: 480px;
+            --size-container-max: 767px;
+          }
+        }
 
-      #video-2::before {
-        background-image: url("https://cdn.prod.website-files.com/68a6f1839c241fc65368dbab/68a6f4264df0addd22673621_project-1.jpg");
-      }
+        /* Mobile Portrait */
+        @media screen and (max-width: 479px) {
+          :root {
+            --size-container-ideal: 390;
+            --size-container-min: 320px;
+            --size-container-max: 479px;
+          }
+        }
 
-      #video-3::before {
-        background-image: url("https://cdn.prod.website-files.com/68a6f1839c241fc65368dbab/68a6f4343fd221a2e41bdf94_project-2.jpg");
-      }
+        body {
+          font-size: var(--size-font);
+        }
 
-      html.wf-design-mode>body>div.page-wrap>div>div.section_latest-technology>div.content>div {
-        overflow: hidden;
-      }
+        html,
+        body {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          font-smoothing: antialiased;
+          text-rendering: optimizeLegibility;
+        }
 
-      html.wf-design-mode>body>.loader {
-        display: none;
-      }
-    </style>
+        /* ------------------------- Hide Scrollbar -------------------------------------------------- */
+        body ::-webkit-scrollbar {
+          display: none;
+        }
+
+        body {
+          -ms-overflow-style: none;
+        }
+
+        html {
+          scrollbar-width: none;
+        }
+
+        /* ------------------------- body -------------------------------------------------- */
+        *,
+        *:after,
+        *:before {
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+        }
+
+        html {
+          scroll-behavior: initial;
+        }
+
+        svg {
+          max-width: none;
+          height: auto;
+          box-sizing: border-box;
+          vertical-align: middle;
+        }
+
+        button {
+          padding: 0px;
+          background: transparent;
+          text-align: inherit;
+        }
+
+        ::selection {
+          background-color: black;
+          color: white;
+          text-shadow: none;
+        }
+
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+
+        a,
+        button {
+          cursor: pointer;
+        }
+
+        textarea {
+          resize: none;
+        }
+
+        .is-eyebrow.is-black>.eyebrow-s {
+          color: var(--white);
+        }
+
+        .section_hero .body-xl {
+          opacity: 0;
+        }
+
+        .section_safety {
+          padding-top: 0rem;
+        }
+
+        .svg-text {
+          width: 100%;
+          height: 100%;
+        }
+      </style>
+    </div>
+    <div class="css-animations w-embed">
+      <style>
+        .video-inner {
+          position: relative;
+          overflow: hidden;
+          z-index: 0;
+        }
+
+        .toggle.is-green>.toggle-option>.toggle-id {
+          color: var(--primary);
+        }
+
+        .toggle.is-green>.toggle-option>.toggle-id.is-active {
+          color: var(--white);
+        }
+
+        .toggle.is-white>.toggle-option>.toggle-id {
+          color: var(--primary);
+        }
+
+        .toggle.is-white>.toggle-option>.toggle-id.is-active {
+          color: var(--white);
+        }
+
+        .toggle.is-white>.toggle-indicator {
+          background-color: var(--primary);
+        }
+
+        .toggle.is-white {
+          width: 8.75em;
+        }
+
+        .toggle.is-white>.toggle-option,
+        .toggle.is-white>.toggle-indicator {
+          width: 4em;
+        }
+
+        html.wf-design-mode>body>div.page-wrap>div>div.section_latest-technology>div.content>div {
+          overflow: hidden;
+        }
+
+        html.wf-design-mode>body>.loader {
+          display: none;
+        }
+
+        .section_positions .sissmac_inner>.sissmac-row:last-child {
+          padding-bottom: 4em
+        }
+      </style>
+    </div>
+    <div class="css-responsive w-embed">
+      <style>
+        @media screen and (max-width: 991px) {
+          .section_values .body-xxl {
+            font-size: 4em;
+          }
+
+          .workshops .body-xl {
+            font-size: 3.5em;
+          }
+
+          .workshops .body-s {
+            font-size: 1em;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .service-card .body-s {
+            display: none;
+          }
+
+          .services-viewer .button {
+            margin-top: 3em;
+          }
+
+          .minerals_right .button {
+            display: none;
+          }
+
+          .minerals_left .body-xl {
+            font-size: 3.5em;
+          }
+
+          .section_safety .content>.content_column:nth-of-type(2) {
+            order: 2;
+          }
+
+          .section_technology .text-button {
+            padding: 0 1em;
+          }
+
+          .footer .is-eyebrow {
+            padding: 0.25em;
+          }
+
+          .footer-links_col .eyebrow-s {
+            font-size: 0.75em;
+          }
+
+          .section_about .button {
+            margin-bottom: 5em;
+          }
+
+          .workshops .body-xl {
+            font-size: 2em;
+          }
+
+          .workshops .body-s {
+            font-size: 0.875em;
+            font-weight: 500;
+          }
+
+          .machine-grid_mobile .machine_button {
+            background-color: var(--light-green);
+          }
+
+          .workshops-sm-wrap .body-xl,
+          .workshops-sm-wrap p {
+            text-align: left;
+          }
+
+          .workshops-sm-wrap .body-xl {
+            font-size: 1.5em;
+          }
+
+          .workshops-sm-wrap .body-s {
+            font-size: 0.75em;
+          }
+        }
+
+        @media (max-width: 479px) {
+          .minerals-inner .col-3:nth-child(2) {
+            order: 3;
+          }
+
+          .minerals-inner .col-6 {
+            order: 2;
+          }
+
+          .minerals-inner .col-3:last-of-type {
+            order: 1;
+          }
+
+          .minerals-names .body-xl {
+            padding-bottom: 0.125em;
+          }
+
+          .workshops-sm-wrap .body-xl,
+          .workshops-sm-wrap p {
+            text-align: center;
+          }
+        }
+      </style>
+    </div>
   </div>
   <div class="navbar">
     <a aria-label="home" href="index.html" class="is-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg"
@@ -260,9 +386,8 @@
           d="M85.7826 12.8989C85.6561 13.1879 85.5458 13.4711 85.4518 13.7485C85.3578 14.0236 85.2823 14.2894 85.2197 14.5482C85.1698 14.3045 85.0978 14.048 85.0084 13.7799C84.9202 13.5094 84.8077 13.217 84.673 12.8989L82.3715 7.42773H80.6387L85.2185 18.0962L89.7984 7.42773H88.0725L85.7814 12.8989H85.7826Z"
           fill="var(--white)" class="logo-path"></path>
         <path d="M92.4678 7.62695H90.7988V17.895H92.4678V7.62695Z" fill="var(--white)" class="logo-path"></path>
-      </svg></a>
-    <link rel="prefetch" href="/"><button aria-expanded="false" aria-controls="nav-inner" class="is-menu"><span
-        class="is-label">Menu</span>
+      </svg></a><button aria-expanded="false" aria-controls="nav-inner" class="is-menu"><span
+        class="is-label is-menu">Menu</span>
       <div class="menu-icon">
         <div class="menu-icon_bar is-1"></div>
         <div class="menu-icon_bar is-2"></div>
@@ -272,7 +397,7 @@
   <div id="nav-inner" class="nav-inner">
     <ul role="list" class="links">
       <li class="link-item">
-        <a data-w-id="a4e76833-20d0-3f69-847c-e4a0dc68cc22" href="our-services.html" aria-current="page"
+        <a data-w-id="1bb2d4ce-1036-11f0-8f9d-92dc0700ba18" href="our-services.html" aria-current="page"
           class="navlink w-inline-block w--current"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
@@ -291,7 +416,7 @@
           </svg><span class="navlink_label">Technology</span></a>
       </li>
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="safety.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
@@ -302,7 +427,7 @@
     </ul>
     <ul role="list" class="links">
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="about-us.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
@@ -311,7 +436,7 @@
           </svg><span class="navlink_label">About us</span></a>
       </li>
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="blog.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
@@ -320,24 +445,25 @@
           </svg><span class="navlink_label">Blog</span></a>
       </li>
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="contact.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
               d="M14.0293 9.26572C14.0293 8.67179 14.7474 8.37434 15.1674 8.79432L22.8716 16.4986C23.1319 16.7589 23.1319 17.181 22.8716 17.4414L15.1674 25.1456C14.7474 25.5656 14.0293 25.2681 14.0293 24.6742V9.26572Z"
               fill="currentColor" class="icon--inner"></path>
           </svg><span class="navlink_label">Contact</span></a>
+        <link rel="prerender" href="/contact">
       </li>
     </ul>
     <ul role="list" class="links">
       <li class="link-item">
-        <a href="#" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+        <a href="join-the-team.html" class="navlink w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%"
             viewbox="0 0 34 34" fill="none" class="navlink_icon">
             <rect x="0.0585938" width="33.9411" height="33.9411" rx="4" fill="currentColor"></rect>
             <path
               d="M14.0293 9.26572C14.0293 8.67179 14.7474 8.37434 15.1674 8.79432L22.8716 16.4986C23.1319 16.7589 23.1319 17.181 22.8716 17.4414L15.1674 25.1456C14.7474 25.5656 14.0293 25.2681 14.0293 24.6742V9.26572Z"
               fill="currentColor" class="icon--inner"></path>
-          </svg><span class="navlink_label">Civil construction</span></a>
+          </svg><span class="navlink_label">Join the Team</span></a>
       </li>
       <li class="link-item">
         <a href="#" class="navlink-locale w-inline-block"><span class="navlink_label">ES</span></a>
@@ -405,10 +531,8 @@
           <div id="w-node-_856ffc81-c0d5-5e76-e729-7b745be6dc6e-9ee752f7" class="w-layout-hflex hero-bottom_cards">
             <div id="w-node-c93c8f4e-7912-3b01-975e-897eec858b94-9ee752f7"
               class="w-layout-hflex hero-bottom_cards-wrapper">
-              <a pt-inner="" href="technology.html" class="card w-inline-block"><img src="images/technology_1.avif"
-                  loading="lazy" sizes="(max-width: 2880px) 100vw, 2880px"
-                  srcset="images/technology_1technology.avif 500w, images/technology_1technology.avif 800w, images/technology_1technology.avif 1080w, images/technology_1.avif 2880w"
-                  alt="" class="card_bg">
+              <a pt-inner="" href="technology.html" class="card w-inline-block"><img src="images/technology-sm_1.avif"
+                  loading="lazy" alt="" class="card_bg">
                 <div class="button-sm">
                   <div class="button-sm_inner">
                     <div class="w-layout-hflex button-sm_inner-left"><svg xmlns="http://www.w3.org/2000/svg"
@@ -425,8 +549,8 @@
                   </div>
                 </div>
               </a>
-              <a pt-inner="" href="#" class="card w-inline-block"><img src="images/card-3_1.avif" loading="lazy" alt=""
-                  class="card_bg">
+              <a pt-inner="" href="safety.html" class="card w-inline-block"><img src="images/safety-sm_2.avif"
+                  loading="lazy" alt="" class="card_bg">
                 <div class="button-sm">
                   <div class="button-sm_inner">
                     <div class="w-layout-hflex button-sm_inner-left"><svg xmlns="http://www.w3.org/2000/svg"
@@ -447,9 +571,9 @@
           </div>
         </div>
         <div class="hero-background">
-          <div class="background-inner"><img src="images/Services_1.avif" loading="lazy"
-              sizes="(max-width: 2160px) 100vw, 2160px"
-              srcset="images/Services_1Services.avif 500w, images/Services_1Services.avif 800w, images/Services_1Services.avif 1080w, images/Services_1.avif 2160w"
+          <div class="background-inner"><img src="images/our-services_1.avif" loading="lazy"
+              sizes="(max-width: 2880px) 100vw, 2880px"
+              srcset="images/our-services_1our-services.avif 500w, images/our-services_1our-services.avif 800w, images/our-services_1our-services.avif 1080w, images/our-services_1.avif 2880w"
               alt="" class="background_image"></div>
         </div>
       </div>
@@ -617,15 +741,19 @@
                         fill="#151515"></path>
                     </svg></div>
                 </div>
-              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="100vw"
+              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt=""
-                class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt=""
-                class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt=""
-                class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt=""
-                class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt=""
                 class="service-image is-5">
             </div>
@@ -639,10 +767,14 @@
       <div bg="white" class="section_minerals">
         <div class="minerals-stage">
           <div class="minerals-inner">
-            <div id="w-node-_4b388654-c447-7f40-5378-71757500adee-9ee752f7" class="col-3">
+            <div class="eyebrows is-top is-mobile">
+              <div class="is-eyebrow"><span class="eyebrow-s">S.03</span></div>
+              <div class="is-eyebrow is-black"><span class="eyebrow-s">Minerals</span></div>
+            </div>
+            <div id="w-node-abbd744e-85d6-37c4-c73f-39bca1cbb80f-9ee752f7" class="col-3">
               <div class="minerals_left">
-                <div class="eyebrows is-top">
-                  <div class="is-eyebrow"><span class="eyebrow-s">S.02</span></div>
+                <div class="eyebrows is-top is-d">
+                  <div class="is-eyebrow"><span class="eyebrow-s">S.03</span></div>
                   <div class="is-eyebrow is-black"><span class="eyebrow-s">Minerals</span></div>
                 </div>
                 <div class="minerals-list">
@@ -653,7 +785,7 @@
                 </div>
               </div>
             </div>
-            <div id="w-node-_4b388654-c447-7f40-5378-71757500ae06-9ee752f7" class="col-6">
+            <div id="w-node-abbd744e-85d6-37c4-c73f-39bca1cbb827-9ee752f7" class="col-6">
               <div class="minerals_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 616 616"
                   fill="none" class="circle is-1">
                   <g opacity="0.3">
@@ -1040,7 +1172,7 @@
                 <div class="minerals-slider_overlay"></div>
               </div>
             </div>
-            <div id="w-node-_4b388654-c447-7f40-5378-71757500af81-9ee752f7" class="col-3">
+            <div id="w-node-abbd744e-85d6-37c4-c73f-39bca1cbb9a2-9ee752f7" class="col-3">
               <div class="minerals_right">
                 <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html"
                   aria-current="page" class="button w-inline-block w--current">
@@ -1070,7 +1202,7 @@
                       class="eyebrow-m o-60"> Tonnes mined</span>
                   </div>
                   <div class="eyebrow-line"><span class="eyebrow-m o-60">[</span>
-                    <div class="eyebrow-slider"><span class="eyebrow-m o-60">2025</span><span
+                    <div class="eyebrow-slider"><span class="eyebrow-m is-o-60">2025</span><span
                         class="eyebrow-m o-60">2024</span><span class="eyebrow-m o-60">2025</span><span
                         class="eyebrow-m o-60">2023</span><span class="eyebrow-m o-60">2022</span></div><span
                       class="eyebrow-m o-60">]</span>
@@ -1091,8 +1223,8 @@
         </div>
         <div class="content">
           <div class="map-section">
-            <div class="is-grid-12">
-              <div id="w-node-fd12c596-39d3-3e87-fc2b-4f49f1ecad8c-9ee752f7" class="is-col-9">
+            <div class="is-grid-12 is-map">
+              <div id="w-node-fd12c596-39d3-3e87-fc2b-4f49f1ecad8c-9ee752f7" class="is-col-9 is-map">
                 <div class="map-wrapper"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 1084 900"
                     fill="none" class="is-map">
                     <g id="Map">
@@ -1246,7 +1378,7 @@
                   </div>
                 </div>
               </div>
-              <div id="w-node-_9843294e-d475-27fe-42dc-3905c3627d34-9ee752f7" class="is-col-3">
+              <div id="w-node-_9843294e-d475-27fe-42dc-3905c3627d34-9ee752f7" class="is-col-3 is-map">
                 <div class="cards-wrapper">
                   <div class="projects-wrapper w-dyn-list">
                     <div role="list" class="projects-list w-dyn-items">
@@ -1414,7 +1546,7 @@
               </div>
               <div id="w-node-_23fc9992-383f-96d7-d2f7-0d0e46e3b44c-9ee752f7" class="video is-fixed">
                 <div id="video-3" class="video-inner"><img src="images/service-card-2_1.avif" loading="lazy"
-                    sizes="100vw"
+                    sizes="(max-width: 896px) 100vw, 896px"
                     srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt=""
                     class="video-clip-inner"></div>
               </div>
@@ -1433,7 +1565,7 @@
               </div>
               <div id="w-node-_10497ea3-bdc0-abcd-dcd3-007e4c500172-9ee752f7" class="video is-fixed">
                 <div id="video-3" class="video-inner"><img src="images/service-card-1_1.avif" loading="lazy"
-                    sizes="100vw"
+                    sizes="(max-width: 896px) 100vw, 896px"
                     srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt=""
                     class="video-clip-inner"></div>
               </div>
@@ -1451,7 +1583,7 @@
               </div>
               <div id="w-node-f06b02cc-a897-5b31-d904-7d34b518a522-9ee752f7" class="video is-fixed">
                 <div id="video-3" class="video-inner"><img src="images/image-about-section_1.avif" loading="lazy"
-                    sizes="100vw"
+                    sizes="(max-width: 1360px) 100vw, 1360px"
                     srcset="images/image-about-section_1image-about-section.avif 500w, images/image-about-section_1image-about-section.avif 800w, images/image-about-section_1image-about-section.avif 1080w, images/image-about-section_1.avif 1360w"
                     alt="" class="video-clip-inner"></div>
               </div>
@@ -1487,7 +1619,8 @@
                 </div>
               </div>
               <div id="w-node-d2606f86-34bd-c0e3-463b-efb17495d41c-9ee752f7" class="video is-fixed">
-                <div id="video-3" class="video-inner"><img src="images/home_bg_1.avif" loading="lazy" sizes="100vw"
+                <div id="video-3" class="video-inner"><img src="images/home_bg_1.avif" loading="lazy"
+                    sizes="(max-width: 2880px) 100vw, 2880px"
                     srcset="images/home_bg_1home_bg.avif 500w, images/home_bg_1home_bg.avif 800w, images/home_bg_1home_bg.avif 1080w, images/home_bg_1home_bg.avif 1600w, images/home_bg_1.avif 2880w"
                     alt="" class="video-clip-inner"></div>
               </div>
@@ -1506,7 +1639,7 @@
               </div>
               <div data-video="last" id="w-node-_7b5a870e-d751-99a0-91c0-4bcfb850648b-9ee752f7" class="video is-fixed">
                 <div id="video-3" class="video-inner"><img src="images/service-card-3_1.avif" loading="lazy"
-                    sizes="100vw"
+                    sizes="(max-width: 896px) 100vw, 896px"
                     srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt=""
                     class="video-clip-inner"></div>
               </div>
@@ -1531,13 +1664,14 @@
       <div bg="black" class="section_next">
         <div class="intro_next">
           <div class="eyebrows is-white">
-            <div class="is-eyebrow"><span class="eyebrow-s">S.08</span></div>
+            <div class="is-eyebrow"><span class="eyebrow-s">S.05</span></div>
             <div class="is-eyebrow"><span class="eyebrow-s">Link</span></div>
           </div>
           <p tr="1" class="body-next">Next page</p>
         </div>
         <div class="next-button-wrapper">
-          <a data-w-id="687c3d2f-385d-93aa-43fe-a460e90d552d" href="#" class="button-white w-inline-block">
+          <a pt-next="" data-w-id="687c3d2f-385d-93aa-43fe-a460e90d552d" href="technology.html"
+            class="button-white w-inline-block">
             <div class="button-white_inner">
               <div class="w-layout-hflex button-white_inner-content"><svg xmlns="http://www.w3.org/2000/svg"
                   width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
@@ -1545,7 +1679,7 @@
                   <path
                     d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z"
                     fill="currentColor" class="arrow-white-1_arrow"></path>
-                </svg><span class="button-white_label">Our Services</span><svg xmlns="http://www.w3.org/2000/svg"
+                </svg><span class="button-white_label">Technology</span><svg xmlns="http://www.w3.org/2000/svg"
                   width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square">
                   <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-2_bg"></rect>
                   <path
@@ -1554,11 +1688,14 @@
                 </svg></div>
             </div>
           </a>
+          <link rel="prefetch" href="/technology">
         </div>
-        <div class="next_background"><img src="images/Services_1.avif" loading="lazy"
-            sizes="(max-width: 2160px) 100vw, 2160px"
-            srcset="images/Services_1Services.avif 500w, images/Services_1Services.avif 800w, images/Services_1Services.avif 1080w, images/Services_1.avif 2160w"
-            alt="" class="background"></div>
+        <div class="next_background-wrap">
+          <div class="next_background"><img src="images/technology_1.avif" loading="lazy"
+              sizes="(max-width: 2880px) 100vw, 2880px"
+              srcset="images/technology_1technology.avif 500w, images/technology_1technology.avif 800w, images/technology_1technology.avif 1080w, images/technology_1.avif 2880w"
+              alt="" class="background"></div>
+        </div>
       </div>
       <div class="footer">
         <div class="footer-inner">
@@ -1615,23 +1752,23 @@
             </div>
           </div>
           <div id="w-node-_1f5661f6-8f20-019f-338a-f39a75305b95-75305b7a" class="footer_right">
-            <div class="footer-links_col">
+            <div id="w-node-_1f5661f6-8f20-019f-338a-f39a75305b96-75305b7a" class="footer-links_col">
               <div class="is-eyebrow"><span class="eyebrow-s">Explore</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a href="#" class="footer-link">Services</a>
+                  <a href="our-services.html" aria-current="page" class="footer-link w--current">Services</a>
                 </li>
                 <li>
                   <a href="#" class="footer-link">Projects</a>
                 </li>
                 <li>
-                  <a href="#" class="footer-link">Technology</a>
+                  <a href="technology.html" class="footer-link">Technology</a>
                 </li>
                 <li>
                   <a href="#" class="footer-link">About us</a>
                 </li>
                 <li>
-                  <a href="#" class="footer-link">Job Offers</a>
+                  <a href="join-the-team.html" class="footer-link">Join the team</a>
                 </li>
               </ul>
             </div>
@@ -1639,18 +1776,18 @@
               <div class="is-eyebrow"><span class="eyebrow-s">Library</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a href="#" class="footer-link">News</a>
+                  <a pt-inner="" href="blog.html" class="footer-link">News</a>
                 </li>
                 <li>
                   <a href="#" class="footer-link">CoMinVi University</a>
                 </li>
               </ul>
             </div>
-            <div class="footer-links_col">
+            <div id="w-node-_1f5661f6-8f20-019f-338a-f39a75305bb5-75305b7a" class="footer-links_col">
               <div class="is-eyebrow"><span class="eyebrow-s">Legal</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a href="#" class="footer-link">Notice of Privacy</a>
+                  <a href="notice-of-privacy.html" class="footer-link">Notice of Privacy</a>
                 </li>
               </ul>
             </div>

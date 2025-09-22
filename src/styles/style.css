@@ -396,4 +396,8 @@ figure .image-wrapper {
     visibility: hidden;
     pointer-events: none;
   }
+
+  .processes>.process:nth-child(10) .process_inner {
+    border: none;
+  }
 }

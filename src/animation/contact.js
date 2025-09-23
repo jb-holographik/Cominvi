@@ -203,6 +203,45 @@ export function initContact(root = document) {
   // Initialize the JS Map immediately (SDK only)
   bindMapScrollPause()
   ensureJsMap()
+
+  // On mobile, move left content inside right content after contact infos
+  try {
+    const isMobile =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 767px)').matches
+    if (isMobile) {
+      // Prefer generic classes if present, else fallback to contact page classes
+      const contentLeft =
+        (root && root.querySelector && root.querySelector('.content_left')) ||
+        scope.querySelector('.content_left') ||
+        (root && root.querySelector && root.querySelector('.contact_map')) ||
+        scope.querySelector('.contact_map')
+      const contentRight =
+        (root && root.querySelector && root.querySelector('.content_right')) ||
+        scope.querySelector('.content_right') ||
+        (root && root.querySelector && root.querySelector('.contact_right')) ||
+        scope.querySelector('.contact_right')
+      const contactInfos =
+        (root && root.querySelector && root.querySelector('.contact_infos')) ||
+        scope.querySelector('.contact_infos')
+      if (
+        contentLeft &&
+        contentRight &&
+        contactInfos &&
+        !contentLeft.__mobileReparented
+      ) {
+        contactInfos.insertAdjacentElement('afterend', contentLeft)
+        try {
+          contentLeft.__mobileReparented = true
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
 }
 
 // Sets the width of `.contact_map` to 50.8em. When provided a timeline config,
@@ -244,7 +283,14 @@ export function initContactHero(root = document, opts = {}) {
       opts.delay >= 0
     const delay = isValidDelay ? opts.delay : 0.5
 
-    if (opts && opts.animate) {
+    const isMobile =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 767px)').matches
+
+    const shouldAnimate = !!(opts && opts.animate) && !isMobile
+
+    if (shouldAnimate) {
       try {
         const computed =
           (window.getComputedStyle && window.getComputedStyle(el)) || null
@@ -274,9 +320,12 @@ export function initContactHero(root = document, opts = {}) {
         // fallback to immediate
       }
     }
-    setTimeout(() => {
-      el.style.width = widthValue
-    }, Math.max(0, Math.round(delay * 1000)))
+    // On mobile, do not apply the fixed width at all
+    if (!isMobile) {
+      setTimeout(() => {
+        el.style.width = widthValue
+      }, Math.max(0, Math.round(delay * 1000)))
+    }
   } catch (e) {
     // ignore
   }

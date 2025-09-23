@@ -190,7 +190,11 @@ export function initBlog(root = document) {
   // Abbreviate blog dates (first word → 3 letters) similar to join-the-team
   try {
     const scope2 = root && root.nodeType === 1 ? root : document
-    const dateEls = Array.from(scope2.querySelectorAll('.blog-date .eyebrow-m'))
+    const dateEls = Array.from(
+      scope2.querySelectorAll(
+        '.blog-date .eyebrow-m, .blog-main_link .eyebrow-m'
+      )
+    )
     if (dateEls.length) {
       dateEls.forEach((element) => {
         try {

@@ -201,6 +201,8 @@ function ensureState() {
       tabletLoggedElements: false,
       tabletStickyStarted: false,
       tabletSectionStartTop: null,
+      // Debug: track last whole-vh step during handheld scrolling
+      lastVHStep: -1,
       // Track current breakpoint mode to allow re-init on resize
       lastIsHandheld: null,
     }
@@ -210,7 +212,7 @@ function ensureState() {
 
 function resetTextsAndImagesToZero(root = document) {
   try {
-    const state = ensureState()
+    ensureState()
     const scope = root && root.querySelector ? root : document
     let isHandheld = false
     try {
@@ -219,8 +221,9 @@ function resetTextsAndImagesToZero(root = document) {
     } catch (e) {
       isHandheld = false
     }
-    const titles = Array.isArray(state.titles) ? state.titles : []
-    const descs = Array.isArray(state.descs) ? state.descs : []
+    const st = ensureState()
+    const titles = Array.isArray(st.titles) ? st.titles : []
+    const descs = Array.isArray(st.descs) ? st.descs : []
     const unsplit = (el) => {
       try {
         if (!el) return
@@ -288,7 +291,7 @@ function resetTextsAndImagesToZero(root = document) {
       } catch (e) {
         // ignore
       }
-      state.tabletActiveIndex = 0
+      st.tabletActiveIndex = 0
     } else {
       try {
         const wrapsRoot = scope.querySelector('.workshops_right') || scope
@@ -301,7 +304,7 @@ function resetTextsAndImagesToZero(root = document) {
       }
       updateGreenToggle(0, scope)
     }
-    state.currentTextIndex = 0
+    st.currentTextIndex = 0
   } catch (e) {
     // ignore
   }
@@ -311,18 +314,8 @@ function updateGreenToggle(index, root) {
   try {
     const scope = root && root.querySelector ? root : document
     const toggle = scope.querySelector('.toggle.is-green')
-    const state = ensureState()
-    if (state.debug) {
-      try {
-        console.log('[WS] updateGreenToggle', {
-          index,
-          hasToggle: !!toggle,
-          scopeTag: scope && scope.tagName,
-        })
-      } catch (e) {
-        // ignore
-      }
-    }
+    ensureState()
+    // trimmed debug
     if (!toggle) return
     const options = toggle.querySelectorAll('.toggle-option')
     const ids = toggle.querySelectorAll('.toggle-id')
@@ -402,34 +395,14 @@ function startLoop() {
         }
       })()
 
-      if (state.debug) {
-        try {
-          const w = window.innerWidth || document.documentElement.clientWidth
-          console.log('[WS] tick', {
-            isHandheld,
-            width: w,
-            offsetPx: state.offsetPx,
-          })
-        } catch (e) {
-          // ignore
-        }
-      }
+      // trimmed debug
 
       if (isHandheld) {
         // Scope to .workshops_left-sm
         const container = (state.scope || document).querySelector(
           '.workshops_left-sm'
         )
-        if (state.debug) {
-          try {
-            console.log('[WS] handheld path', {
-              hasContainer: !!container,
-              scopeIsDoc: state.scope === document,
-            })
-          } catch (e) {
-            // ignore
-          }
-        }
+        // trimmed debug
         if (!container) {
           state.tabletStickyStartY = null
           state.tabletActiveIndex = 0
@@ -449,8 +422,7 @@ function startLoop() {
                 w.style.position = 'absolute'
                 w.style.zIndex = String(z)
               })
-              if (state.debug)
-                console.log('[WS] z-index applied to wraps', wraps.length)
+              // trimmed debug
             }
           } catch (e) {
             // ignore
@@ -459,30 +431,14 @@ function startLoop() {
         }
 
         // One-time elements found log
-        if (!state.tabletLoggedElements) {
-          try {
-            const titles = (state.titles || []).length
-            const descs = (state.descs || []).length
-            const wraps = container.querySelectorAll('.worskshops_img-wrap')
-            console.log('[WS] elements found', {
-              container: true,
-              titles,
-              descs,
-              wraps: wraps.length,
-            })
-          } catch (e) {
-            // ignore
-          }
-          state.tabletLoggedElements = true
-        }
+        if (!state.tabletLoggedElements) state.tabletLoggedElements = true
 
         // Detect sticky start (top <= offset)
         let started = false
         try {
           const cr = container.getBoundingClientRect()
           started = cr.top <= state.offsetPx
-          if (started && !state.tabletStickyStarted)
-            console.log('[WS] sticky start')
+          // trimmed debug
           state.tabletStickyStarted = state.tabletStickyStarted || started
         } catch (e) {
           started = false
@@ -497,16 +453,7 @@ function startLoop() {
             // Reset texts visibility to first
             const titles = state.titles || []
             const descs = state.descs || []
-            if (state.debug) {
-              try {
-                console.log('[WS] reset before sticky', {
-                  titles: titles.length,
-                  descs: descs.length,
-                })
-              } catch (e) {
-                // ignore
-              }
-            }
+            // trimmed debug
             titles.forEach((el, i) => {
               const on = i === 0
               if (on) {
@@ -541,8 +488,7 @@ function startLoop() {
               wraps.forEach((w) => {
                 w.style.opacity = '1'
               })
-              if (state.debug)
-                console.log('[WS] reset wraps opacity to 1', wraps.length)
+              // trimmed debug
             } catch (e) {
               // ignore
             }
@@ -560,7 +506,11 @@ function startLoop() {
               (container.closest && container.closest('.workshops')) ||
               (state.scope || document).querySelector('.workshops')
             const wr = workshops ? workshops.getBoundingClientRect() : null
-            state.tabletSectionStartTop = wr ? wr.top : 0
+            // If we are already past the sticky threshold on resize, reconstruct
+            // the section start top so that delta reflects current progress.
+            const cr = container.getBoundingClientRect()
+            const passed = Math.max(0, state.offsetPx - cr.top)
+            state.tabletSectionStartTop = wr ? wr.top + passed : 0
           } catch (e) {
             state.tabletSectionStartTop = 0
           }
@@ -582,9 +532,27 @@ function startLoop() {
           delta = 0
         }
 
-        // Compute index at 50vh intervals
+        // Compute index at 50vh intervals (0 -> <50vh, 1 -> 50-<100vh, 2 -> >=100vh, ...)
         const step = Math.max(1, vh * 0.5)
         let idx = Math.floor(delta / step)
+        try {
+          const deltaVhUnits = vh ? (delta * 100) / vh : 0
+          const currentVHStep = Math.floor(deltaVhUnits)
+          if (state.lastVHStep < 0) {
+            state.lastVHStep = currentVHStep
+          } else if (currentVHStep > state.lastVHStep) {
+            // Catch up: log once per missing 1vh step
+            while (state.lastVHStep < currentVHStep) {
+              state.lastVHStep += 1
+              console.log('1vh scrollé')
+            }
+          } else if (currentVHStep < state.lastVHStep) {
+            // Scrolling up: rebase to current step to avoid spam
+            state.lastVHStep = currentVHStep
+          }
+        } catch (e) {
+          // ignore
+        }
         const titles = state.titles || []
         const descs = state.descs || []
         const imgWraps = container.querySelectorAll('.worskshops_img-wrap')
@@ -600,23 +568,10 @@ function startLoop() {
         if (maxLen >= 0) idx = Math.min(idx, maxLen)
         else idx = 0
 
-        if (state.debug) {
-          try {
-            console.log('[WS] compute index', {
-              step,
-              idx,
-              maxLen,
-              titles: titles.length,
-              descs: descs.length,
-              wraps: imgWraps.length,
-            })
-          } catch (e) {
-            // ignore
-          }
-        }
+        // trimmed debug
 
         if (idx !== state.tabletActiveIndex) {
-          console.log('[WS] switch', { from: state.tabletActiveIndex, to: idx })
+          // trimmed debug
           // Update green toggle to reflect active index (scope to tablet container)
           updateGreenToggle(idx, container)
 
@@ -688,7 +643,7 @@ function startLoop() {
             }
             addLineAnim(titleIn)
             addLineAnim(descIn)
-            if (state.debug) console.log('[WS] synced text+image switch', idx)
+            // trimmed debug
           } catch (e) {
             // Fallback without gsap timeline
             try {
@@ -726,10 +681,13 @@ function startLoop() {
         }
       })
 
-      // Détermine si le dernier wrapper a atteint le seuil (50% viewport): si oui, on arrête le pin
+      // Détermine si le dernier wrapper (desktop uniquement) a atteint le seuil (50% viewport): si oui, on arrête le pin
       let lastWrapTop = Infinity
       try {
-        const wraps = document.querySelectorAll('.worskshops_img-wrap')
+        const wrapsRoot =
+          (state.scope || document).querySelector('.workshops_right') ||
+          document
+        const wraps = wrapsRoot.querySelectorAll('.worskshops_img-wrap')
         if (wraps && wraps.length) {
           const lastWrap = wraps[wraps.length - 1]
           lastWrapTop = lastWrap.getBoundingClientRect().top
@@ -766,7 +724,7 @@ function startLoop() {
           document
         const wraps = wrapsRoot.querySelectorAll('.worskshops_img-wrap')
         if (wraps && wraps.length) {
-          // Before sticky: ensure index 0 is visible and do not advance
+          // Before sticky (desktop): ensure index 0 is visible and do not advance
           if (!groupActive && !groupEnded) {
             if (state.currentTextIndex !== 0) {
               const titles = state.titles || []
@@ -785,9 +743,9 @@ function startLoop() {
                 el.style.visibility = on ? 'visible' : 'hidden'
                 el.style.pointerEvents = on ? 'auto' : 'none'
               })
-              // Reset images opacity as well
-              wraps.forEach((w, i) => {
-                w.style.opacity = i < 0 ? '0' : '1'
+              // Reset images opacity as well (keep all visible before sticky)
+              wraps.forEach((w) => {
+                w.style.opacity = '1'
               })
               updateGreenToggle(0)
               state.currentTextIndex = 0
@@ -1081,7 +1039,63 @@ export function initWorkshopsStickyImages(root = document) {
         if (currIsHandheld) {
           st.tabletSectionStartTop = null
           st.tabletLoggedElements = false
+          st.tabletStickyStarted = false
+          st.tabletStickyStartY = null
+          st.tabletActiveIndex = 0
         }
+      } catch (e) {
+        // ignore
+      }
+    }
+    // Robust snap: align .section_workshops top to viewport top across a few RAFs
+    const getScroller = () => {
+      try {
+        if (
+          window.__lenisWrapper &&
+          window.__lenisWrapper.scrollTop !== undefined
+        )
+          return { type: 'element', el: window.__lenisWrapper }
+      } catch (e) {
+        // ignore
+      }
+      try {
+        const el =
+          document.scrollingElement || document.documentElement || document.body
+        return { type: 'element', el }
+      } catch (e) {
+        return { type: 'window', el: null }
+      }
+    }
+    const snapSectionTopToViewport = () => {
+      try {
+        const scope2 = state.scope || document
+        const section = scope2.querySelector('.section_workshops') || null
+        if (!section) return
+        let attempts = 0
+        const step = () => {
+          try {
+            const scroller = getScroller()
+            const currY =
+              scroller.type === 'element'
+                ? scroller.el.scrollTop || 0
+                : window.pageYOffset || 0
+            const sr = section.getBoundingClientRect()
+            const targetY = currY + sr.top
+            if (Math.abs(sr.top) > 1) {
+              if (scroller.type === 'element') scroller.el.scrollTop = targetY
+              else window.scrollTo(0, targetY)
+            }
+          } catch (e) {
+            // ignore
+          }
+          attempts += 1
+          if (attempts < 3) requestAnimationFrame(step)
+        }
+        requestAnimationFrame(step)
+        // Reset sticky state so 50vh logic repart correctement
+        state.tabletStickyStarted = false
+        state.lastVHStep = -1
+        state.tabletSectionStartTop = 0
       } catch (e) {
         // ignore
       }
@@ -1108,10 +1122,16 @@ export function initWorkshopsStickyImages(root = document) {
           state.lastIsHandheld = currIsHandheld
           try {
             initWorkshopsStickyImages(state.scope || document)
-            // Force position 0 after re-init
-            requestAnimationFrame(() =>
+            // Ensure mobile/desktop visibility is set correctly right after re-init
+            requestAnimationFrame(() => {
               resetTextsAndImagesToZero(state.scope || document)
-            )
+              // Handheld: always snap section top to viewport top after re-init
+              if (currIsHandheld) {
+                snapSectionTopToViewport()
+                state.tabletStickyStarted = false
+                state.lastVHStep = -1
+              }
+            })
           } catch (e) {
             // ignore
           }
@@ -1129,6 +1149,8 @@ export function initWorkshopsStickyImages(root = document) {
         // And force a resync of visibility/indices to the new layout
         resyncAfterResize(currIsHandheld)
         resetTextsAndImagesToZero(state.scope || document)
+        // Handheld: always snap section top to viewport top on same-mode resize
+        if (currIsHandheld) snapSectionTopToViewport()
       }, 100)
     }
   })()
@@ -1137,10 +1159,13 @@ export function initWorkshopsStickyImages(root = document) {
   // Init texts visibility: show first, hide others
   try {
     const isTabletInit = isHandheld
-    // Reset tablet flags on (re)init
+    // Reset tablet/mobile flags on (re)init to ensure proper behavior after breakpoint changes
     state.tabletZIndexed = false
     state.tabletStickyStartY = null
     state.tabletActiveIndex = 0
+    state.tabletLoggedElements = false
+    state.tabletStickyStarted = false
+    state.tabletSectionStartTop = null
     // Prefer mobile/tablet specific blocks when available; fallback to default
     const titlesSm = Array.from(
       (scope || document).querySelectorAll(

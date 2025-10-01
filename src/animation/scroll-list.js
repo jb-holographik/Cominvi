@@ -23,15 +23,17 @@ export function initScrollList(root = document) {
       buildAllIndicators(indicators)
       setupTickHighlighting(section, indicators)
 
-      // Rebuild on resize
+      // Rebuild on resize/orientation changes
       let resizeTimer
-      window.addEventListener('resize', () => {
+      const handleRebuild = () => {
         clearTimeout(resizeTimer)
         resizeTimer = setTimeout(() => {
           buildAllIndicators(indicators)
           ScrollTrigger.refresh()
         }, 150)
-      })
+      }
+      window.addEventListener('resize', handleRebuild)
+      window.addEventListener('orientationchange', handleRebuild)
     }
   })
 }
@@ -249,8 +251,62 @@ function buildIndicator(indicator) {
     createdTemp = true
   }
 
-  const tickHeight = sample.getBoundingClientRect().height
-  const containerHeight = indicator.clientHeight
+  const tickRect = sample.getBoundingClientRect()
+  const tickHeight = tickRect && tickRect.height ? tickRect.height : 0
+
+  // Prefer the actual container height when it's meaningful, otherwise fall back to a
+  // reasonable viewport-based height so mobile (where percentage heights may resolve to 0)
+  // still gets a full stack of ticks. We do NOT modify any CSS heights.
+  let containerHeight = indicator.clientHeight
+  if (!containerHeight || containerHeight <= 0) {
+    const r = indicator.getBoundingClientRect()
+    containerHeight = r && r.height ? r.height : 0
+  }
+  // Prefer matching the scroll-list height so indicators mirror the list column
+  const section = indicator.closest('.section_partners, .section_values')
+  if (section) {
+    const list = section.querySelector('.scroll-list')
+    if (list) {
+      const lr = list.getBoundingClientRect()
+      const listH = Math.max(
+        (lr && lr.height) || 0,
+        list.clientHeight || 0,
+        list.scrollHeight || 0
+      )
+      if (listH && listH > 0) containerHeight = listH
+    }
+  }
+  if (!containerHeight || containerHeight <= tickHeight * 2) {
+    // Fallback to section or viewport heights when needed (mobile edge cases)
+    let sectionH = 0
+    if (section) {
+      const cs = section.clientHeight || 0
+      const rs = section.getBoundingClientRect()
+      sectionH = Math.max(cs, (rs && rs.height) || 0)
+    }
+    let viewportH = window.innerHeight || 0
+    if (!viewportH) {
+      viewportH = document.documentElement
+        ? document.documentElement.clientHeight
+        : 0
+    }
+    const baseH = containerHeight || 0
+    const max1 = baseH > sectionH ? baseH : sectionH
+    const max2 = max1 > viewportH ? max1 : viewportH
+    containerHeight = max2 > tickHeight ? max2 : tickHeight
+  }
+
+  // Ensure the column wrapper matches the computed height (do not touch .scroll-indicator)
+  const column = indicator.closest('.content_column')
+  if (column) {
+    const colRect = column.getBoundingClientRect()
+    const colRectH = (colRect && colRect.height) || 0
+    const colClientH = column.clientHeight || 0
+    const colH = colRectH > colClientH ? colRectH : colClientH
+    if (!colH || Math.abs(colH - containerHeight) > 1) {
+      column.style.height = containerHeight + 'px'
+    }
+  }
 
   // Compute number of ticks so that ticks + gaps fill the height
   const perUnit = tickHeight + rowGap

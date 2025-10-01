@@ -5180,7 +5180,7 @@ p {
   }
 
   .card {
-    height: 5em;
+    height: 9em;
   }
 
   .section_about {
@@ -5199,10 +5199,23 @@ p {
     flex-flow: column;
   }
 
+  .content.is-12-col.is-list {
+    flex-flow: row;
+  }
+
+  .content_column {
+    flex: 1;
+  }
+
   .content_column.align-r {
     grid-column-gap: 6em;
     grid-row-gap: 6em;
     order: -1;
+  }
+
+  .content_column.scroll-indicator {
+    flex: 0 auto;
+    width: auto;
   }
 
   .stats {
@@ -5270,13 +5283,44 @@ p {
     grid-row-gap: 0em;
   }
 
+  .minerals-inner {
+    grid-column-gap: 2em;
+    grid-row-gap: 2em;
+    flex-flow: column;
+    height: 100svh;
+    padding-bottom: 1em;
+    display: flex;
+  }
+
+  .minerals_left {
+    justify-content: flex-start;
+    align-items: flex-end;
+  }
+
+  .minerals_right {
+    justify-content: flex-end;
+    align-items: center;
+  }
+
   .circle.is-1,
   .circle.is-2 {
     height: 110%;
   }
 
+  .minerals-list {
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+    width: 100%;
+  }
+
+  .minerals-names {
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+    flex-flow: row;
+  }
+
   .eyebrow-wrapper.is-a {
-    position: relative;
+    position: static;
   }
 
   .minerals-slider_overlay {

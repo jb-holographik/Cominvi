@@ -89,10 +89,13 @@ export function initServiceCards(root = document) {
         bloc.style.transform = `translateY(${height}px)`
         card.style.backgroundColor = 'var(--white)'
       })
+
+      // Icons hover logic moved to service-icons.js
     }
 
     card.__serviceCardsBound = true
   })
+  // Team card icon behaviors moved to service-icons.js
 
   // Apply same reveal behavior to technology machine cards
   const machineCards = scope.querySelectorAll('.machine-card')
@@ -310,6 +313,9 @@ export function initServiceCards(root = document) {
     card.__machineMobileBound = true
   })
 }
+
+// Reset all Lottie icons inside service/team cards to frame 0 after transitions
+// Icon reset moved to service-icons.js
 
 export function serviceCardsHover(root = document) {
   const scope = root && root.querySelector ? root : document

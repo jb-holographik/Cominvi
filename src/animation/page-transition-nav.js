@@ -23,6 +23,11 @@ import { initScrollList } from './scroll-list.js'
 import { initLenis, destroyLenis } from './scroll.js'
 import { initServiceCards } from './service-cards.js'
 import {
+  initIcons,
+  resetServiceCardIcons,
+  destroyIcons,
+} from './service-icons.js'
+import {
   createViewportClipOverlay,
   resetOverlayClipBaseState,
 } from './svg-clip-overlay.js'
@@ -365,6 +370,12 @@ export function initializePageTransitionNav() {
           }
         },
         leave: (data) => {
+          try {
+            const current = data && data.current && data.current.container
+            destroyIcons(current || document)
+          } catch (e) {
+            /* ignore */
+          }
           // Ensure page-info/mask behavior mirrors inner on pt-next clicks
           performPreInnerUI()
           try {
@@ -430,6 +441,12 @@ export function initializePageTransitionNav() {
           initLenis(next && next.container)
           // Re-init Webflow first, then (re)bind nav handlers/animations
           reinitializeWebflowAnimations()
+          // Reset service-card icons so they don't auto-play on viewport
+          try {
+            resetServiceCardIcons(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
           resetMenuLinksAnimationState(next && next.container)
           initializeNav2()
           ensureNavbarInteractive(next && next.container)
@@ -437,6 +454,11 @@ export function initializePageTransitionNav() {
           initHeroBackgroundParallax(next && next.container)
           initNextBackgroundParallax(next && next.container)
           initServiceCards(next && next.container)
+          try {
+            initIcons(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
           initTextReveal()
           initMinerals()
           initScrollList()
@@ -517,6 +539,18 @@ export function initializePageTransitionNav() {
           }
         },
         leave: (data) => {
+          try {
+            const current = data && data.current && data.current.container
+            destroyIcons(current || document)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            const current = data && data.current && data.current.container
+            destroyIcons(current || document)
+          } catch (e) {
+            /* ignore */
+          }
           performPreInnerUI()
           const fromNs = getNamespaceFromContainer(
             data && data.current && data.current.container
@@ -576,6 +610,11 @@ export function initializePageTransitionNav() {
           initLenis(next && next.container)
           // Re-init Webflow first, then (re)bind nav handlers/animations
           reinitializeWebflowAnimations()
+          try {
+            resetServiceCardIcons(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
           resetMenuLinksAnimationState(next && next.container)
           initializeNav2()
           ensureNavbarInteractive(next && next.container)
@@ -583,6 +622,11 @@ export function initializePageTransitionNav() {
           initHeroBackgroundParallax(next && next.container)
           initNextBackgroundParallax(next && next.container)
           initServiceCards(next && next.container)
+          try {
+            initIcons(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
           initTextReveal()
           initMinerals()
           initScrollList()
@@ -740,6 +784,17 @@ export function initializePageTransitionNav() {
           initHeroBackgroundParallax(next && next.container)
           initNextBackgroundParallax(next && next.container)
           initServiceCards(next && next.container)
+          // Ensure icons are reset and bound for inner transitions as well
+          try {
+            resetServiceCardIcons(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initIcons(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
           initTextReveal()
           initMinerals()
           initScrollList()
@@ -823,6 +878,17 @@ export function initializePageTransitionNav() {
           initHeroBackgroundParallax(next && next.container)
           initNextBackgroundParallax(next && next.container)
           initServiceCards(next && next.container)
+          // Ensure icons are reset and bound for generic slide-scale transitions too
+          try {
+            resetServiceCardIcons(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initIcons(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
           initTextReveal()
           initMinerals()
           initScrollList()
@@ -885,11 +951,49 @@ export function initializePageTransitionNav() {
     ],
   })
 
+  // Ensure icon teardown on every transition
+  barba.hooks.beforeLeave(({ current }) => {
+    try {
+      console.log('[icons] beforeLeave destroy')
+      destroyIcons(current && current.container)
+    } catch (e) {
+      /* ignore */
+    }
+  })
+
   // Global fallback for nav that bypasses custom transitions
   barba.hooks.after(({ next }) => {
-    // If the transition-specific after already ran, skip duplicate init
+    // If a transition-specific after ran, still ensure icons are ready
     if (window.__barbaAfterHandled) {
       window.__barbaAfterHandled = false
+      try {
+        console.log('[icons] global after reset')
+        resetServiceCardIcons(next && next.container)
+      } catch (e) {
+        /* ignore */
+      }
+      try {
+        console.log('[icons] global after init')
+        initIcons(next && next.container)
+      } catch (e) {
+        /* ignore */
+      }
+      // Also ensure nav animations re-init in this fast path
+      try {
+        resetMenuLinksAnimationState(next && next.container)
+      } catch (e) {
+        /* ignore */
+      }
+      try {
+        initializeNav2()
+      } catch (e) {
+        /* ignore */
+      }
+      try {
+        ensureNavbarInteractive(next && next.container)
+      } catch (e) {
+        /* ignore */
+      }
       return
     }
     // Global fallback: ensure Finsweet Attributes are reinitialized
@@ -900,11 +1004,25 @@ export function initializePageTransitionNav() {
     resetMenuLinksAnimationState(next && next.container)
     initializeNav2()
     ensureNavbarInteractive(next && next.container)
+    // Reinitialize Webflow IX2/attributes before any custom init
     reinitializeWebflowAnimations()
+    try {
+      console.log('[icons] global after reset (fallback)')
+      resetServiceCardIcons(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
     initParallax(next && next.container)
     initHeroBackgroundParallax(next && next.container)
     initNextBackgroundParallax(next && next.container)
     initServiceCards(next && next.container)
+    // Ensure icons are constructed after service cards/DOM structure exists
+    try {
+      console.log('[icons] global after init (fallback)')
+      initIcons(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
     initProcessProgression(next && next.container)
     initTextReveal()
     initMinerals()
@@ -956,6 +1074,95 @@ export function initializePageTransitionNav() {
     }
     try {
       initContact(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+  })
+
+  // Ensure immediate init after the new container is attached
+  barba.hooks.afterEnter(({ next }) => {
+    try {
+      console.log('[icons] afterEnter start')
+    } catch (e) {
+      /* ignore */
+    }
+    // Ensure Webflow's Lottie registry is ready before binding icons
+    try {
+      const wf = typeof window !== 'undefined' ? window.Webflow : null
+      const mod =
+        wf && typeof wf.require === 'function' ? wf.require('lottie') : null
+      const ready = mod && typeof mod.ready === 'function' ? mod.ready : null
+      if (ready) ready()
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      reinitializeWebflowAnimations()
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      resetMenuLinksAnimationState(next && next.container)
+      initializeNav2()
+      ensureNavbarInteractive(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      initServiceCards(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      requestAnimationFrame(() => {
+        // If icons still not ready in this frame, queue one more microtask
+        try {
+          // Re-assert Lottie registry readiness just before (re)binding
+          try {
+            const wf = typeof window !== 'undefined' ? window.Webflow : null
+            const mod =
+              wf && typeof wf.require === 'function'
+                ? wf.require('lottie')
+                : null
+            const ready =
+              mod && typeof mod.ready === 'function' ? mod.ready : null
+            if (ready) ready()
+          } catch (e) {
+            /* ignore */
+          }
+          resetServiceCardIcons(next && next.container)
+        } catch (e) {
+          /* ignore */
+        }
+        try {
+          initIcons(next && next.container)
+        } catch (e) {
+          /* ignore */
+        }
+        try {
+          Promise.resolve().then(() => {
+            try {
+              try {
+                const wf = typeof window !== 'undefined' ? window.Webflow : null
+                const mod =
+                  wf && typeof wf.require === 'function'
+                    ? wf.require('lottie')
+                    : null
+                const ready =
+                  mod && typeof mod.ready === 'function' ? mod.ready : null
+                if (ready) ready()
+              } catch (e) {
+                /* ignore */
+              }
+              initIcons(next && next.container)
+            } catch (e) {
+              /* ignore */
+            }
+          })
+        } catch (e) {
+          /* ignore */
+        }
+      })
     } catch (e) {
       /* ignore */
     }

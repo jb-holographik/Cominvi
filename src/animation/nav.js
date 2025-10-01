@@ -97,11 +97,10 @@ export function initializeMenuClick(options = {}, root = document) {
       }
 
       if (configured) {
+        // Always seed baseline so open animation has a reliable start state after transitions
         anchor.style.marginTop = configured
-        if (!anchor.dataset.originalMarginTop) {
-          anchor.dataset.originalMarginTop = configured
-        }
-      } else if (!anchor.dataset.originalMarginTop) {
+        anchor.dataset.originalMarginTop = configured
+      } else {
         const mt = getComputedStyle(anchor).marginTop || '0px'
         anchor.dataset.originalMarginTop = mt
       }

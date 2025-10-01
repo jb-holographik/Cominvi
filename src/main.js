@@ -18,6 +18,7 @@ import { initProcessProgression } from './animation/process-progression.js'
 import { initScrollList } from './animation/scroll-list.js'
 import { initLenis } from './animation/scroll.js'
 import { initServiceCards } from './animation/service-cards.js'
+import { initIcons } from './animation/service-icons.js'
 import { createViewportClipOverlay } from './animation/svg-clip-overlay.js'
 import { initTechnology } from './animation/technology.js'
 import { initTestimonials } from './animation/testimonials.js'
@@ -37,6 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initParallax()
   initNextBackgroundParallax()
   initServiceCards()
+  try {
+    initIcons(document)
+  } catch (e) {
+    /* ignore */
+  }
   initTextReveal()
   initMinerals()
   initScrollList()

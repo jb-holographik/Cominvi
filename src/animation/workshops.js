@@ -89,6 +89,12 @@ function getEffectiveScaleY(el) {
 function prepareSplitLines(el) {
   try {
     if (!el || el.__splitPrepared) return
+    // Cache original HTML (preserve <br>, entities, exact spaces) for future restores
+    try {
+      if (!el.__origHTML) el.__origHTML = el.innerHTML
+    } catch (e0) {
+      // ignore
+    }
     // Convertit chaque mot en span inline-block pour mesurer les retours à la ligne
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null)
     const textNodes = []
@@ -195,9 +201,110 @@ function ensureState() {
       tabletLoggedElements: false,
       tabletStickyStarted: false,
       tabletSectionStartTop: null,
+      // Track current breakpoint mode to allow re-init on resize
+      lastIsHandheld: null,
     }
   }
   return window.__workshopsSticky
+}
+
+function resetTextsAndImagesToZero(root = document) {
+  try {
+    const state = ensureState()
+    const scope = root && root.querySelector ? root : document
+    let isHandheld = false
+    try {
+      const w = window.innerWidth || document.documentElement.clientWidth || 0
+      isHandheld = w <= 991
+    } catch (e) {
+      isHandheld = false
+    }
+    const titles = Array.isArray(state.titles) ? state.titles : []
+    const descs = Array.isArray(state.descs) ? state.descs : []
+    const unsplit = (el) => {
+      try {
+        if (!el) return
+        if (el.querySelector('.ws-line') || el.querySelector('.ws-word')) {
+          if (el.__origHTML) el.innerHTML = el.__origHTML
+          else {
+            const raw = el.textContent || ''
+            el.textContent = raw
+          }
+        }
+        try {
+          // clear split flag so prepareSplitLines can run again
+          el.__splitPrepared = false
+        } catch (e) {
+          // ignore
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    const setVis = (idx) => {
+      titles.forEach((el, i) => {
+        const on = i === idx
+        if (!el || !el.style) return
+        unsplit(el)
+        el.style.display = on ? '' : 'none'
+        el.style.opacity = on ? '1' : '0'
+        el.style.visibility = on ? 'visible' : 'hidden'
+        el.style.pointerEvents = on ? 'auto' : 'none'
+      })
+      descs.forEach((el, i) => {
+        const on = i === idx
+        if (!el || !el.style) return
+        unsplit(el)
+        el.style.display = on ? '' : 'none'
+        el.style.opacity = on ? '1' : '0'
+        el.style.visibility = on ? 'visible' : 'hidden'
+        el.style.pointerEvents = on ? 'auto' : 'none'
+      })
+    }
+    setVis(0)
+    // Re-prepare split for visible (index 0) so animations have correct line wraps
+    try {
+      if (titles[0]) prepareSplitLines(titles[0])
+    } catch (e) {
+      // ignore
+    }
+    try {
+      if (descs[0]) prepareSplitLines(descs[0])
+    } catch (e) {
+      // ignore
+    }
+    if (isHandheld) {
+      try {
+        const container = scope.querySelector('.workshops_left-sm')
+        if (container) {
+          const wraps = container.querySelectorAll('.worskshops_img-wrap')
+          wraps.forEach((wrap, i) => {
+            wrap.style.opacity = i < 0 ? '0' : '1'
+          })
+          updateGreenToggle(0, container)
+        } else {
+          updateGreenToggle(0, scope)
+        }
+      } catch (e) {
+        // ignore
+      }
+      state.tabletActiveIndex = 0
+    } else {
+      try {
+        const wrapsRoot = scope.querySelector('.workshops_right') || scope
+        const wraps = wrapsRoot.querySelectorAll('.worskshops_img-wrap')
+        wraps.forEach((wrap, i) => {
+          wrap.style.opacity = i < 0 ? '0' : '1'
+        })
+      } catch (e) {
+        // ignore
+      }
+      updateGreenToggle(0, scope)
+    }
+    state.currentTextIndex = 0
+  } catch (e) {
+    // ignore
+  }
 }
 
 function updateGreenToggle(index, root) {
@@ -653,8 +760,39 @@ function startLoop() {
 
       // Text alternance: find which wrap is crossing 50% viewport height and show corresponding text
       try {
-        const wraps = document.querySelectorAll('.worskshops_img-wrap')
+        // Desktop: only consider wraps inside the desktop container to avoid hidden -sm elements
+        const wrapsRoot =
+          (state.scope || document).querySelector('.workshops_right') ||
+          document
+        const wraps = wrapsRoot.querySelectorAll('.worskshops_img-wrap')
         if (wraps && wraps.length) {
+          // Before sticky: ensure index 0 is visible and do not advance
+          if (!groupActive && !groupEnded) {
+            if (state.currentTextIndex !== 0) {
+              const titles = state.titles || []
+              const descs = state.descs || []
+              titles.forEach((el, i) => {
+                const on = i === 0
+                el.style.display = on ? '' : 'none'
+                el.style.opacity = on ? '1' : '0'
+                el.style.visibility = on ? 'visible' : 'hidden'
+                el.style.pointerEvents = on ? 'auto' : 'none'
+              })
+              descs.forEach((el, i) => {
+                const on = i === 0
+                el.style.display = on ? '' : 'none'
+                el.style.opacity = on ? '1' : '0'
+                el.style.visibility = on ? 'visible' : 'hidden'
+                el.style.pointerEvents = on ? 'auto' : 'none'
+              })
+              // Reset images opacity as well
+              wraps.forEach((w, i) => {
+                w.style.opacity = i < 0 ? '0' : '1'
+              })
+              updateGreenToggle(0)
+              state.currentTextIndex = 0
+            }
+          }
           let activeIdx = -1
           const vh =
             (window && window.innerHeight) ||
@@ -905,6 +1043,8 @@ export function initWorkshopsStickyImages(root = document) {
       return false
     }
   })()
+  // Track current mode for future resize re-init
+  state.lastIsHandheld = isHandheld
   const els = isHandheld ? [] : scope.querySelectorAll('.workshops_img-view')
   const added = []
   els.forEach((el) => {
@@ -933,9 +1073,52 @@ export function initWorkshopsStickyImages(root = document) {
   }
   state.resizeHandler = (() => {
     let timer
+    const resyncAfterResize = (currIsHandheld) => {
+      try {
+        const st = ensureState()
+        // Force text/image recompute on next tick
+        st.currentTextIndex = -1
+        if (currIsHandheld) {
+          st.tabletSectionStartTop = null
+          st.tabletLoggedElements = false
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
     return () => {
       clearTimeout(timer)
       timer = setTimeout(() => {
+        // Detect breakpoint change and re-initialize accordingly
+        let currIsHandheld = false
+        try {
+          const w =
+            window.innerWidth || document.documentElement.clientWidth || 0
+          currIsHandheld = w <= 991
+        } catch (e) {
+          currIsHandheld = false
+        }
+        if (state.lastIsHandheld !== currIsHandheld) {
+          try {
+            // Full cleanup then re-init in the new mode
+            destroyWorkshopsStickyImages()
+          } catch (e) {
+            // ignore
+          }
+          state.lastIsHandheld = currIsHandheld
+          try {
+            initWorkshopsStickyImages(state.scope || document)
+            // Force position 0 after re-init
+            requestAnimationFrame(() =>
+              resetTextsAndImagesToZero(state.scope || document)
+            )
+          } catch (e) {
+            // ignore
+          }
+          return
+        }
+
+        // Same mode: just refresh scales for precision
         state.items.forEach((entry) => {
           try {
             entry.scaleY = getEffectiveScaleY(entry.el)
@@ -943,6 +1126,9 @@ export function initWorkshopsStickyImages(root = document) {
             entry.scaleY = 1
           }
         })
+        // And force a resync of visibility/indices to the new layout
+        resyncAfterResize(currIsHandheld)
+        resetTextsAndImagesToZero(state.scope || document)
       }, 100)
     }
   })()
@@ -968,19 +1154,21 @@ export function initWorkshopsStickyImages(root = document) {
     )
     const titlesDefault = Array.from(
       (scope || document).querySelectorAll(
-        '.workshops_left_middle .body-xl.is-black'
+        '.workshops_left .workshops_left_middle .body-xl.is-black'
       )
     )
     const descsDefault = Array.from(
-      (scope || document).querySelectorAll('.workshops_left_bottom .body-s')
+      (scope || document).querySelectorAll(
+        '.workshops_left .workshops_left_bottom .body-s'
+      )
     )
     if (isTabletInit) {
       state.titles = titlesSm.length ? titlesSm : titlesDefault
       state.descs = descsSm.length ? descsSm : descsDefault
     } else {
-      // On mobile, DOM often uses the -sm variants; use them if present
-      state.titles = titlesSm.length ? titlesSm : titlesDefault
-      state.descs = descsSm.length ? descsSm : descsDefault
+      // Desktop (>991px): prefer desktop defaults; fallback to -sm only if defaults are missing
+      state.titles = titlesDefault.length ? titlesDefault : titlesSm
+      state.descs = descsDefault.length ? descsDefault : descsSm
     }
     const setVis = (idx) => {
       state.titles.forEach((el, i) => {

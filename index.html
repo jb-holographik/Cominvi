@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Wed Sep 17 2025 17:18:26 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Tue Sep 30 2025 08:01:51 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="6899a2f3f7995d5e3e31b7cd" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -35,6 +35,20 @@
 </head>
 
 <body data-barba="wrapper">
+  <div class="m-overlay"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 72 101" fill="none"
+      class="rotate-icon">
+      <rect x="16" y="16" width="40" height="70" rx="5" stroke="white" stroke-width="2"></rect>
+      <rect x="71" y="31" width="40" height="70" rx="5" transform="rotate(90 71 31)" stroke="white" stroke-opacity="0.2"
+        stroke-width="2" stroke-dasharray="4 4"></rect>
+      <path
+        d="M48.8706 95.6103C48.6039 95.6818 48.4456 95.9559 48.517 96.2227L49.6817 100.569C49.7532 100.836 50.0274 100.994 50.2941 100.923C50.5608 100.851 50.7191 100.577 50.6476 100.311L49.6124 96.4468L53.4761 95.4115C53.7428 95.3401 53.9011 95.0659 53.8296 94.7992C53.7582 94.5324 53.484 94.3741 53.2173 94.4456L48.8706 95.6103ZM64.75 87H64.25C64.25 88.7554 63.7879 90.4798 62.9103 92L63.3433 92.25L63.7763 92.5C64.7417 90.8278 65.25 88.9309 65.25 87H64.75ZM63.3433 92.25L62.9103 92C62.0326 93.5202 60.7702 94.7826 59.25 95.6603L59.5 96.0933L59.75 96.5263C61.4222 95.5608 62.8108 94.1722 63.7763 92.5L63.3433 92.25ZM59.5 96.0933L59.25 95.6603C57.7298 96.5379 56.0054 97 54.25 97V97.5V98C56.1809 98 58.0778 97.4917 59.75 96.5263L59.5 96.0933ZM54.25 97.5V97C52.4946 97 50.7702 96.5379 49.25 95.6603L49 96.0933L48.75 96.5263C50.4222 97.4917 52.3191 98 54.25 98V97.5Z"
+        fill="currentColor" class="is-path-white"></path>
+      <path
+        d="M22.8794 5.8897C23.1461 5.81823 23.3044 5.54406 23.233 5.27733L22.0683 0.930659C21.9968 0.663925 21.7226 0.505634 21.4559 0.577105C21.1892 0.648576 21.0309 0.922744 21.1024 1.18948L22.1376 5.05318L18.2739 6.08846C18.0072 6.15993 17.8489 6.4341 17.9204 6.70083C17.9918 6.96756 18.266 7.12585 18.5327 7.05438L22.8794 5.8897ZM7 14.5L7.5 14.5C7.5 12.7446 7.96206 11.0202 8.83975 9.5L8.40673 9.25L7.97372 9C7.00827 10.6722 6.5 12.5691 6.5 14.5L7 14.5ZM8.40673 9.25L8.83975 9.5C9.71743 7.97981 10.9798 6.71743 12.5 5.83974L12.25 5.40673L12 4.97372C10.3278 5.93917 8.93917 7.32779 7.97372 9L8.40673 9.25ZM12.25 5.40673L12.5 5.83974C14.0202 4.96206 15.7446 4.5 17.5 4.5L17.5 4L17.5 3.5C15.5691 3.5 13.6722 4.00827 12 4.97372L12.25 5.40673ZM17.5 4L17.5 4.5C19.2554 4.5 20.9798 4.96206 22.5 5.83975L22.75 5.40673L23 4.97372C21.3278 4.00827 19.4309 3.5 17.5 3.5L17.5 4Z"
+        fill="currentColor" class="is-path-white"></path>
+    </svg>
+    <p class="body-m is-white">Turn your phone for <br>a better experience</p>
+  </div>
   <div class="loader">
     <div class="loader_inner">
       <div class="loader_mask"></div>
@@ -107,7 +121,6 @@
           --size-container-max: 1920px;
           --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
           --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
-          --dot-shadow: 0px 0px 6px 0px rgba(0, 254, 165, 1), 0px 0px 11px 0px rgba(79, 255, 193, 1);
         }
 
         /* Tablet */
@@ -145,7 +158,6 @@
         body {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          font-smoothing: antialiased;
           text-rendering: optimizeLegibility;
         }
 
@@ -278,13 +290,27 @@
     </div>
     <div class="css-responsive w-embed">
       <style>
+        @media screen and (max-width: 991px) {
+          .section_values .body-xxl {
+            font-size: 4em;
+          }
+
+          .workshops .body-xl {
+            font-size: 3.5em;
+          }
+
+          .workshops .body-s {
+            font-size: 1em;
+          }
+        }
+
         @media (max-width: 767px) {
           .service-card .body-s {
             display: none;
           }
 
           .services-viewer .button {
-            margin-top: 3em
+            margin-top: 3em;
           }
 
           .minerals_right .button {
@@ -312,7 +338,33 @@
           }
 
           .section_about .button {
-            margin-bottom: 5em
+            margin-bottom: 5em;
+          }
+
+          .workshops .body-xl {
+            font-size: 2em;
+          }
+
+          .workshops .body-s {
+            font-size: 0.875em;
+            font-weight: 500;
+          }
+
+          .machine-grid_mobile .machine_button {
+            background-color: var(--light-green);
+          }
+
+          .workshops-sm-wrap .body-xl,
+          .workshops-sm-wrap p {
+            text-align: left;
+          }
+
+          .workshops-sm-wrap .body-xl {
+            font-size: 1.5em;
+          }
+
+          .workshops-sm-wrap .body-s {
+            font-size: 0.75em;
           }
         }
 
@@ -331,6 +383,15 @@
 
           .minerals-names .body-xl {
             padding-bottom: 0.125em;
+          }
+
+          .workshops-sm-wrap .body-xl,
+          .workshops-sm-wrap p {
+            text-align: center;
+          }
+
+          .section_work-team .body-xxl {
+            font-size: 2.5em;
           }
         }
       </style>
@@ -789,16 +850,12 @@
         </div>
         <div class="content">
           <div class="is-grid-3"><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path
-                    d="M36.9733 9.52588H11.2262C9.44873 9.52588 8.00781 10.9668 8.00781 12.7443V35.273C8.00781 37.0505 9.44873 38.4914 11.2262 38.4914H36.9733C38.7508 38.4914 40.1917 37.0505 40.1917 35.273V12.7443C40.1917 10.9668 38.7508 9.52588 36.9733 9.52588Z"
-                    stroke="#151515" stroke-width="1.5" stroke-linejoin="round"></path>
-                  <path d="M8.00781 19.1812H27.3182C29.0957 19.1812 30.5365 20.6221 30.5365 22.3995V38.4915"
-                    stroke="#151515" stroke-width="1.5"></path>
-                  <path d="M20.8887 38.4915V19.1812" stroke="#151515" stroke-width="1.5"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="4f71b7c3-5684-fecc-19c9-b2d7eefb1523"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-06.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Engineering</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -806,35 +863,12 @@
                 </div>
               </div>
             </button><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <g clip-path="url(#clip0_4385_4294)">
-                    <path
-                      d="M37.9962 9.62109L37.1817 11.1744C36.0754 13.2843 34.575 14.4696 33.0105 14.4696H15.5072C13.9427 14.4696 12.4422 13.2843 11.336 11.1744L10.5215 9.62109"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M6.96875 8.96973H40.9081" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-                    <path
-                      d="M9.87876 38.0605L10.6933 36.5072C11.7996 34.3974 13.3 33.2121 14.8645 33.2121L32.3678 33.2121C33.9323 33.2121 35.4328 34.3974 36.539 36.5072L37.3535 38.0605"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M40.9062 38.7119L6.96686 38.7119" stroke="#151515" stroke-width="1.5"
-                      stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path
-                      d="M20.2188 32.2489L20.5514 30.5857C20.7569 29.5577 20.8599 29.0436 21.1883 28.7029C21.2759 28.6121 21.3738 28.5319 21.48 28.4638C21.8785 28.2085 22.4027 28.2085 23.4511 28.2085C24.4995 28.2085 25.0236 28.2085 25.4221 28.4638C25.5283 28.5319 25.6263 28.6121 25.7139 28.7029C26.0423 29.0436 26.1452 29.5577 26.3508 30.5857L26.6834 32.2489"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path
-                      d="M20.2188 14.4697L20.5514 16.133C20.7569 17.161 20.8599 17.675 21.1883 18.0157C21.2759 18.1065 21.3738 18.1868 21.48 18.2548C21.8785 18.5101 22.4027 18.5101 23.4511 18.5101C24.4995 18.5101 25.0236 18.5101 25.4221 18.2548C25.5283 18.1868 25.6263 18.1065 25.7139 18.0157C26.0423 17.675 26.1452 17.161 26.3508 16.133L26.6834 14.4697"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M23.4531 28.2082V18.5112" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-                  </g>
-                  <defs>
-                    <clippath id="clip0_4385_4294">
-                      <rect width="35.8788" height="32" fill="white" transform="translate(6 8)"></rect>
-                    </clippath>
-                  </defs>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="57feaf23-e23c-1bc4-ef39-4b5be16e7e4d"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-07.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Ground Support &amp; Fortification</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -842,20 +876,12 @@
                 </div>
               </div>
             </button><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <g clip-path="url(#clip0_4385_4322)">
-                    <path
-                      d="M32.9516 31.1208L38.1096 29.4646C39.9736 28.866 40.4433 26.49 38.9425 25.2503L34.9036 21.914M32.9516 31.1208L30.0423 32.0551C28.7568 32.468 27.5425 33.0703 26.4413 33.8416L24.2061 35.4073M32.9516 31.1208L33.0555 28.63C33.1131 27.2441 33.3946 25.8761 33.8895 24.577L34.9036 21.914M32.9516 31.1208L32.7348 36.3256C32.6563 38.211 30.532 39.3088 28.9046 38.3051L24.2061 35.4073M34.9036 21.914L36.763 17.0318C37.4428 15.2464 35.8826 13.414 33.9726 13.7547L28.5855 14.7158M34.9036 21.914L32.8695 20.2337C31.811 19.3594 30.8975 18.3287 30.1615 17.1787L28.5855 14.7158M24.2061 35.4073L19.7303 38.5423C18.1685 39.6361 15.9856 38.6681 15.789 36.7943L15.2374 31.5366M24.2061 35.4073L21.6003 33.8C20.455 33.0936 19.207 32.5623 17.8991 32.2245L15.2374 31.5366M15.2374 31.5366L10.0345 30.1921C8.13915 29.7025 7.52745 27.3601 8.94887 26.0353L12.8143 22.4326M15.2374 31.5366L14.7238 26.6406L12.8143 22.4326M12.8143 22.4326L10.6797 17.7284C9.8884 15.9845 11.3371 14.0597 13.2672 14.2905L18.7547 14.9466M12.8143 22.4326L14.9824 20.4119C15.9888 19.4738 16.8401 18.3874 17.5054 17.1917L18.7547 14.9466M18.7547 14.9466L21.3511 10.2806C22.2671 8.63445 24.6483 8.56318 25.6646 10.1515L28.5855 14.7158M18.7547 14.9466L21.8581 15.3177C23.189 15.4768 24.5368 15.438 25.8558 15.2027L28.5855 14.7158"
-                      stroke="#151515" stroke-width="1.5" stroke-linejoin="round"></path>
-                  </g>
-                  <defs>
-                    <clippath id="clip0_4385_4322">
-                      <rect width="34" height="32" fill="white" transform="translate(7 8)"></rect>
-                    </clippath>
-                  </defs>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="7173b5e4-072f-766d-902b-c5775d060e8f"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-08.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.0166666666666666"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Development</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -863,36 +889,12 @@
                 </div>
               </div>
             </button><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path d="M24.9883 34.3218L26.7475 33.6182" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M26.5716 29.5776L24.9883 29.0498" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M29.0469 38.0198L29.5746 36.4365" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M29.3892 26.7592L28.6855 25" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M33.4492 26.5833L33.977 25" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M34.3228 38.0156L33.6191 36.2563" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M36.2617 29.397L38.0209 28.6934" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M38.0091 33.9745L36.4258 33.4468" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path
-                    d="M31.51 36.7862C34.4248 36.7862 36.7877 34.4233 36.7877 31.5086C36.7877 28.5938 34.4248 26.231 31.51 26.231C28.5953 26.231 26.2324 28.5938 26.2324 31.5086C26.2324 34.4233 28.5953 36.7862 31.51 36.7862Z"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M20.952 36.952H12.5711C11.7628 36.952 10.9876 36.6309 10.4161 36.0594C9.84452 35.4878 9.52344 34.7127 9.52344 33.9044V12.5711C9.52344 11.7628 9.84452 10.9876 10.4161 10.4161C10.9876 9.84452 11.7628 9.52344 12.5711 9.52344H33.9044C34.7127 9.52344 35.4878 9.84452 36.0594 10.4161C36.6309 10.9876 36.952 11.7628 36.952 12.5711V20.952"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M27.8125 9.52344V20.952" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M18.6641 9.52344V36.952" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="09a76385-4f13-6690-136f-1bb6584a00a5"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-09.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Production</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -900,24 +902,12 @@
                 </div>
               </div>
             </button><button id="w-node-_720ec395-9ded-3626-bd95-202de911efba-3e31b7cd" class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path
-                    d="M8.10156 11.7518C8.10156 10.2892 9.28723 9.10352 10.7498 9.10352H14.2809C15.7435 9.10352 16.9291 10.2892 16.9291 11.7518V15.2828C16.9291 16.7454 15.7435 17.9311 14.2809 17.9311H10.7498C9.28723 17.9311 8.10156 16.7454 8.10156 15.2828V11.7518Z"
-                    stroke="#151515" stroke-width="1.5"></path>
-                  <path
-                    d="M8.10156 32.7171C8.10156 31.2546 9.28723 30.0688 10.7498 30.0688H14.2809C15.7435 30.0688 16.9291 31.2546 16.9291 32.7171V36.2482C16.9291 37.7107 15.7435 38.8964 14.2809 38.8964H10.7498C9.28723 38.8964 8.10156 37.7107 8.10156 36.2482V32.7171Z"
-                    stroke="#151515" stroke-width="1.5"></path>
-                  <path d="M17.6669 34.4581H38.5864M30.5405 13.5386H17.6669M31.061 17.041L17.1016 31.0004"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M31.2734 11.7518C31.2734 10.2892 32.4592 9.10352 33.9217 9.10352H37.4527C38.9153 9.10352 40.101 10.2892 40.101 11.7518V15.2828C40.101 16.7454 38.9153 17.9311 37.4527 17.9311H33.9217C32.4592 17.9311 31.2734 16.7454 31.2734 15.2828V11.7518Z"
-                    stroke="#151515" stroke-width="1.5"></path>
-                  <path
-                    d="M33.7559 38.4854L35.9899 36.9626C37.719 35.7841 38.5834 35.1948 38.5834 34.4624C38.5834 33.7301 37.719 33.1408 35.9899 31.9622L33.7559 30.4395"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="ac49e6e9-83e9-5d2b-01f0-e718bbb8d0ec"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-10.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Hauling</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -964,15 +954,19 @@
                         fill="#151515"></path>
                     </svg></div>
                 </div>
-              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="100vw"
+              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt=""
-                class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt=""
-                class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt=""
-                class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt=""
-                class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt=""
                 class="service-image is-5">
             </div>
@@ -1610,8 +1604,7 @@
           <div class="content_column">
             <div class="machines-grid"><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card_1Machine-card.avif 500w, images/Machine-card_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1659,8 +1652,7 @@
                 </div>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-1_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-1_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-1_1Machine-card-1.avif 500w, images/Machine-card-1_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1708,8 +1700,7 @@
                 </div>
               </button><button id="w-node-d0dd9a34-13c0-08d0-cd68-038ac5c3c87b-3e31b7cd" class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-2_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-2_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-2_1Machine-card-2.avif 500w, images/Machine-card-2_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1757,8 +1748,7 @@
                 </div>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-3_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-3_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-3_1Machine-card-3.avif 500w, images/Machine-card-3_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1806,8 +1796,7 @@
                 </div>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-4_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-4_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-4_1Machine-card-4.avif 500w, images/Machine-card-4_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1855,8 +1844,7 @@
                 </div>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-5_1.avif" loading="lazy"
-                      sizes="(max-width: 896px) 100vw, 896px"
+                  <div class="machine-card_bg"><img src="images/Machine-card-5_1.avif" loading="lazy" sizes="100vw"
                       srcset="images/Machine-card-5_1Machine-card-5.avif 500w, images/Machine-card-5_1.avif 896w" alt=""
                       class="image-p"></div>
                   <div class="machine-card_inner">
@@ -1961,74 +1949,44 @@
         </div>
         <div class="content">
           <div class="is-grid-3"><button class="team-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <g clip-path="url(#clip0_4385_4251)">
-                    <path
-                      d="M24.3232 9.45459H23.6832C22.9117 9.45459 22.1717 9.76108 21.6262 10.3066C21.0806 10.8522 20.7741 11.5921 20.7741 12.3637V12.6255C20.7736 13.1356 20.6389 13.6367 20.3836 14.0784C20.1283 14.52 19.7614 14.8868 19.3196 15.1419L18.6941 15.5055C18.2519 15.7608 17.7502 15.8952 17.2396 15.8952C16.7289 15.8952 16.2273 15.7608 15.785 15.5055L15.5668 15.3891C14.8993 15.0041 14.1062 14.8996 13.3617 15.0987C12.6173 15.2977 11.9822 15.7841 11.5959 16.451L11.2759 17.0037C10.8909 17.6712 10.7864 18.4643 10.9855 19.2088C11.1845 19.9533 11.6709 20.5883 12.3377 20.9746L12.5559 21.12C12.9956 21.3739 13.3612 21.7384 13.6164 22.1773C13.8715 22.6162 14.0074 23.1142 14.0105 23.6219V24.3637C14.0125 24.8763 13.8791 25.3803 13.6236 25.8248C13.3682 26.2692 12.9999 26.6383 12.5559 26.8946L12.3377 27.0255C11.6709 27.4118 11.1845 28.0468 10.9855 28.7913C10.7864 29.5358 10.8909 30.3289 11.2759 30.9964L11.5959 31.5491C11.9822 32.216 12.6173 32.7023 13.3617 32.9014C14.1062 33.1005 14.8993 32.996 15.5668 32.611L15.785 32.4946C16.2273 32.2393 16.7289 32.1048 17.2396 32.1048C17.7502 32.1048 18.2519 32.2393 18.6941 32.4946L19.3196 32.8582C19.7614 33.1133 20.1283 33.4801 20.3836 33.9217C20.6389 34.3634 20.7736 34.8644 20.7741 35.3746V35.6364C20.7741 36.4079 21.0806 37.1479 21.6262 37.6934C22.1717 38.239 22.9117 38.5455 23.6832 38.5455H24.3232C25.0947 38.5455 25.8347 38.239 26.3802 37.6934C26.9258 37.1479 27.2323 36.4079 27.2323 35.6364V35.3746C27.2328 34.8644 27.3675 34.3634 27.6228 33.9217C27.8781 33.4801 28.245 33.1133 28.6868 32.8582L29.3123 32.4946C29.7545 32.2393 30.2562 32.1048 30.7668 32.1048C31.2775 32.1048 31.7791 32.2393 32.2214 32.4946L32.4396 32.611C33.1071 32.996 33.9002 33.1005 34.6446 32.9014C35.3891 32.7023 36.0242 32.216 36.4105 31.5491L36.7305 30.9819C37.1155 30.3143 37.22 29.5213 37.0209 28.7768C36.8219 28.0323 36.3355 27.3972 35.6687 27.011L35.4505 26.8946C35.0065 26.6383 34.6382 26.2692 34.3828 25.8248C34.1273 25.3803 33.9939 24.8763 33.9959 24.3637V23.6364C33.9939 23.1238 34.1273 22.6198 34.3828 22.1753C34.6382 21.7309 35.0065 21.3618 35.4505 21.1055L35.6687 20.9746C36.3355 20.5883 36.8219 19.9533 37.0209 19.2088C37.22 18.4643 37.1155 17.6712 36.7305 17.0037L36.4105 16.451C36.0242 15.7841 35.3891 15.2977 34.6446 15.0987C33.9002 14.8996 33.1071 15.0041 32.4396 15.3891L32.2214 15.5055C31.7791 15.7608 31.2775 15.8952 30.7668 15.8952C30.2562 15.8952 29.7545 15.7608 29.3123 15.5055L28.6868 15.1419C28.245 14.8868 27.8781 14.52 27.6228 14.0784C27.3675 13.6367 27.2328 13.1356 27.2323 12.6255V12.3637C27.2323 11.5921 26.9258 10.8522 26.3802 10.3066C25.8347 9.76108 25.0947 9.45459 24.3232 9.45459Z"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path
-                      d="M24.0004 28.3635C26.4103 28.3635 28.364 26.4098 28.364 23.9999C28.364 21.5899 26.4103 19.6362 24.0004 19.6362C21.5904 19.6362 19.6367 21.5899 19.6367 23.9999C19.6367 26.4098 21.5904 28.3635 24.0004 28.3635Z"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </g>
-                  <defs>
-                    <clippath id="clip0_4385_4251">
-                      <rect width="28" height="32" fill="white" transform="translate(10 8)"></rect>
-                    </clippath>
-                  </defs>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="4d96aaec-ece4-e37a-2966-66b543a06295"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-01.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.0166666666666666"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Operation</span></div>
             </button><button class="team-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path d="M14.6226 9.52393H32.9083L39.0035 18.6668L23.7654 38.4763L8.52734 18.6668L14.6226 9.52393Z"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M22.2414 9.52393L17.6699 18.6668L23.7652 38.4763L29.8604 18.6668L25.289 9.52393"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M8.52734 18.6665H39.0035" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="91ac3f58-7eb3-f0da-29ab-a9fc2b7cad05"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-02.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Quality Processes</span></div>
             </button><button class="team-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path
-                    d="M34.8016 27.2001C37.1856 24.8641 39.6016 22.0641 39.6016 18.4001C39.6016 16.0662 38.6744 13.8279 37.0241 12.1776C35.3738 10.5272 33.1355 9.6001 30.8016 9.6001C27.9856 9.6001 26.0016 10.4001 23.6016 12.8001C21.2016 10.4001 19.2176 9.6001 16.4016 9.6001C14.0677 9.6001 11.8293 10.5272 10.179 12.1776C8.5287 13.8279 7.60156 16.0662 7.60156 18.4001C7.60156 22.0801 10.0016 24.8801 12.4016 27.2001L23.6016 38.4001L34.8016 27.2001Z"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M9.55078 23.9999H19.5988L20.3988 22.3999L23.5988 29.5999L26.7988 18.3999L29.1988 23.9999H37.6308"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="3d8079e6-0a63-cf76-ed4d-adedd96d731c"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-03.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Security</span></div>
             </button><button class="team-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path
-                    d="M29.8951 22.9482C29.2208 23.4139 28.3354 23.793 27.3114 24.0544C26.2873 24.3158 25.154 24.4521 24.0042 24.4521C22.8544 24.4521 21.721 24.3158 20.697 24.0544C19.673 23.793 18.7875 23.4139 18.1133 22.9482"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M31.1621 27.433L37.6784 30.4003C37.937 30.5138 38.157 30.7001 38.3115 30.9364C38.466 31.1728 38.5483 31.4491 38.5485 31.7314C38.5487 32.0138 38.4666 32.2902 38.3124 32.5267C38.1581 32.7633 37.9383 32.9498 37.6799 33.0636L25.2086 38.7363C24.8296 38.9092 24.4179 38.9986 24.0013 38.9986C23.5848 38.9986 23.1731 38.9092 22.7941 38.7363L10.3228 33.049C10.0647 32.9352 9.84522 32.7488 9.69116 32.5125C9.5371 32.2762 9.45508 32.0002 9.45508 31.7181C9.45508 31.436 9.5371 31.16 9.69116 30.9237C9.84522 30.6874 10.0647 30.501 10.3228 30.3872L16.845 27.4199"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M31.1993 27.5639C31.3462 28.0796 31.2699 28.605 30.9755 29.1046C30.681 29.6043 30.1754 30.0665 29.4926 30.4599C28.8099 30.8533 27.9662 31.1689 27.0184 31.3851C26.0707 31.6013 25.041 31.7132 23.9993 31.7132C22.9575 31.7132 21.9279 31.6013 20.9802 31.3851C20.0324 31.1689 19.1886 30.8533 18.5059 30.4599C17.8232 30.0665 17.3175 29.6043 17.0231 29.1046C16.7287 28.605 16.6523 28.0796 16.7993 27.5639L21.1833 12.0875C21.344 11.4624 21.7081 10.9085 22.2181 10.513C22.7282 10.1175 23.3553 9.90283 24.0007 9.90283C24.6462 9.90283 25.2733 10.1175 25.7834 10.513C26.2934 10.9085 26.6575 11.4624 26.8182 12.0875L31.1993 27.5639Z"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M19.9199 16.5562C21.1241 16.9642 22.5453 17.1823 23.9999 17.1823C25.4545 17.1823 26.8758 16.9642 28.0799 16.5562"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="bcc4d647-bf0d-11ff-e7e8-c77c52172504"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-04-2.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Maintenance</span></div>
             </button><button class="team-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path
-                    d="M13.4185 28.2106L15.9448 23.3264C16.2194 22.7809 16.6372 22.3204 17.1534 21.9941C17.6696 21.6677 18.2648 21.4879 18.8753 21.4737H36.9974M36.9974 21.4737C37.512 21.4728 38.02 21.5898 38.4823 21.8158C38.9446 22.0417 39.349 22.3705 39.6645 22.7771C39.98 23.1836 40.1981 23.657 40.3022 24.161C40.4062 24.6649 40.3934 25.186 40.2648 25.6842L37.6711 35.7895C37.4835 36.5163 37.0584 37.1597 36.4634 37.6174C35.8684 38.0751 35.1376 38.3209 34.3869 38.3158H10.0501C9.1567 38.3158 8.29993 37.9609 7.66823 37.3292C7.03653 36.6975 6.68164 35.8408 6.68164 34.9474V13.0527C6.68164 12.1593 7.03653 11.3025 7.66823 10.6708C8.29993 10.0391 9.1567 9.68424 10.0501 9.68424H16.6185C17.1818 9.67872 17.7376 9.81458 18.2348 10.0794C18.7321 10.3442 19.155 10.7295 19.4648 11.2L20.829 13.2211C21.1357 13.6868 21.5533 14.0691 22.0442 14.3337C22.5351 14.5982 23.084 14.7368 23.6416 14.7369H33.629C34.5224 14.7369 35.3791 15.0918 36.0108 15.7235C36.6425 16.3552 36.9974 17.2119 36.9974 18.1053V21.4737Z"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="630eec33-654c-f6d4-6f01-65fe49fdeb3c"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-05.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Administration &amp; ressources</span></div>
             </button>
             <div class="services-viewer">
@@ -2052,15 +2010,19 @@
                 </div>
               </a>
               <link rel="prefetch" href="/our-services"><img src="images/service-card-1_1.avif" loading="lazy"
-                sizes="100vw"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt=""
-                class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt=""
-                class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt=""
-                class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt=""
-                class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="100vw"
+                class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy"
+                sizes="(max-width: 896px) 100vw, 896px"
                 srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt=""
                 class="service-image is-5">
             </div>
@@ -2158,7 +2120,8 @@
           <link rel="prefetch" href="/our-services">
         </div>
         <div class="next_background-wrap">
-          <div class="next_background"><img src="images/our-services_1.avif" loading="lazy" sizes="100vw"
+          <div class="next_background"><img src="images/our-services_1.avif" loading="lazy"
+              sizes="(max-width: 2880px) 100vw, 2880px"
               srcset="images/our-services_1our-services.avif 500w, images/our-services_1our-services.avif 800w, images/our-services_1our-services.avif 1080w, images/our-services_1.avif 2880w"
               alt="" class="background"></div>
         </div>

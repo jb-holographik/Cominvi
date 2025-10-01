@@ -5451,6 +5451,10 @@ p {
     padding-right: 0;
   }
 
+  .utility-page-content {
+    padding: 14.5em 1em 1em;
+  }
+
   .machines_label {
     justify-content: space-between;
     align-items: center;

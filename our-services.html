@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Mon Sep 22 2025 11:24:47 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Tue Sep 30 2025 08:01:51 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="689b3603a6ed82269ee752f7" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -17,6 +17,20 @@
 </head>
 
 <body data-barba="wrapper">
+  <div class="m-overlay"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 72 101" fill="none"
+      class="rotate-icon">
+      <rect x="16" y="16" width="40" height="70" rx="5" stroke="white" stroke-width="2"></rect>
+      <rect x="71" y="31" width="40" height="70" rx="5" transform="rotate(90 71 31)" stroke="white" stroke-opacity="0.2"
+        stroke-width="2" stroke-dasharray="4 4"></rect>
+      <path
+        d="M48.8706 95.6103C48.6039 95.6818 48.4456 95.9559 48.517 96.2227L49.6817 100.569C49.7532 100.836 50.0274 100.994 50.2941 100.923C50.5608 100.851 50.7191 100.577 50.6476 100.311L49.6124 96.4468L53.4761 95.4115C53.7428 95.3401 53.9011 95.0659 53.8296 94.7992C53.7582 94.5324 53.484 94.3741 53.2173 94.4456L48.8706 95.6103ZM64.75 87H64.25C64.25 88.7554 63.7879 90.4798 62.9103 92L63.3433 92.25L63.7763 92.5C64.7417 90.8278 65.25 88.9309 65.25 87H64.75ZM63.3433 92.25L62.9103 92C62.0326 93.5202 60.7702 94.7826 59.25 95.6603L59.5 96.0933L59.75 96.5263C61.4222 95.5608 62.8108 94.1722 63.7763 92.5L63.3433 92.25ZM59.5 96.0933L59.25 95.6603C57.7298 96.5379 56.0054 97 54.25 97V97.5V98C56.1809 98 58.0778 97.4917 59.75 96.5263L59.5 96.0933ZM54.25 97.5V97C52.4946 97 50.7702 96.5379 49.25 95.6603L49 96.0933L48.75 96.5263C50.4222 97.4917 52.3191 98 54.25 98V97.5Z"
+        fill="currentColor" class="is-path-white"></path>
+      <path
+        d="M22.8794 5.8897C23.1461 5.81823 23.3044 5.54406 23.233 5.27733L22.0683 0.930659C21.9968 0.663925 21.7226 0.505634 21.4559 0.577105C21.1892 0.648576 21.0309 0.922744 21.1024 1.18948L22.1376 5.05318L18.2739 6.08846C18.0072 6.15993 17.8489 6.4341 17.9204 6.70083C17.9918 6.96756 18.266 7.12585 18.5327 7.05438L22.8794 5.8897ZM7 14.5L7.5 14.5C7.5 12.7446 7.96206 11.0202 8.83975 9.5L8.40673 9.25L7.97372 9C7.00827 10.6722 6.5 12.5691 6.5 14.5L7 14.5ZM8.40673 9.25L8.83975 9.5C9.71743 7.97981 10.9798 6.71743 12.5 5.83974L12.25 5.40673L12 4.97372C10.3278 5.93917 8.93917 7.32779 7.97372 9L8.40673 9.25ZM12.25 5.40673L12.5 5.83974C14.0202 4.96206 15.7446 4.5 17.5 4.5L17.5 4L17.5 3.5C15.5691 3.5 13.6722 4.00827 12 4.97372L12.25 5.40673ZM17.5 4L17.5 4.5C19.2554 4.5 20.9798 4.96206 22.5 5.83975L22.75 5.40673L23 4.97372C21.3278 4.00827 19.4309 3.5 17.5 3.5L17.5 4Z"
+        fill="currentColor" class="is-path-white"></path>
+    </svg>
+    <p class="body-m is-white">Turn your phone for <br>a better experience</p>
+  </div>
   <div class="loader">
     <div class="loader_inner">
       <div class="loader_mask"></div>
@@ -126,7 +140,6 @@
         body {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          font-smoothing: antialiased;
           text-rendering: optimizeLegibility;
         }
 
@@ -358,6 +371,10 @@
           .workshops-sm-wrap p {
             text-align: center;
           }
+
+          .section_work-team .body-xxl {
+            font-size: 2.5em;
+          }
         }
       </style>
     </div>
@@ -588,16 +605,12 @@
         </div>
         <div class="content">
           <div class="is-grid-3"><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path
-                    d="M36.9733 9.52588H11.2262C9.44873 9.52588 8.00781 10.9668 8.00781 12.7443V35.273C8.00781 37.0505 9.44873 38.4914 11.2262 38.4914H36.9733C38.7508 38.4914 40.1917 37.0505 40.1917 35.273V12.7443C40.1917 10.9668 38.7508 9.52588 36.9733 9.52588Z"
-                    stroke="#151515" stroke-width="1.5" stroke-linejoin="round"></path>
-                  <path d="M8.00781 19.1812H27.3182C29.0957 19.1812 30.5365 20.6221 30.5365 22.3995V38.4915"
-                    stroke="#151515" stroke-width="1.5"></path>
-                  <path d="M20.8887 38.4915V19.1812" stroke="#151515" stroke-width="1.5"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="7e80903e-bfda-acc4-2379-51611fed43ac"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-06.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Engineering</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -605,35 +618,12 @@
                 </div>
               </div>
             </button><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <g clip-path="url(#clip0_4385_4294)">
-                    <path
-                      d="M37.9962 9.62109L37.1817 11.1744C36.0754 13.2843 34.575 14.4696 33.0105 14.4696H15.5072C13.9427 14.4696 12.4422 13.2843 11.336 11.1744L10.5215 9.62109"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M6.96875 8.96973H40.9081" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-                    <path
-                      d="M9.87876 38.0605L10.6933 36.5072C11.7996 34.3974 13.3 33.2121 14.8645 33.2121L32.3678 33.2121C33.9323 33.2121 35.4328 34.3974 36.539 36.5072L37.3535 38.0605"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M40.9062 38.7119L6.96686 38.7119" stroke="#151515" stroke-width="1.5"
-                      stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path
-                      d="M20.2188 32.2489L20.5514 30.5857C20.7569 29.5577 20.8599 29.0436 21.1883 28.7029C21.2759 28.6121 21.3738 28.5319 21.48 28.4638C21.8785 28.2085 22.4027 28.2085 23.4511 28.2085C24.4995 28.2085 25.0236 28.2085 25.4221 28.4638C25.5283 28.5319 25.6263 28.6121 25.7139 28.7029C26.0423 29.0436 26.1452 29.5577 26.3508 30.5857L26.6834 32.2489"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path
-                      d="M20.2188 14.4697L20.5514 16.133C20.7569 17.161 20.8599 17.675 21.1883 18.0157C21.2759 18.1065 21.3738 18.1868 21.48 18.2548C21.8785 18.5101 22.4027 18.5101 23.4511 18.5101C24.4995 18.5101 25.0236 18.5101 25.4221 18.2548C25.5283 18.1868 25.6263 18.1065 25.7139 18.0157C26.0423 17.675 26.1452 17.161 26.3508 16.133L26.6834 14.4697"
-                      stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M23.4531 28.2082V18.5112" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-                  </g>
-                  <defs>
-                    <clippath id="clip0_4385_4294">
-                      <rect width="35.8788" height="32" fill="white" transform="translate(6 8)"></rect>
-                    </clippath>
-                  </defs>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="520e8021-443a-2f88-cbf0-b0e2b771a3ce"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-07.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Fortification</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -641,20 +631,12 @@
                 </div>
               </div>
             </button><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <g clip-path="url(#clip0_4385_4322)">
-                    <path
-                      d="M32.9516 31.1208L38.1096 29.4646C39.9736 28.866 40.4433 26.49 38.9425 25.2503L34.9036 21.914M32.9516 31.1208L30.0423 32.0551C28.7568 32.468 27.5425 33.0703 26.4413 33.8416L24.2061 35.4073M32.9516 31.1208L33.0555 28.63C33.1131 27.2441 33.3946 25.8761 33.8895 24.577L34.9036 21.914M32.9516 31.1208L32.7348 36.3256C32.6563 38.211 30.532 39.3088 28.9046 38.3051L24.2061 35.4073M34.9036 21.914L36.763 17.0318C37.4428 15.2464 35.8826 13.414 33.9726 13.7547L28.5855 14.7158M34.9036 21.914L32.8695 20.2337C31.811 19.3594 30.8975 18.3287 30.1615 17.1787L28.5855 14.7158M24.2061 35.4073L19.7303 38.5423C18.1685 39.6361 15.9856 38.6681 15.789 36.7943L15.2374 31.5366M24.2061 35.4073L21.6003 33.8C20.455 33.0936 19.207 32.5623 17.8991 32.2245L15.2374 31.5366M15.2374 31.5366L10.0345 30.1921C8.13915 29.7025 7.52745 27.3601 8.94887 26.0353L12.8143 22.4326M15.2374 31.5366L14.7238 26.6406L12.8143 22.4326M12.8143 22.4326L10.6797 17.7284C9.8884 15.9845 11.3371 14.0597 13.2672 14.2905L18.7547 14.9466M12.8143 22.4326L14.9824 20.4119C15.9888 19.4738 16.8401 18.3874 17.5054 17.1917L18.7547 14.9466M18.7547 14.9466L21.3511 10.2806C22.2671 8.63445 24.6483 8.56318 25.6646 10.1515L28.5855 14.7158M18.7547 14.9466L21.8581 15.3177C23.189 15.4768 24.5368 15.438 25.8558 15.2027L28.5855 14.7158"
-                      stroke="#151515" stroke-width="1.5" stroke-linejoin="round"></path>
-                  </g>
-                  <defs>
-                    <clippath id="clip0_4385_4322">
-                      <rect width="34" height="32" fill="white" transform="translate(7 8)"></rect>
-                    </clippath>
-                  </defs>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="40860d72-da39-b0d3-4802-f4f1d11f5f3a"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-08.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.0166666666666666"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Development</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -662,36 +644,12 @@
                 </div>
               </div>
             </button><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path d="M24.9883 34.3218L26.7475 33.6182" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M26.5716 29.5776L24.9883 29.0498" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M29.0469 38.0198L29.5746 36.4365" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M29.3892 26.7592L28.6855 25" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M33.4492 26.5833L33.977 25" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M34.3228 38.0156L33.6191 36.2563" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M36.2617 29.397L38.0209 28.6934" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M38.0091 33.9745L36.4258 33.4468" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path
-                    d="M31.51 36.7862C34.4248 36.7862 36.7877 34.4233 36.7877 31.5086C36.7877 28.5938 34.4248 26.231 31.51 26.231C28.5953 26.231 26.2324 28.5938 26.2324 31.5086C26.2324 34.4233 28.5953 36.7862 31.51 36.7862Z"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M20.952 36.952H12.5711C11.7628 36.952 10.9876 36.6309 10.4161 36.0594C9.84452 35.4878 9.52344 34.7127 9.52344 33.9044V12.5711C9.52344 11.7628 9.84452 10.9876 10.4161 10.4161C10.9876 9.84452 11.7628 9.52344 12.5711 9.52344H33.9044C34.7127 9.52344 35.4878 9.84452 36.0594 10.4161C36.6309 10.9876 36.952 11.7628 36.952 12.5711V20.952"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M27.8125 9.52344V20.952" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M18.6641 9.52344V36.952" stroke="#151515" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="1b0126b0-d980-b557-fda8-489e99a1be9b"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-09.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Production</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical
@@ -699,24 +657,12 @@
                 </div>
               </div>
             </button><button class="service-card">
-              <div class="service-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 48 48"
-                  fill="none" class="service-icon_icon">
-                  <rect width="48" height="48" fill="white"></rect>
-                  <path
-                    d="M8.10156 11.7518C8.10156 10.2892 9.28723 9.10352 10.7498 9.10352H14.2809C15.7435 9.10352 16.9291 10.2892 16.9291 11.7518V15.2828C16.9291 16.7454 15.7435 17.9311 14.2809 17.9311H10.7498C9.28723 17.9311 8.10156 16.7454 8.10156 15.2828V11.7518Z"
-                    stroke="#151515" stroke-width="1.5"></path>
-                  <path
-                    d="M8.10156 32.7171C8.10156 31.2546 9.28723 30.0688 10.7498 30.0688H14.2809C15.7435 30.0688 16.9291 31.2546 16.9291 32.7171V36.2482C16.9291 37.7107 15.7435 38.8964 14.2809 38.8964H10.7498C9.28723 38.8964 8.10156 37.7107 8.10156 36.2482V32.7171Z"
-                    stroke="#151515" stroke-width="1.5"></path>
-                  <path d="M17.6669 34.4581H38.5864M30.5405 13.5386H17.6669M31.061 17.041L17.1016 31.0004"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M31.2734 11.7518C31.2734 10.2892 32.4592 9.10352 33.9217 9.10352H37.4527C38.9153 9.10352 40.101 10.2892 40.101 11.7518V15.2828C40.101 16.7454 38.9153 17.9311 37.4527 17.9311H33.9217C32.4592 17.9311 31.2734 16.7454 31.2734 15.2828V11.7518Z"
-                    stroke="#151515" stroke-width="1.5"></path>
-                  <path
-                    d="M33.7559 38.4854L35.9899 36.9626C37.719 35.7841 38.5834 35.1948 38.5834 34.4624C38.5834 33.7301 37.719 33.1408 35.9899 31.9622L33.7559 30.4395"
-                    stroke="#151515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg></div>
+              <div class="service-icon">
+                <div class="service-icon_icon" data-w-id="56c27c4d-4afa-b719-a019-2b5cfaa3d406"
+                  data-animation-type="lottie" data-src="documents/CoMinVi---Icon-10.json" data-loop="0"
+                  data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg"
+                  data-default-duration="0" data-duration="3.033333333333333"></div>
+              </div>
               <div class="w-layout-vflex card-inner"><span class="body-l">Hauling</span>
                 <div class="desc">
                   <p class="body-s">Shotcrete application, rock bolting, steel sets, mesh installation, and geotechnical

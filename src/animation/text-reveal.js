@@ -4,6 +4,38 @@ import SplitType from 'split-type'
 
 gsap.registerPlugin(ScrollTrigger)
 
+let __textRevealResizeAttached = false
+let __textRevealResizeTimeout = null
+
+function attachTextRevealResizeHandler() {
+  if (typeof window === 'undefined') return
+  if (__textRevealResizeAttached) return
+  const handler = () => {
+    if (__textRevealResizeTimeout) clearTimeout(__textRevealResizeTimeout)
+    __textRevealResizeTimeout = setTimeout(() => {
+      try {
+        destroyTextReveal(document)
+      } catch (e) {
+        // ignore
+      }
+      try {
+        initTextReveal(document)
+      } catch (e) {
+        // ignore
+      }
+    }, 200)
+  }
+  try {
+    window.addEventListener('resize', handler)
+    window.addEventListener('orientationchange', handler)
+    // expose for potential cleanup elsewhere
+    window.__textRevealOnResize = handler
+  } catch (e) {
+    // ignore
+  }
+  __textRevealResizeAttached = true
+}
+
 function createLetterRevealTimeline(element) {
   const split = new SplitType(element, {
     types: 'lines,words,chars',
@@ -62,6 +94,9 @@ function createLetterRevealTimeline(element) {
 export function initTextReveal(root = document) {
   const targets = root.querySelectorAll('[tr="1"]')
   if (!targets.length) return null
+
+  // Ensure the resize/orientationchange re-init is attached once
+  attachTextRevealResizeHandler()
 
   const timelines = []
   targets.forEach((el) => {

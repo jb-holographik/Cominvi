@@ -162,6 +162,74 @@ export function initLoader() {
     tl.set(logoWrap, { justifyContent: 'flex-end' })
     tl.to(logoWrap, { width: widthAfterPx, duration: 0.3, ease: loaderEase })
 
+    // Fallback on tablet/mobile: replace mask reveal with a simple loader fade-out
+    const isTabletOrMobile =
+      (window.matchMedia && window.matchMedia('(max-width: 991px)').matches) ||
+      window.innerWidth <= 991
+    if (isTabletOrMobile) {
+      // Cleanup any overlay resources
+      tl.add(() => {
+        try {
+          if (syncOutlineSize) gsap.ticker.remove(syncOutlineSize)
+          if (handleResize) window.removeEventListener('resize', handleResize)
+          if (outlineEl) outlineEl.remove()
+        } catch (e) {
+          // ignore
+        }
+      })
+
+      // Run hero-related animations in parallel with the fade-out
+      tl.add(() => {
+        try {
+          heroAnimation()
+        } catch (e) {
+          // ignore
+        }
+      }, '>')
+      tl.add(() => {
+        try {
+          initContactHero(document, {
+            animate: true,
+            duration: 1.2,
+            ease: loaderEase,
+          })
+        } catch (e) {
+          // ignore
+        }
+      }, '<')
+      tl.add(() => {
+        try {
+          initHeroBackgroundParallax(document)
+        } catch (e) {
+          // ignore
+        }
+      }, '<')
+      tl.to(
+        '.background-inner',
+        {
+          scale: 1.2,
+          transformOrigin: '50% 50%',
+          duration: 1.2,
+          ease: loaderEase,
+        },
+        '<'
+      )
+
+      // Fade out loader quickly
+      tl.to(loader, { opacity: 0, duration: 0.5, ease: loaderEase }, '<')
+
+      // Remove loader at the end
+      tl.add(() => {
+        try {
+          loader.remove()
+        } catch (e) {
+          // ignore
+        }
+      })
+
+      return tl
+    }
+
     // 4. Préparation et animation du masque à l'intérieur de .is-logo-text
     let holeRectRef = null
     tl.add(() => {

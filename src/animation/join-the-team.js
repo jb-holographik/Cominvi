@@ -9,6 +9,7 @@ function buildIndicator(indicator) {
     style.rowGap || style.getPropertyValue('row-gap') || style.gridRowGap || 0
   )
 
+  // Ensure we always have a measurable tick
   let sample = indicator.querySelector('.scroll-tick')
   let createdTemp = false
   if (!sample) {
@@ -18,8 +19,61 @@ function buildIndicator(indicator) {
     createdTemp = true
   }
 
-  const tickHeight = sample.getBoundingClientRect().height
-  const containerHeight = indicator.clientHeight
+  const tickRect = sample.getBoundingClientRect()
+  const tickHeight = tickRect && tickRect.height ? tickRect.height : 0
+
+  // Compute a robust container height with mobile fallbacks
+  let containerHeight = indicator.clientHeight
+  if (!containerHeight || containerHeight <= 0) {
+    const r = indicator.getBoundingClientRect()
+    containerHeight = r && r.height ? r.height : 0
+  }
+  // Try to mirror the scroll-list column height inside this section
+  const section = indicator.closest('.section_work-team')
+  if (section) {
+    const list = section.querySelector('.scroll-list')
+    if (list) {
+      const lr = list.getBoundingClientRect()
+      const listH = Math.max(
+        (lr && lr.height) || 0,
+        list.clientHeight || 0,
+        list.scrollHeight || 0
+      )
+      if (listH && listH > 0) containerHeight = listH
+    }
+  }
+  if (!containerHeight || containerHeight <= tickHeight * 2) {
+    // Fallback to section or viewport height to ensure a visible stack on mobile
+    let sectionH = 0
+    if (section) {
+      const cs = section.clientHeight || 0
+      const rs = section.getBoundingClientRect()
+      sectionH = Math.max(cs, (rs && rs.height) || 0)
+    }
+    let viewportH = window.innerHeight || 0
+    if (!viewportH) {
+      viewportH = document.documentElement
+        ? document.documentElement.clientHeight
+        : 0
+    }
+    const baseH = containerHeight || 0
+    const max1 = baseH > sectionH ? baseH : sectionH
+    const max2 = max1 > viewportH ? max1 : viewportH
+    containerHeight = max2 > tickHeight ? max2 : tickHeight
+  }
+
+  // Keep the column wrapper in sync so layout is correct without CSS hacks
+  const column = indicator.closest('.content_column')
+  if (column) {
+    const colRect = column.getBoundingClientRect()
+    const colRectH = (colRect && colRect.height) || 0
+    const colClientH = column.clientHeight || 0
+    const colH = colRectH > colClientH ? colRectH : colClientH
+    if (!colH || Math.abs(colH - containerHeight) > 1) {
+      column.style.height = containerHeight + 'px'
+    }
+  }
+
   const perUnit = tickHeight + rowGap
   let count =
     perUnit > 0
@@ -98,6 +152,22 @@ function setupTickHighlighting(section, indicators) {
     onEnter: updateTicks,
     onEnterBack: updateTicks,
   })
+
+  // Expose an updater for external recalculation (resize/orientation/font load)
+  try {
+    section._updateTeamTicks = updateTicks
+  } catch (e) {
+    // ignore
+  }
+
+  // Recalculate once fonts are ready (line heights may change)
+  try {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => updateTicks())
+    }
+  } catch (e) {
+    // ignore
+  }
 
   updateTicks()
 }
@@ -194,21 +264,35 @@ function initWorkTeamSection(section) {
     })
   }
 
-  const indicators = Array.from(
-    section.querySelectorAll('.content_column > .scroll-indicator')
-  )
+  // Be flexible: some exports may wrap indicators differently on mobile
+  const indicators = [
+    ...section.querySelectorAll('.content_column > .scroll-indicator'),
+    ...section.querySelectorAll(
+      '.content_column.scroll-indicator > .scroll-indicator'
+    ),
+  ]
   if (indicators.length) {
     buildAllIndicators(indicators)
     setupTickHighlighting(section, indicators)
 
     let resizeTimer
-    window.addEventListener('resize', () => {
+    const recalc = () => {
       clearTimeout(resizeTimer)
       resizeTimer = setTimeout(() => {
         buildAllIndicators(indicators)
         ScrollTrigger.refresh()
+        try {
+          if (typeof section._updateTeamTicks === 'function') {
+            section._updateTeamTicks()
+          }
+        } catch (e) {
+          // ignore
+        }
       }, 150)
-    })
+    }
+    window.addEventListener('resize', recalc)
+    window.addEventListener('orientationchange', recalc)
+    window.addEventListener('load', recalc)
   }
 }
 
@@ -278,8 +362,9 @@ function initEquitySlider(section) {
     tl.to(
       arc,
       {
-        start: 234, // 65%
-        end: 360, // continue to 100%
+        // Sweep with a 65% arc (234°) by the end of phase 2
+        start: 126, // 35%
+        end: 360, // 100%
         duration: 1, // across the next 100vh
         onUpdate: () => {
           try {
@@ -315,7 +400,33 @@ export function initTeam(root = document) {
   const positionsSection = (root || document).querySelector(
     '.section_positions'
   )
-  if (positionsSection) abbreviatePositionsEyebrows(positionsSection)
+  // Only apply on screens wider than 767px (disable on mobile)
+  if (
+    positionsSection &&
+    typeof window !== 'undefined' &&
+    window.innerWidth > 767
+  )
+    abbreviatePositionsEyebrows(positionsSection)
+
+  // Toggle abbreviation on breakpoint changes (desktop ↔ mobile)
+  if (positionsSection && typeof window !== 'undefined') {
+    let wasDesktop = window.innerWidth > 767
+    let resizeTimer
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(() => {
+        const isDesktop = window.innerWidth > 767
+        if (isDesktop !== wasDesktop) {
+          if (isDesktop) {
+            abbreviatePositionsEyebrows(positionsSection)
+          } else {
+            restorePositionsEyebrows(positionsSection)
+          }
+          wasDesktop = isDesktop
+        }
+      }, 150)
+    })
+  }
 }
 
 function abbreviatePositionsEyebrows(section) {
@@ -326,6 +437,10 @@ function abbreviatePositionsEyebrows(section) {
     if (!eyebrowElements.length) return
     eyebrowElements.forEach((element) => {
       if (element.dataset.abbrevApplied === '1') return
+      if (!element.dataset.abbrevOriginal) {
+        // store original HTML so we can restore on mobile
+        element.dataset.abbrevOriginal = element.innerHTML
+      }
       const originalText = element.textContent || ''
       if (!originalText.trim()) return
       const match = originalText.match(/^(\s*)(\S+)([\s\S]*)$/)
@@ -339,6 +454,27 @@ function abbreviatePositionsEyebrows(section) {
       result = result.replace(/,\s*/, ',<br> ')
       element.innerHTML = result
       element.dataset.abbrevApplied = '1'
+    })
+  } catch (e) {
+    // ignore
+  }
+}
+
+function restorePositionsEyebrows(section) {
+  try {
+    const eyebrowElements = Array.from(
+      section.querySelectorAll('.sissmac-row .eyebrow-wrapper .eyebrow-m')
+    )
+    if (!eyebrowElements.length) return
+    eyebrowElements.forEach((element) => {
+      if (element.dataset.abbrevApplied === '1') {
+        const original = element.dataset.abbrevOriginal
+        if (typeof original === 'string') {
+          element.innerHTML = original
+        }
+        delete element.dataset.abbrevApplied
+        delete element.dataset.abbrevOriginal
+      }
     })
   } catch (e) {
     // ignore

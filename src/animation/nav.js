@@ -141,8 +141,9 @@ export function initializeMenuClick(options = {}, root = document) {
     if (!isOpen || !pageWrapElement) return
     const vw = window.innerWidth
     const isTabletNow = vw >= 768 && vw <= 991
-    const topWhenOpen = isTabletNow ? '15em' : '24em'
-    const borderGapPxNow = 64
+    const isMobileNow = vw < 768
+    const topWhenOpen = isMobileNow ? '32em' : isTabletNow ? '15em' : '24em'
+    const borderGapPxNow = isMobileNow ? 32 : 64
     const desiredWidthNow = Math.max(0, vw - borderGapPxNow)
     const scaleWhenOpen = vw > 0 ? desiredWidthNow / vw : 1
     gsap.set(pageWrapElement, {
@@ -175,8 +176,18 @@ export function initializeMenuClick(options = {}, root = document) {
     const targetBorderRadius = isOpen ? '0rem' : '1rem'
     const viewportWidth = window.innerWidth
     const isTablet = viewportWidth >= 768 && viewportWidth <= 991
-    const targetTop = isOpen ? originalTop : isTablet ? '15em' : '24em'
-    const borderGapPx = 64
+    const isMobile = viewportWidth < 768
+    let targetTop
+    if (isOpen) {
+      targetTop = originalTop
+    } else if (isMobile) {
+      targetTop = '32em'
+    } else if (isTablet) {
+      targetTop = '15em'
+    } else {
+      targetTop = '24em'
+    }
+    const borderGapPx = isMobile ? 32 : 64
     const desiredWidth = Math.max(0, viewportWidth - borderGapPx)
     const computedScaleOpen =
       viewportWidth > 0 ? desiredWidth / viewportWidth : 1

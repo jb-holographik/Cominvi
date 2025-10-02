@@ -2,6 +2,18 @@ import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import SplitType from 'split-type'
 
+// Debounce utility for resize-driven recalculations
+const debounce = (fn, wait = 150) => {
+  let t
+  return (...args) => {
+    clearTimeout(t)
+    t = setTimeout(() => fn.apply(null, args), wait)
+  }
+}
+
+let __svcResizeBound = false
+let __svcResizeHandler = null
+
 // Ensure the same custom ease as Technology
 if (!gsap.parseEase('machinesStep')) {
   try {
@@ -13,6 +25,47 @@ if (!gsap.parseEase('machinesStep')) {
 export function initServiceCards(root = document) {
   const scope = root && root.querySelector ? root : document
   const cards = scope.querySelectorAll('.service-card')
+  const isTabletOrBelowNow = () => {
+    try {
+      return (
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(max-width: 991px)').matches
+      )
+    } catch (e) {
+      return false
+    }
+  }
+  const updateServiceCardBaseState = (card) => {
+    const desc = card.querySelector('.desc')
+    const bloc = card.querySelector('.card-inner') || desc
+    if (!desc || !bloc) return
+    const isTablet = isTabletOrBelowNow()
+    try {
+      if (!isTablet) {
+        bloc.style.transition = 'none'
+        const rect = desc.getBoundingClientRect()
+        const h =
+          rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
+        bloc.style.transform = `translateY(${h}px)`
+        void bloc.offsetWidth
+        bloc.style.transition = 'transform 0.5s ease, opacity 0.3s ease'
+      } else {
+        bloc.style.transition = ''
+        bloc.style.transform = ''
+        bloc.style.willChange = ''
+      }
+      const existing = card.style.transition?.trim()
+      card.style.transition = existing
+        ? `${existing}, background-color 0.3s ease`
+        : 'background-color 0.3s ease'
+      if (!card.style.backgroundColor) {
+        card.style.backgroundColor = 'var(--white)'
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
   cards.forEach((card) => {
     if (card.__serviceCardsBound) return
     const desc = card.querySelector('.desc')
@@ -60,6 +113,7 @@ export function initServiceCards(root = document) {
     }
     if (!isTabletOrBelow) {
       card.addEventListener('mouseenter', () => {
+        if (isTabletOrBelowNow()) return
         const height = desc.getBoundingClientRect().height
         bloc.style.transition = 'transform 0.5s ease'
         bloc.style.transform = `translateY(${height}px)`
@@ -70,6 +124,7 @@ export function initServiceCards(root = document) {
         card.style.backgroundColor = 'var(--accent)'
       })
       card.addEventListener('mouseleave', () => {
+        if (isTabletOrBelowNow()) return
         const rect = desc.getBoundingClientRect()
         const height =
           rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
@@ -79,10 +134,12 @@ export function initServiceCards(root = document) {
       })
       // Pointer events for broader support
       card.addEventListener('pointerenter', () => {
+        if (isTabletOrBelowNow()) return
         bloc.style.transform = 'translateY(0)'
         card.style.backgroundColor = 'var(--accent)'
       })
       card.addEventListener('pointerleave', () => {
+        if (isTabletOrBelowNow()) return
         const rect = desc.getBoundingClientRect()
         const height =
           rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
@@ -162,17 +219,98 @@ export function initServiceCards(root = document) {
         })
     }
 
-    card.addEventListener('mouseenter', revealLines)
-    card.addEventListener('mouseleave', hideLines)
+    card.addEventListener('mouseenter', () => {
+      if (isTabletOrBelowNow()) return
+      revealLines()
+    })
+    card.addEventListener('mouseleave', () => {
+      if (isTabletOrBelowNow()) return
+      hideLines()
+    })
     // Pointer events for broader support
-    card.addEventListener('pointerenter', revealLines)
-    card.addEventListener('pointerleave', hideLines)
+    card.addEventListener('pointerenter', () => {
+      if (isTabletOrBelowNow()) return
+      revealLines()
+    })
+    card.addEventListener('pointerleave', () => {
+      if (isTabletOrBelowNow()) return
+      hideLines()
+    })
 
     card.__machineCardsBound = true
   })
 
   // Also bind the hover → viewer image logic
   serviceCardsHover(scope)
+
+  // Debounced resize recalculation for service and machine cards
+  const recalcOnResize = () => {
+    try {
+      const allCards = scope.querySelectorAll('.service-card')
+      allCards.forEach((c) => updateServiceCardBaseState(c))
+
+      const machineCards = scope.querySelectorAll('.machine-card')
+      machineCards.forEach((card) => {
+        const bloc = card.querySelector('.machine-card_inner')
+        if (!bloc) {
+          return
+        }
+
+        const textEl =
+          bloc.querySelector('p, .body-s, .body-m, .body-l') || bloc
+
+        try {
+          if (
+            textEl.__splitLines &&
+            typeof textEl.__splitLines.revert === 'function'
+          ) {
+            textEl.__splitLines.revert()
+            textEl.__splitLines = null
+            textEl.__lines = null
+          }
+          const split = new SplitType(textEl, {
+            types: 'lines',
+            tagName: 'span',
+          })
+          textEl.__splitLines = split
+          textEl.__lines = split.lines || []
+          const inners = []
+          textEl.__lines.forEach((line) => {
+            line.style.display = 'block'
+            line.style.overflow = 'hidden'
+            if (!line.__inner) {
+              const inner = document.createElement('span')
+              inner.className = 'line-inner'
+              inner.style.display = 'inline-block'
+              while (line.firstChild) inner.appendChild(line.firstChild)
+              line.appendChild(inner)
+              line.__inner = inner
+            }
+            inners.push(line.__inner)
+          })
+          inners.forEach((el) => {
+            el.style.transform = 'translateY(100%)'
+            el.style.willChange = 'transform'
+            el.style.transition = 'transform 0.4s ease'
+          })
+          bloc.__lineInners = inners
+        } catch (e) {
+          // ignore
+        }
+      })
+
+      // Refresh viewer bindings/state according to viewport
+      serviceCardsHover(scope)
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  if (!__svcResizeBound) {
+    __svcResizeHandler = debounce(recalcOnResize, 150)
+    window.addEventListener('resize', __svcResizeHandler)
+    __svcResizeBound = true
+  }
 
   // Mobile: click a .machine-card to expand its .machine-bottom-wrap to reveal content
   const isTabletOrBelowViewport = () => {
@@ -323,17 +461,20 @@ export function serviceCardsHover(root = document) {
   const viewer = scope.querySelector('.service-viewer, .services-viewer')
   if (!viewer) return
 
-  if (viewer.__serviceViewerBound) return
+  // Allow re-invocation for base state refresh; keep from double-binding with flags below
+  // if (viewer.__serviceViewerBound) return
 
-  // Detect tablet/mobile viewport
-  let isTabletOrBelow = false
-  try {
-    isTabletOrBelow =
-      typeof window !== 'undefined' &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(max-width: 991px)').matches
-  } catch (e) {
-    isTabletOrBelow = false
+  // Detect tablet/mobile viewport (local helper)
+  const isTabletOrBelowNow = () => {
+    try {
+      return (
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(max-width: 991px)').matches
+      )
+    } catch (e) {
+      return false
+    }
   }
 
   const images = Array.from(viewer.querySelectorAll('.service-image'))
@@ -368,14 +509,32 @@ export function serviceCardsHover(root = document) {
     viewerButton.style.display = 'block'
   }
 
-  // On tablet/mobile: keep base state only, do not bind hover handlers
-  if (isTabletOrBelow) {
+  // Button initial state handled above; if mobile, don't bind hover handlers
+  if (isTabletOrBelowNow()) {
+    if (!viewer.__svcViewerResizeBound) {
+      const onResize = debounce(() => {
+        // Re-apply base state when viewport crosses breakpoints
+        images.forEach((img) => {
+          img.style.transition = `opacity 0.5s ${OPACITY_EASING}`
+          img.style.opacity = '0'
+          img.style.zIndex = '0'
+          img.style.display = 'none'
+        })
+        if (viewerButton) {
+          viewerButton.style.display = 'block'
+          viewerButton.style.opacity = '1'
+        }
+      }, 150)
+      window.addEventListener('resize', onResize)
+      viewer.__svcViewerResizeBound = true
+    }
     viewer.__serviceViewerBound = true
     return
   }
   const cards = Array.from(scope.querySelectorAll('.service-card'))
 
   const showImageByIndex = (index) => {
+    if (isTabletOrBelowNow()) return
     images.forEach((img, i) => {
       if (i === index) {
         img.style.display = 'block'
@@ -421,6 +580,7 @@ export function serviceCardsHover(root = document) {
   }
 
   const hideImageByIndex = (index) => {
+    if (isTabletOrBelowNow()) return
     const img = images[index]
     if (!img) return
     img.style.transition = `opacity 0.5s ${OPACITY_EASING}`
@@ -438,12 +598,14 @@ export function serviceCardsHover(root = document) {
 
     if (!card.__serviceViewerHoverBound) {
       card.addEventListener('mouseenter', () => {
+        if (isTabletOrBelowNow()) return
         showImageByIndex(indexInImages)
         if (viewerButton) {
           viewerButton.style.opacity = '0'
         }
       })
       card.addEventListener('mouseleave', () => {
+        if (isTabletOrBelowNow()) return
         hideImageByIndex(indexInImages)
         // Show button only if no card is hovered anymore
         if (viewerButton && !scope.querySelector('.service-card:hover')) {
@@ -466,12 +628,14 @@ export function serviceCardsHover(root = document) {
       })
       // Pointer events for broader support
       card.addEventListener('pointerenter', () => {
+        if (isTabletOrBelowNow()) return
         showImageByIndex(indexInImages)
         if (viewerButton) {
           viewerButton.style.opacity = '0'
         }
       })
       card.addEventListener('pointerleave', () => {
+        if (isTabletOrBelowNow()) return
         hideImageByIndex(indexInImages)
         if (viewerButton && !scope.querySelector('.service-card:hover')) {
           if (viewerButton.__onOpacityEnd) {
@@ -492,12 +656,14 @@ export function serviceCardsHover(root = document) {
       })
       // Also handle focus/blur for keyboard navigation
       card.addEventListener('focus', () => {
+        if (isTabletOrBelowNow()) return
         showImageByIndex(indexInImages)
         if (viewerButton) {
           viewerButton.style.opacity = '0'
         }
       })
       card.addEventListener('blur', () => {
+        if (isTabletOrBelowNow()) return
         hideImageByIndex(indexInImages)
         if (viewerButton && !scope.querySelector('.service-card:hover')) {
           if (viewerButton.__onOpacityEnd) {

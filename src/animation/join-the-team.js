@@ -104,11 +104,68 @@ function setupTickHighlighting(section, indicators) {
     section.closest('.page-wrap') ||
     window
 
+  // On tablet & mobile, center relative to 100svh (small viewport height)
+  // to avoid browser UI chrome affecting the visual center. We measure 100svh
+  // via a temporary element and cache it until the next resize/orientation.
+  const isTabletOrMobile =
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(max-width: 991px)').matches
+      : false
+
+  let cachedSVH = 0
+  const measureSVH = () => {
+    try {
+      const el = document.createElement('div')
+      el.style.position = 'fixed'
+      el.style.top = '0'
+      el.style.left = '0'
+      el.style.height = '100svh'
+      el.style.width = '0'
+      el.style.pointerEvents = 'none'
+      el.style.opacity = '0'
+      el.style.visibility = 'hidden'
+      document.documentElement.appendChild(el)
+      const h = el.getBoundingClientRect().height || el.offsetHeight || 0
+      el.remove()
+      return h
+    } catch (e) {
+      return 0
+    }
+  }
+
+  const refreshSVH = () => {
+    cachedSVH = measureSVH()
+  }
+
+  if (isTabletOrMobile) {
+    refreshSVH()
+    const svhResizeHandler = () => {
+      // Debounce to avoid excessive recalcs
+      clearTimeout(svhResizeHandler._t)
+      svhResizeHandler._t = setTimeout(refreshSVH, 100)
+    }
+    window.addEventListener('resize', svhResizeHandler)
+    window.addEventListener('orientationchange', svhResizeHandler)
+  }
+
   const updateTicks = () => {
-    const viewportRect =
-      wrapper === window
-        ? { top: 0, height: window.innerHeight }
-        : wrapper.getBoundingClientRect()
+    let viewportRect
+    const viewportHeight =
+      // Use 100svh on tablet/mobile when available; fallback to innerHeight
+      isTabletOrMobile && cachedSVH > 0 ? cachedSVH : window.innerHeight
+
+    if (wrapper === window) {
+      // Center is half of 100svh or innerHeight
+      viewportRect = { top: 0, height: viewportHeight }
+    } else {
+      const rect = wrapper.getBoundingClientRect()
+      if (isTabletOrMobile) {
+        // On tablet/mobile, always center relative to viewport 100svh, not wrapper
+        viewportRect = { top: 0, height: viewportHeight }
+      } else {
+        viewportRect = { top: rect.top, height: rect.height }
+      }
+    }
     const viewportCenter = viewportRect.top + viewportRect.height / 2
 
     indicators.forEach((indicator) => {

@@ -48,19 +48,36 @@ export function initParallax(root = document) {
       if (cs.position === 'static') container.style.position = 'relative'
       container.style.overflow = 'hidden'
 
-      // Compute container height from image intrinsic ratio
-      const containerWidth = container.clientWidth || img.clientWidth
-      let ratio = 0
-      if (img.naturalWidth && img.naturalHeight) {
-        ratio = img.naturalHeight / img.naturalWidth
-      } else if (img.clientWidth && img.clientHeight) {
-        ratio = img.clientHeight / img.clientWidth
-      } else {
-        ratio = 9 / 16
+      // Compute and apply container height after layout has settled
+      // We defer the height assignment with a double rAF to ensure
+      // styles, fonts and DOM layout are applied before measuring.
+      const setHeightAfterLayout = () => {
+        try {
+          // Recompute ratio and width at apply-time to avoid stale values
+          let r = 0
+          if (img.naturalWidth && img.naturalHeight) {
+            r = img.naturalHeight / img.naturalWidth
+          } else if (img.clientWidth && img.clientHeight) {
+            r = img.clientHeight / img.clientWidth
+          } else {
+            r = 9 / 16
+          }
+          const w = container.clientWidth || img.clientWidth
+          if (w) {
+            container.style.height = `${Math.round(w * r)}px`
+          }
+          try {
+            ScrollTrigger.refresh()
+          } catch (e) {
+            // ignore
+          }
+        } catch (e) {
+          // ignore
+        }
       }
-      if (containerWidth) {
-        container.style.height = `${Math.round(containerWidth * ratio)}px`
-      }
+      // Clear any previous explicit height first, then defer apply
+      container.style.height = ''
+      requestAnimationFrame(() => requestAnimationFrame(setHeightAfterLayout))
 
       // Image should be larger than container to avoid gaps during travel
       // Use absolute positioning + calibrated top offset so that at the

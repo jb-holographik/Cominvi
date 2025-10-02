@@ -383,13 +383,21 @@ function setupTickHighlighting(section, indicators) {
 
   const updateTicks = () => {
     let viewportRect
+    const viewportHeight =
+      // Use 100svh on tablet/mobile when available; fallback to innerHeight
+      isTabletOrMobile && cachedSVH > 0 ? cachedSVH : window.innerHeight
+
     if (wrapper === window) {
-      const viewportHeight =
-        // Use 100svh on tablet/mobile when available; fallback to innerHeight
-        isTabletOrMobile && cachedSVH > 0 ? cachedSVH : window.innerHeight
+      // Center is half of 100svh or innerHeight
       viewportRect = { top: 0, height: viewportHeight }
     } else {
-      viewportRect = wrapper.getBoundingClientRect()
+      const rect = wrapper.getBoundingClientRect()
+      if (isTabletOrMobile) {
+        // On tablet/mobile, always center relative to viewport 100svh, not wrapper
+        viewportRect = { top: 0, height: viewportHeight }
+      } else {
+        viewportRect = { top: rect.top, height: rect.height }
+      }
     }
     const viewportCenter = viewportRect.top + viewportRect.height / 2
 

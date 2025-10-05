@@ -240,23 +240,27 @@ export function initHeroBackgroundParallax(root = document) {
   }
 
   const triggerEl = bgInner.parentElement || bgInner
-  let baseY = Number(gsap.getProperty(bgInner, 'y')) || 0
-  const tween = gsap.to(bgInner, {
-    y: () => baseY + amplitudePx,
-    ease: 'none',
-    immediateRender: false,
-    scrollTrigger: {
-      trigger: triggerEl,
-      start: 'top top',
-      end: 'bottom top',
-      scrub: true,
-      scroller,
-      invalidateOnRefresh: true,
-      onRefresh: () => {
-        baseY = Number(gsap.getProperty(bgInner, 'y')) || 0
+  const tween = gsap.fromTo(
+    bgInner,
+    { y: 0 },
+    {
+      y: amplitudePx,
+      ease: 'none',
+      immediateRender: false,
+      scrollTrigger: {
+        trigger: triggerEl,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+        scroller,
+        invalidateOnRefresh: true,
+        onRefresh: () => {
+          // Reset baseline to avoid accumulating translate after resize
+          gsap.set(bgInner, { y: 0 })
+        },
       },
-    },
-  })
+    }
+  )
   try {
     window.__heroBgParallax = tween
   } catch (e) {
@@ -412,23 +416,27 @@ export function initNextBackgroundParallax(root = document) {
   wrappers.forEach((bg) => {
     try {
       const triggerEl = ensureLaidOut(bg) || bg
-      let baseY = Number(gsap.getProperty(bg, 'y')) || 0
-      const tween = gsap.to(bg, {
-        y: () => baseY + 40,
-        ease: 'none',
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: triggerEl,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-          scroller,
-          invalidateOnRefresh: true,
-          onRefresh: () => {
-            baseY = Number(gsap.getProperty(bg, 'y')) || 0
+      const tween = gsap.fromTo(
+        bg,
+        { y: 0 },
+        {
+          y: 40,
+          ease: 'none',
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: triggerEl,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+            scroller,
+            invalidateOnRefresh: true,
+            onRefresh: () => {
+              // Reset baseline to avoid accumulating translate after resize
+              gsap.set(bg, { y: 0 })
+            },
           },
-        },
-      })
+        }
+      )
       tweens.push(tween)
     } catch (err) {
       // ignore per-image failure

@@ -104,10 +104,6 @@
   transition: all 0.2s ease-out;
 }
 
-.processes .process:first-child .process-infos {
-  padding-top: 0;
-}
-
 .processes .process:nth-child(10) {
   height: calc(100vh - 2em);
 }
@@ -373,6 +369,12 @@ h1>.is-h1-span-wrap:last-child>span {
 .is-g-map .gm-control-active {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+}
+
+@media (min-width: 991px) {
+  .processes .process:first-child .process-infos {
+    padding-top: 0;
+  }
 }
 
 @media (max-width: 767px) and (orientation: landscape) {

@@ -76,7 +76,23 @@ export function initMap(root = document) {
         const regionKey = pointToRegionName.get(pointKey)
         if (regionKey) highlightRegionByName(regionKey)
         dimCardsExceptPoint(pointKey)
-        scrollMapSectionToCard(pointKey)
+        // On desktop only: scroll to the corresponding card. On tablet/mobile, do not scroll.
+        try {
+          const isCoarse =
+            typeof window !== 'undefined' &&
+            window.matchMedia &&
+            window.matchMedia('(pointer: coarse)').matches
+          const isNarrow =
+            typeof window !== 'undefined' &&
+            window.matchMedia &&
+            window.matchMedia('(max-width: 991px)').matches
+          if (!(isCoarse || isNarrow)) {
+            scrollMapSectionToCard(pointKey)
+          }
+        } catch (e) {
+          // Fallback: assume desktop behavior
+          scrollMapSectionToCard(pointKey)
+        }
       })
       btn.addEventListener('mouseleave', () => {
         const currentOverlays = (scope || document).querySelector(
@@ -361,7 +377,8 @@ export function initMap(root = document) {
         }
         offset = -(viewportH - rect.height) // default bottom align
       } else {
-        offset = -(viewportH / 2 - rect.height / 2) // center
+        // On mobile/tablet, do not center vertically; default to top alignment
+        offset = isTouchOrSmallNow() ? 0 : -(viewportH / 2 - rect.height / 2)
       }
 
       // Prefer Lenis
@@ -405,6 +422,174 @@ export function initMap(root = document) {
 
   // Interactions now handled by marker-hitbox buttons
 
+  // Enable drag-to-scroll on the projects list for tablet/mobile without breaking taps
+  try {
+    const projectsList = scope.querySelector('.projects-list')
+    const cardsWrapper = scope.querySelector('.cards-wrapper')
+    if (projectsList && cardsWrapper && !cardsWrapper.dataset.dragScrollBound) {
+      cardsWrapper.dataset.dragScrollBound = 'true'
+      try {
+        // Do NOT create a vertical scroll container here; let page handle vertical
+        cardsWrapper.style.overflowY = ''
+        cardsWrapper.style.height = cardsWrapper.style.height || '100%'
+        cardsWrapper.style.overscrollBehavior = ''
+        cardsWrapper.style.webkitOverflowScrolling = ''
+        cardsWrapper.style.touchAction = ''
+        // Ensure Lenis does NOT block wheel/touch on this wrapper
+        cardsWrapper.removeAttribute('data-lenis-prevent')
+        cardsWrapper.removeAttribute('data-lenis-prevent-touch')
+        cardsWrapper.removeAttribute('data-lenis-prevent-wheel')
+      } catch (e) {
+        // ignore
+      }
+      // Ensure horizontal scrollability on the projects list itself
+      try {
+        projectsList.style.overflowX = 'auto'
+        projectsList.style.overflowY = 'hidden'
+        projectsList.style.webkitOverflowScrolling = 'touch'
+        // Allow vertical gestures to bubble to the page
+        projectsList.style.touchAction = 'auto'
+        // Make sure Lenis does NOT block wheel/touch on the list (let vertical pass through)
+        projectsList.removeAttribute('data-lenis-prevent')
+        projectsList.removeAttribute('data-lenis-prevent-touch')
+        projectsList.removeAttribute('data-lenis-prevent-wheel')
+      } catch (e) {
+        // ignore
+      }
+
+      let isPointerDown = false
+      let startY = 0
+      let startX = 0
+      let startScrollLeft = 0
+      let hasDragged = false
+      const DRAG_THRESHOLD = 5
+
+      const isTabletOrBelow = () => {
+        try {
+          if (typeof window === 'undefined' || !window.matchMedia) return false
+          const isCoarse = window.matchMedia('(pointer: coarse)').matches
+          const isNarrow = window.matchMedia('(max-width: 1200px)').matches
+          return isCoarse || isNarrow
+        } catch (e) {
+          return false
+        }
+      }
+
+      const onPointerDown = (e) => {
+        if (!isTabletOrBelow()) return
+        isPointerDown = true
+        hasDragged = false
+        startY = (e && e.touches ? e.touches[0].clientY : e.clientY) || 0
+        startX = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
+        projectsList.style.userSelect = 'none'
+        // Do not constrain to pan-x; let UA route vertical to page
+        projectsList.style.touchAction = 'auto'
+        cardsWrapper.style.userSelect = 'none'
+        // Allow vertical gestures to bubble to page
+        cardsWrapper.style.touchAction = 'auto'
+        try {
+          // Always track current horizontal scroll of the list
+          startScrollLeft =
+            typeof projectsList.scrollLeft === 'number'
+              ? projectsList.scrollLeft
+              : 0
+        } catch (err) {
+          startScrollLeft = 0
+        }
+        try {
+          if (
+            e &&
+            e.target &&
+            e.target.setPointerCapture &&
+            e.pointerId != null
+          ) {
+            e.target.setPointerCapture(e.pointerId)
+          }
+        } catch (err) {
+          // ignore
+        }
+      }
+
+      const onPointerMove = (e) => {
+        if (!isPointerDown || !isTabletOrBelow()) return
+        const y = (e && e.touches ? e.touches[0].clientY : e.clientY) || 0
+        const x = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
+        const dy = y - startY
+        const dx = x - startX
+        const isHorizontal =
+          Math.abs(dx) > DRAG_THRESHOLD && Math.abs(dx) > Math.abs(dy)
+        if (isHorizontal) hasDragged = true
+        try {
+          if (isHorizontal) {
+            // Only handle horizontal drag; leave vertical to the page
+            const targetLeft = startScrollLeft - dx
+            projectsList.scrollLeft = targetLeft
+          }
+        } catch (err) {
+          // ignore
+        }
+        if (isHorizontal && e && typeof e.preventDefault === 'function')
+          e.preventDefault()
+      }
+
+      const onPointerUp = () => {
+        if (!isPointerDown) return
+        isPointerDown = false
+        projectsList.style.userSelect = ''
+        projectsList.style.touchAction = ''
+        cardsWrapper.style.userSelect = ''
+        cardsWrapper.style.touchAction = ''
+        if (hasDragged) {
+          const until = String(Date.now() + 250)
+          projectsList.dataset.suppressClickUntilTs = until
+          cardsWrapper.dataset.suppressClickUntilTs = until
+        }
+        try {
+          if (
+            window &&
+            window.document &&
+            typeof window.getSelection === 'function'
+          ) {
+            const sel = window.getSelection()
+            if (sel && sel.empty) sel.empty()
+          }
+        } catch (err) {
+          // ignore
+        }
+      }
+
+      const suppressClick = (ev) => {
+        try {
+          const tsStr =
+            cardsWrapper.dataset.suppressClickUntilTs ||
+            projectsList.dataset.suppressClickUntilTs
+          const ts = tsStr ? Number(tsStr) : 0
+          if (ts && Date.now() < ts) {
+            ev.stopPropagation()
+            ev.preventDefault()
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      projectsList.addEventListener('pointerdown', onPointerDown, true)
+      cardsWrapper.addEventListener('pointerdown', onPointerDown, true)
+      window.addEventListener('pointermove', onPointerMove)
+      window.addEventListener('pointerup', onPointerUp)
+      window.addEventListener('pointercancel', onPointerUp)
+      projectsList.addEventListener('touchstart', onPointerDown, true)
+      cardsWrapper.addEventListener('touchstart', onPointerDown, true)
+      window.addEventListener('touchmove', onPointerMove, { passive: false })
+      window.addEventListener('touchend', onPointerUp, { passive: true })
+      window.addEventListener('touchcancel', onPointerUp, { passive: true })
+      projectsList.addEventListener('click', suppressClick, true)
+      cardsWrapper.addEventListener('click', suppressClick, true)
+    }
+  } catch (e) {
+    // ignore
+  }
+
   regions.forEach((regionEl) => {
     regionEl.addEventListener('mouseenter', () => {
       // Only region highlight per spec
@@ -423,8 +608,38 @@ export function initMap(root = document) {
     })
   })
 
+  // Helper: treat mobile/tablet as touch or <=991px
+  const isTouchOrSmallNow = () => {
+    try {
+      if (typeof window === 'undefined' || !window.matchMedia) return false
+      return (
+        window.matchMedia('(pointer: coarse)').matches ||
+        window.matchMedia('(max-width: 991px)').matches
+      )
+    } catch (e) {
+      return false
+    }
+  }
+
+  // On mobile/tablet, disable hover effects on project cards
+  try {
+    if (isTouchOrSmallNow()) {
+      const projectButtons = Array.from(scope.querySelectorAll('.project-card'))
+      projectButtons.forEach((btn) => {
+        try {
+          btn.style.transition = 'none'
+        } catch (e) {
+          // ignore
+        }
+      })
+    }
+  } catch (e) {
+    // ignore
+  }
+
   projectItems.forEach((cardEl) => {
     cardEl.addEventListener('mouseenter', () => {
+      if (isTouchOrSmallNow()) return
       const pointKey = cardEl?.dataset?.point
         ? String(cardEl.dataset.point)
         : null
@@ -449,6 +664,7 @@ export function initMap(root = document) {
       })
     })
     cardEl.addEventListener('mouseleave', () => {
+      if (isTouchOrSmallNow()) return
       const currentOverlays = (scope || document).querySelector(
         '.projects_overlays'
       )
@@ -464,6 +680,63 @@ export function initMap(root = document) {
         if (!pointKey) return
         ev.preventDefault()
         ev.stopPropagation()
+        // On tablet/mobile: scroll page so that .map-section top aligns to viewport top, then open
+        if (isTouchOrSmallNow()) {
+          try {
+            const mapSection = scope.querySelector('.map-section')
+            if (mapSection) {
+              const wrapper = (() => {
+                try {
+                  return window.__lenisWrapper || null
+                } catch (e) {
+                  return null
+                }
+              })()
+              const wrapperTop = wrapper
+                ? wrapper.getBoundingClientRect().top
+                : 0
+              const currentTop = wrapper
+                ? wrapper.scrollTop
+                : window.pageYOffset || document.documentElement.scrollTop || 0
+              const targetTopRel =
+                mapSection.getBoundingClientRect().top - wrapperTop
+              const desiredTop = currentTop + targetTopRel
+              // Prefer GSAP tween for reliable onComplete
+              if (wrapper) {
+                gsap.to(wrapper, {
+                  scrollTop: desiredTop,
+                  duration: 0.6,
+                  ease: CustomEase.create('custom', easeCurve),
+                  onComplete: () => mapOpen(pointKey, scope),
+                })
+                return
+              }
+              // Try Lenis if available
+              try {
+                if (
+                  window.lenis &&
+                  typeof window.lenis.scrollTo === 'function'
+                ) {
+                  window.lenis.scrollTo(desiredTop, {
+                    duration: 0.6,
+                    immediate: false,
+                  })
+                  setTimeout(() => mapOpen(pointKey, scope), 650)
+                  return
+                }
+              } catch (e) {
+                // ignore
+              }
+              // Fallback: native smooth scroll then open
+              window.scrollTo({ top: desiredTop, behavior: 'smooth' })
+              setTimeout(() => mapOpen(pointKey, scope), 650)
+              return
+            }
+          } catch (e) {
+            // ignore and fallback to open
+          }
+        }
+        // Desktop or fallback: open immediately
         mapOpen(pointKey, scope)
       } catch (e) {
         // ignore
@@ -574,11 +847,35 @@ export function mapOpen(pointKey, root = document) {
 
   // Animate panels
   if (cardsWrapper) {
-    gsap.to(cardsWrapper, {
-      xPercent: 110,
-      duration: 1.2,
-      ease: CustomEase.create('custom', easeCurve),
-    })
+    const isTouchOrSmall = () => {
+      try {
+        if (typeof window === 'undefined' || !window.matchMedia) return false
+        return (
+          window.matchMedia('(pointer: coarse)').matches ||
+          window.matchMedia('(max-width: 991px)').matches
+        )
+      } catch (e) {
+        return false
+      }
+    }
+    if (isTouchOrSmall()) {
+      // Mobile/tablet: slide cards down
+      gsap.set(cardsWrapper, { x: 0, xPercent: 0, overwrite: 'auto' })
+      gsap.to(cardsWrapper, {
+        y: 0,
+        yPercent: 100,
+        duration: 1.2,
+        ease: CustomEase.create('custom', easeCurve),
+      })
+    } else {
+      // Desktop: slide cards right (existing behavior)
+      gsap.set(cardsWrapper, { y: 0, yPercent: 0, overwrite: 'auto' })
+      gsap.to(cardsWrapper, {
+        xPercent: 110,
+        duration: 1.2,
+        ease: CustomEase.create('custom', easeCurve),
+      })
+    }
   }
   if (overlays) {
     gsap.set(overlays, { display: 'flex' })
@@ -681,11 +978,35 @@ export function mapClose(root = document) {
   }
 
   if (cardsWrapper) {
-    gsap.to(cardsWrapper, {
-      xPercent: 0,
-      duration: 1.2,
-      ease: CustomEase.create('custom', easeCurve),
-    })
+    const isTouchOrSmall = () => {
+      try {
+        if (typeof window === 'undefined' || !window.matchMedia) return false
+        return (
+          window.matchMedia('(pointer: coarse)').matches ||
+          window.matchMedia('(max-width: 991px)').matches
+        )
+      } catch (e) {
+        return false
+      }
+    }
+    if (isTouchOrSmall()) {
+      // Mobile/tablet: reset vertical slide
+      gsap.set(cardsWrapper, { x: 0, xPercent: 0, overwrite: 'auto' })
+      gsap.to(cardsWrapper, {
+        y: 0,
+        yPercent: 0,
+        duration: 1.2,
+        ease: CustomEase.create('custom', easeCurve),
+      })
+    } else {
+      // Desktop: reset horizontal slide (existing behavior)
+      gsap.set(cardsWrapper, { y: 0, yPercent: 0, overwrite: 'auto' })
+      gsap.to(cardsWrapper, {
+        xPercent: 0,
+        duration: 1.2,
+        ease: CustomEase.create('custom', easeCurve),
+      })
+    }
   }
   if (overlays) {
     // Reset any px translation so percent-based move is accurate

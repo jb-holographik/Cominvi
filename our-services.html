@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Tue Sep 30 2025 08:01:51 GMT+0000 (Coordinated Universal Time)  -->
+<!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Fri Oct 03 2025 11:42:44 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="689b3603a6ed82269ee752f7" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 
 <head>
@@ -218,6 +218,10 @@
           width: 100%;
           height: 100%;
         }
+
+        .section_values>.intro.p-top {
+          border: none;
+        }
       </style>
     </div>
     <div class="css-animations w-embed">
@@ -284,11 +288,30 @@
           .workshops .body-s {
             font-size: 1em;
           }
+
+          .section_projects .intro {
+            padding-right: 1em;
+            padding-left: 1em;
+          }
+
+          .section_projects .content {
+            position: relative;
+          }
         }
 
         @media (max-width: 767px) {
-          .service-card .body-s {
-            display: none;
+          .section_services .card-inner {
+            gap: 1em;
+          }
+
+          .section_services .body-s {
+            opacity: 0.5;
+            font-weight: 500;
+          }
+
+          .section_services .service-card {
+            padding-top: 1.5em;
+            padding-bottom: 1.5em;
           }
 
           .services-viewer .button {
@@ -348,15 +371,14 @@
           .workshops-sm-wrap .body-s {
             font-size: 0.75em;
           }
-        }
 
-        @media (max-width: 479px) {
           .minerals-inner .col-3:nth-child(2) {
             order: 3;
           }
 
           .minerals-inner .col-6 {
             order: 2;
+            flex: 1;
           }
 
           .minerals-inner .col-3:last-of-type {
@@ -367,6 +389,82 @@
             padding-bottom: 0.125em;
           }
 
+          .section_partners>.content.is-12-col {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+          }
+
+          .section_work-team>.content.is-12-col {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            gap: 0em;
+          }
+
+          .is-stat>.eyebrow-m {
+            font-size: 13px;
+          }
+
+          .processes .process:nth-child(10) {
+            height: auto;
+          }
+
+          .section_positions .sissmac_p-wrap {
+            padding-left: 0;
+          }
+
+          .section_positions .sissmac_title {
+            padding-bottom: 1em;
+          }
+
+          .section_work-team .body-xxl {
+            font-size: 3.5em
+          }
+
+          .section_about-us .intro.p-2 {
+            padding-bottom: 12em;
+          }
+
+          .section_about-us .image-wrapper {
+            width: 100%;
+          }
+
+          .section_improvement .body-s {
+            font-weight: 500;
+            opacity: 50%;
+          }
+
+          .minerals-inner .col-6 {
+            padding: 2em;
+          }
+
+          .minerals-list .eyebrow-wrapper {
+            padding-left: 1em
+          }
+
+          .section_projects .content,
+          .section_projects .content .map-section,
+          .section_projects .content .map-section .is-grid-12 {
+            min-height: 100svh;
+          }
+        }
+
+        /* end max landscape mobile */
+        @media (max-width: 767px) and (min-width: 479px) {
+          .equity-inner {
+            display: flex;
+            justify-content: space-between;
+          }
+
+          .minerals-inner .col-6 {
+            padding: 1em;
+          }
+        }
+
+        /* end onlylandscape mobile */
+        @media (max-width: 479px) {
+
           .workshops-sm-wrap .body-xl,
           .workshops-sm-wrap p {
             text-align: center;
@@ -374,6 +472,30 @@
 
           .section_work-team .body-xxl {
             font-size: 2.5em;
+          }
+
+          .section_safety-2 {
+            padding-bottom: 4em;
+          }
+
+          .section_safety-2 .image-p {
+            height: 29.625em;
+          }
+
+          .image-wrapper.is-w-5 {
+            width: 100%;
+          }
+
+          .story_intro_inner .body-4xl {
+            font-size: 4em;
+          }
+
+          .story_intro_inner .mask-fill.is-w-r>.eyebrow-m {
+            text-align: right;
+          }
+
+          .map-wrapper {
+            width: 120%;
           }
         }
       </style>
@@ -600,11 +722,11 @@
             <div class="is-eyebrow"><span class="eyebrow-s">S.01</span></div>
             <div class="is-eyebrow is-black"><span class="eyebrow-s">Our services</span></div>
           </div>
-          <p tr="1" class="body-xl is-black">Leveraging our deep geological insight and engineering prowess, we partner
-            with clients to transform raw opportunity into operational excellence.</p>
+          <p tr="1" class="body-xl is-black">We deliver comprehensive underground mining solutions tailored to the
+            geological, technical, and logistical requirements of each site.</p>
         </div>
         <div class="content">
-          <div class="is-grid-3"><button class="service-card">
+          <div class="is-grid-3"><button data-lottie="1" class="service-card">
               <div class="service-icon">
                 <div class="service-icon_icon" data-w-id="7e80903e-bfda-acc4-2379-51611fed43ac"
                   data-animation-type="lottie" data-src="documents/CoMinVi---Icon-06.json" data-loop="0"
@@ -617,7 +739,7 @@
                     monitoring.</p>
                 </div>
               </div>
-            </button><button class="service-card">
+            </button><button data-lottie="2" class="service-card">
               <div class="service-icon">
                 <div class="service-icon_icon" data-w-id="520e8021-443a-2f88-cbf0-b0e2b771a3ce"
                   data-animation-type="lottie" data-src="documents/CoMinVi---Icon-07.json" data-loop="0"
@@ -630,7 +752,7 @@
                     monitoring.</p>
                 </div>
               </div>
-            </button><button class="service-card">
+            </button><button data-lottie="3" class="service-card">
               <div class="service-icon">
                 <div class="service-icon_icon" data-w-id="40860d72-da39-b0d3-4802-f4f1d11f5f3a"
                   data-animation-type="lottie" data-src="documents/CoMinVi---Icon-08.json" data-loop="0"
@@ -643,7 +765,7 @@
                     monitoring.</p>
                 </div>
               </div>
-            </button><button class="service-card">
+            </button><button data-lottie="4" class="service-card">
               <div class="service-icon">
                 <div class="service-icon_icon" data-w-id="1b0126b0-d980-b557-fda8-489e99a1be9b"
                   data-animation-type="lottie" data-src="documents/CoMinVi---Icon-09.json" data-loop="0"
@@ -656,7 +778,7 @@
                     monitoring.</p>
                 </div>
               </div>
-            </button><button class="service-card">
+            </button><button data-lottie="5" class="service-card">
               <div class="service-icon">
                 <div class="service-icon_icon" data-w-id="56c27c4d-4afa-b719-a019-2b5cfaa3d406"
                   data-animation-type="lottie" data-src="documents/CoMinVi---Icon-10.json" data-loop="0"
@@ -705,7 +827,7 @@
             </div>
           </div>
         </div>
-        <div class="text-wrapper">
+        <div class="text-wrapper is-about">
           <p tr="1" class="body-xl is-black is-center">Our focus is on safety, productivity, and precision throughout
             the mine life cycle.</p>
         </div>
@@ -1171,8 +1293,8 @@
           <div class="map-section">
             <div class="is-grid-12 is-map">
               <div id="w-node-fd12c596-39d3-3e87-fc2b-4f49f1ecad8c-9ee752f7" class="is-col-9 is-map">
-                <div class="map-wrapper"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 1084 900"
-                    fill="none" class="is-map">
+                <div class="map-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 1084 900" fill="none"
+                    width="100%" class="is-map">
                     <g id="Map">
                       <g id="Mexico map" clip-path="url(#clip0_4792_2876)">
                         <path id="path02"
@@ -1341,7 +1463,8 @@
                                 class="eyebrow-m is-white w-dyn-bind-empty"></span><span
                                 class="eyebrow-m is-white w-dyn-bind-empty"></span></div>
                           </div>
-                        </button></div>
+                        </button>
+                      </div>
                     </div>
                     <div class="w-dyn-empty">
                       <div>No items found.</div>
@@ -1422,7 +1545,7 @@
               </div>
               <div data-video="first" id="w-node-a5e19869-e804-7124-5392-629cb2c28668-9ee752f7" class="video">
                 <div class="video-inner"><img src="images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1.avif"
-                    loading="lazy" sizes="(max-width: 2520px) 100vw, 2520px"
+                    loading="lazy" sizes="100vw"
                     srcset="images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 500w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 800w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 1080w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1.avif 2520w"
                     alt="" class="video-clip-inner"></div>
               </div>
@@ -1458,7 +1581,7 @@
               <div id="w-node-_02449db7-25bd-a028-4a14-b5c1889eedc9-9ee752f7" class="video is-fixed">
                 <div id="video-3" class="video-inner"><img
                     src="images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1.avif" loading="lazy"
-                    sizes="(max-width: 2520px) 100vw, 2520px"
+                    sizes="100vw"
                     srcset="images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 500w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 800w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 1080w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1.avif 2520w"
                     alt="" class="video-clip-inner"></div>
               </div>
@@ -1548,7 +1671,7 @@
               <div id="w-node-_6204fb76-3473-850d-22a5-5bdca5b5450a-9ee752f7" class="video is-fixed">
                 <div id="video-3" class="video-inner"><img
                     src="images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1.avif" loading="lazy"
-                    sizes="(max-width: 2520px) 100vw, 2520px"
+                    sizes="100vw"
                     srcset="images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 500w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 800w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif 1080w, images/UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099_1.avif 2520w"
                     alt="" class="video-clip-inner"></div>
               </div>
@@ -1565,8 +1688,7 @@
                 </div>
               </div>
               <div id="w-node-d2606f86-34bd-c0e3-463b-efb17495d41c-9ee752f7" class="video is-fixed">
-                <div id="video-3" class="video-inner"><img src="images/home_bg_1.avif" loading="lazy"
-                    sizes="(max-width: 2880px) 100vw, 2880px"
+                <div id="video-3" class="video-inner"><img src="images/home_bg_1.avif" loading="lazy" sizes="100vw"
                     srcset="images/home_bg_1home_bg.avif 500w, images/home_bg_1home_bg.avif 800w, images/home_bg_1home_bg.avif 1080w, images/home_bg_1home_bg.avif 1600w, images/home_bg_1.avif 2880w"
                     alt="" class="video-clip-inner"></div>
               </div>
@@ -1637,8 +1759,7 @@
           <link rel="prefetch" href="/technology">
         </div>
         <div class="next_background-wrap">
-          <div class="next_background"><img src="images/technology_1.avif" loading="lazy"
-              sizes="(max-width: 2880px) 100vw, 2880px"
+          <div class="next_background"><img src="images/technology_1.avif" loading="lazy" sizes="100vw"
               srcset="images/technology_1technology.avif 500w, images/technology_1technology.avif 800w, images/technology_1technology.avif 1080w, images/technology_1.avif 2880w"
               alt="" class="background"></div>
         </div>
@@ -1702,19 +1823,20 @@
               <div class="is-eyebrow"><span class="eyebrow-s">Explore</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a href="our-services.html" aria-current="page" class="footer-link w--current">Services</a>
+                  <a pt-inner="" href="our-services.html" aria-current="page" class="footer-link w--current">Our
+                    Services</a>
                 </li>
                 <li>
-                  <a href="#" class="footer-link">Projects</a>
+                  <a pt-inner="" href="technology.html" class="footer-link">Technology</a>
                 </li>
                 <li>
-                  <a href="technology.html" class="footer-link">Technology</a>
+                  <a pt-inner="" href="safety.html" class="footer-link">Safety</a>
                 </li>
                 <li>
-                  <a href="#" class="footer-link">About us</a>
+                  <a pt-inner="" href="about-us.html" class="footer-link">About us</a>
                 </li>
                 <li>
-                  <a href="join-the-team.html" class="footer-link">Join the team</a>
+                  <a pt-inner="" href="join-the-team.html" class="footer-link">Join the team</a>
                 </li>
               </ul>
             </div>
@@ -1722,7 +1844,7 @@
               <div class="is-eyebrow"><span class="eyebrow-s">Library</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a pt-inner="" href="blog.html" class="footer-link">News</a>
+                  <a pt-inner="" href="blog.html" class="footer-link">Blog</a>
                 </li>
                 <li>
                   <a href="#" class="footer-link">CoMinVi University</a>
@@ -1733,7 +1855,7 @@
               <div class="is-eyebrow"><span class="eyebrow-s">Legal</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a href="notice-of-privacy.html" class="footer-link">Notice of Privacy</a>
+                  <a pt-inner="" href="notice-of-privacy.html" class="footer-link">Notice of Privacy</a>
                 </li>
               </ul>
             </div>
@@ -1741,10 +1863,13 @@
               <div class="is-eyebrow"><span class="eyebrow-s">Contact</span></div>
               <ul role="list" class="footer-links w-list-unstyled">
                 <li>
-                  <a href="#" class="footer-link">info@cominvi.com</a>
+                  <a pt-inner="" href="contact.html" class="footer-link">Contact</a>
                 </li>
                 <li>
-                  <a href="#" class="footer-link">+52 477 690 4050</a>
+                  <a href="mailto:info@cominvi.com?subject=Contact%20Form" class="footer-link">info@cominvi.com</a>
+                </li>
+                <li>
+                  <p class="footer-link">+52 477 690 4050</p>
                 </li>
               </ul>
             </div>

@@ -1913,7 +1913,8 @@ export function initTechnology(root = document) {
       // Measure inner height in em for the selected item
       const item = pair[0]
       const inner = item.querySelector('.machine_item')
-      const fs = parseFloat(window.getComputedStyle(item).fontSize || '16')
+      const fontSizeStr = window.getComputedStyle(item).fontSize || '16'
+      const fs = parseFloat(fontSizeStr)
       const innerHpx = inner ? inner.getBoundingClientRect().height : 0
       // Add list-item's own vertical padding
       const itemCS = window.getComputedStyle(item)
@@ -2625,10 +2626,136 @@ export function initTechnology(root = document) {
     }
   }
 
+  let resizeTimer = null
   const onResize = () => {
-    measureSteps()
-    updateWrapperHeight()
-    ScrollTrigger.refresh()
+    try {
+      if (resizeTimer) clearTimeout(resizeTimer)
+    } catch (err) {
+      // ignore
+    }
+    resizeTimer = setTimeout(() => {
+      try {
+        // Recompute item heights from current title sizes
+        setItemHeightFromName()
+      } catch (err) {
+        // ignore
+      }
+      try {
+        measureSteps()
+        updateWrapperHeight()
+      } catch (err) {
+        // ignore
+      }
+      // Recompute images list step in px and its position according to current distance
+      try {
+        imagesStepPx = getImagesBasePx()
+        const dist = getCurrentDistance()
+        setImagesByDistance(dist)
+        try {
+          const idx = getNearestStepForScroll(dist)
+          markActiveImage(idx)
+        } catch (e) {
+          // ignore
+        }
+      } catch (err) {
+        // ignore
+      }
+      // Adjust images container size (open/closed) for current breakpoint and update active image heights
+      try {
+        if (imagesRoot && imagesRoot !== machines) {
+          const isOpen =
+            imagesRoot && imagesRoot.classList
+              ? imagesRoot.classList.contains('is-open')
+              : false
+          if (isOpen) {
+            gsap.set(imagesRoot, {
+              width: isTablet() ? '18.1em' : '28em',
+              height: isTablet() ? '13.2em' : '23.313em',
+            })
+            // Track current y so close can restore precisely after resize
+            try {
+              if (imagesList) {
+                const yVal = gsap.getProperty(imagesList, 'y')
+                imagesYBeforeOpen = Number(yVal) || 0
+              }
+            } catch (e) {
+              // ignore
+            }
+          } else {
+            gsap.set(imagesRoot, {
+              width: isTablet() ? '11.8em' : '13.5em',
+              height: '11.2em',
+            })
+          }
+          try {
+            const h = imagesRoot.getBoundingClientRect().height || 0
+            const items = (imagesRoot || machines).querySelectorAll(
+              '.machines_images-item'
+            )
+            if (h > 0 && items && items.length) {
+              const idx = getNearestStepForScroll(getCurrentDistance())
+              items.forEach((el, i) => {
+                el.style.height = `${Math.round(h)}px`
+                if (i === idx) el.classList.add('is-active')
+                else el.classList.remove('is-active')
+              })
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+      } catch (err) {
+        // ignore
+      }
+      // If a machine is currently open, recompute its open height to match new layout
+      try {
+        const isOpen =
+          imagesRoot && imagesRoot.classList
+            ? imagesRoot.classList.contains('is-open')
+            : false
+        if (isOpen) {
+          const index = getCurrentIndex()
+          const pair = getPairForIndex(index)
+          if (pair && pair.length) {
+            const item = pair[0]
+            const inner = item.querySelector('.machine_item')
+            const fontSizeStr = window.getComputedStyle(item).fontSize || '16'
+            const fs = parseFloat(fontSizeStr)
+            const innerHpx = inner ? inner.getBoundingClientRect().height : 0
+            const itemCS = window.getComputedStyle(item)
+            const pt = parseFloat(itemCS.paddingTop || '0') || 0
+            const pb = parseFloat(itemCS.paddingBottom || '0') || 0
+            const hpx = innerHpx + pt + pb
+            const hem = fs ? hpx / (fs || 16) : 0
+            const openEm = hem > 0 ? hem + 1.5 : 0
+            if (openEm > 0) {
+              pair.forEach((el) => {
+                try {
+                  gsap.set(el, { height: `${openEm}em` })
+                } catch (err) {
+                  try {
+                    el.style.height = `${openEm}em`
+                  } catch (e) {
+                    // ignore
+                  }
+                }
+              })
+            }
+          }
+        }
+      } catch (err) {
+        // ignore
+      }
+      try {
+        st.refresh()
+      } catch (err) {
+        try {
+          ScrollTrigger.refresh()
+        } catch (e) {
+          // ignore
+        }
+      }
+    }, 100)
   }
 
   try {
@@ -2666,9 +2793,22 @@ export function initTechnology(root = document) {
   // Observe dynamic list changes (Webflow CMS) to recompute heights
   try {
     listObserver = new MutationObserver(() => {
-      measureSteps()
-      updateWrapperHeight()
-      st.refresh()
+      try {
+        setItemHeightFromName()
+      } catch (err) {
+        // ignore
+      }
+      try {
+        measureSteps()
+        updateWrapperHeight()
+      } catch (err) {
+        // ignore
+      }
+      try {
+        st.refresh()
+      } catch (err) {
+        // ignore
+      }
     })
     listObserver.observe(machines, { childList: true, subtree: true })
   } catch (err) {

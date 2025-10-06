@@ -173,34 +173,37 @@ export function createViewportClipOverlay(options = {}) {
   const widthFrac = Math.max(0, Math.min(1, 1 - 2 * (sideMarginPx / overlayW)))
   const yFrac = Math.max(0, Math.min(1, topOffsetPx / overlayH))
   const startH = Math.max(0, Math.min(1, 1 - yFrac))
-  const rxFrac = Math.max(0, Math.min(1, (1 * rootFontPx) / overlayW))
+  const rxFracX = Math.max(0, Math.min(1, (1 * rootFontPx) / overlayW))
+  const rxFracY = Math.max(0, Math.min(1, (1 * rootFontPx) / overlayH))
 
-  // Helper to build an even-odd ring path (outer full rect minus inner rounded rect)
-  const buildD = (x, y, w, h, r = rxFrac) => {
+  // Helper to build an even-odd ring path (outer full rect minus inner rect)
+  // Top corners rounded with radius rX/rY; bottom corners square (radius 0)
+  const buildD = (x, y, w, h, rX = rxFracX, rY = rxFracY) => {
     const outer = `M0,0 H1 V1 H0 Z`
-    const rx = Math.max(0, Math.min(r, Math.min(w, h) / 2))
+    const rx = Math.max(0, Math.min(rX, Math.min(w, h) / 2))
+    const ry = Math.max(0, Math.min(rY, Math.min(w, h) / 2))
     const x2 = x + w
     const y2 = y + h
     const inner = [
       `M${x + rx},${y}`,
       `H${x2 - rx}`,
-      `A${rx},${rx} 0 0 1 ${x2},${y + rx}`,
-      `V${y2 - rx}`,
-      `A${rx},${rx} 0 0 1 ${x2 - rx},${y2}`,
-      `H${x + rx}`,
-      `A${rx},${rx} 0 0 1 ${x},${y2 - rx}`,
+      // Top-right rounded
+      `A${rx},${ry} 0 0 1 ${x2},${y + ry}`,
+      // Right edge straight to bottom-right (square corner)
+      `V${y2}`,
+      // Bottom edge straight to bottom-left (square bottom corners)
+      `H${x}`,
+      // Left edge up to start of top-left arc
       `V${y + rx}`,
-      `A${rx},${rx} 0 0 1 ${x + rx},${y}`,
+      // Top-left rounded
+      `A${rx},${ry} 0 0 1 ${x + rx},${y}`,
       'Z',
     ].join(' ')
     return `${outer} ${inner}`
   }
 
   // Initialize ring path to start state (hole inside)
-  ringPath.setAttribute(
-    'd',
-    buildD(xFrac, 1 - startH, widthFrac, startH, rxFrac)
-  )
+  ringPath.setAttribute('d', buildD(xFrac, 1 - startH, widthFrac, startH))
 
   // Animate from: top 12.5em, left/right 2em → to: top 0, left/right 0 (full width/height)
   // Constraint: bottom must always be 0 → enforce y = 1 - h during the animation
@@ -210,7 +213,8 @@ export function createViewportClipOverlay(options = {}) {
     y: 1 - startH,
     w: widthFrac,
     h: startH,
-    r: rxFrac,
+    rX: rxFracX,
+    rY: rxFracY,
   }
   // Ensure timeline starts at initial state
   tl.set({}, {}, 0)
@@ -218,7 +222,8 @@ export function createViewportClipOverlay(options = {}) {
     x: 0,
     w: 1,
     h: 1,
-    r: 0,
+    rX: 0,
+    rY: 0,
     duration: 1.2,
     ease: gsap.parseEase(`custom(${easeCurve})`),
     onUpdate: () => {
@@ -226,7 +231,14 @@ export function createViewportClipOverlay(options = {}) {
         const derivedY = 1 - animState.h
         ringPath.setAttribute(
           'd',
-          buildD(animState.x, derivedY, animState.w, animState.h, animState.r)
+          buildD(
+            animState.x,
+            derivedY,
+            animState.w,
+            animState.h,
+            animState.rX,
+            animState.rY
+          )
         )
       } catch (e) {
         // ignore
@@ -368,18 +380,17 @@ export function playOverlayClipOnce(cleanup = true) {
               const buildD2 = (x, y, w, h, r = 0.02) => {
                 const outer = `M0,0 H1 V1 H0 Z`
                 const rx = Math.max(0, Math.min(r, Math.min(w, h) / 2))
+                const ry = rx
                 const x2 = x + w
                 const y2 = y + h
                 const inner = [
                   `M${x + rx},${y}`,
                   `H${x2 - rx}`,
-                  `A${rx},${rx} 0 0 1 ${x2},${y + rx}`,
-                  `V${y2 - rx}`,
-                  `A${rx},${rx} 0 0 1 ${x2 - rx},${y2}`,
-                  `H${x + rx}`,
-                  `A${rx},${rx} 0 0 1 ${x},${y2 - rx}`,
+                  `A${rx},${ry} 0 0 1 ${x2},${y + ry}`,
+                  `V${y2}`,
+                  `H${x}`,
                   `V${y + rx}`,
-                  `A${rx},${rx} 0 0 1 ${x + rx},${y}`,
+                  `A${rx},${ry} 0 0 1 ${x + rx},${y}`,
                   'Z',
                 ].join(' ')
                 return `${outer} ${inner}`
@@ -595,18 +606,17 @@ export function resetOverlayClipBaseState(topPx) {
       const buildD = (x, y, w, h, r = 0.02) => {
         const outer = `M0,0 H1 V1 H0 Z`
         const rx = Math.max(0, Math.min(r, Math.min(w, h) / 2))
+        const ry = rx
         const x2 = x + w
         const y2 = y + h
         const inner = [
           `M${x + rx},${y}`,
           `H${x2 - rx}`,
-          `A${rx},${rx} 0 0 1 ${x2},${y + rx}`,
-          `V${y2 - rx}`,
-          `A${rx},${rx} 0 0 1 ${x2 - rx},${y2}`,
-          `H${x + rx}`,
-          `A${rx},${rx} 0 0 1 ${x},${y2 - rx}`,
+          `A${rx},${ry} 0 0 1 ${x2},${y + ry}`,
+          `V${y2}`,
+          `H${x}`,
           `V${y + rx}`,
-          `A${rx},${rx} 0 0 1 ${x + rx},${y}`,
+          `A${rx},${ry} 0 0 1 ${x + rx},${y}`,
           'Z',
         ].join(' ')
         return `${outer} ${inner}`
@@ -661,8 +671,8 @@ export function createClipForHost(hostEl, options = {}) {
     )}`
     clipPath.setAttribute('id', clipId)
     clipPath.setAttribute('clipPathUnits', 'objectBoundingBox')
-    // Use a rect so the clip shows only the inside area (no even-odd ring)
-    const clipRect = document.createElementNS(svgNS, 'rect')
+    // Use a path so we can force square bottom corners and rounded top corners
+    const clipPathRect = document.createElementNS(svgNS, 'path')
 
     // Compute base geometry from host size
     let rootFontPx = 16
@@ -675,7 +685,7 @@ export function createClipForHost(hostEl, options = {}) {
     const topOffsetPx = 12.5 * rootFontPx
     const sideMarginPx = 2 * rootFontPx
 
-    clipPath.appendChild(clipRect)
+    clipPath.appendChild(clipPathRect)
     defs.appendChild(clipPath)
     svg.appendChild(defs)
     hostEl.appendChild(svg)
@@ -695,15 +705,30 @@ export function createClipForHost(hostEl, options = {}) {
     const widthFrac = Math.max(0, Math.min(1, 1 - 2 * (sideMarginPx / hostW)))
     const yFrac = Math.max(0, Math.min(1, topOffsetPx / hostH))
     const startH = Math.max(0, Math.min(1, 1 - yFrac))
-    const rxFrac = Math.max(0, Math.min(1, (1 * rootFontPx) / hostW))
+    const rxFracX = Math.max(0, Math.min(1, (1 * rootFontPx) / hostW))
+    const rxFracY = Math.max(0, Math.min(1, (1 * rootFontPx) / hostH))
 
-    // Initialize rect attributes (fractions 0..1)
-    clipRect.setAttribute('x', String(xFrac))
-    clipRect.setAttribute('y', String(1 - startH))
-    clipRect.setAttribute('width', String(widthFrac))
-    clipRect.setAttribute('height', String(startH))
-    clipRect.setAttribute('rx', String(rxFrac))
-    clipRect.setAttribute('ry', String(rxFrac))
+    // Build path with rounded top, square bottom (objectBoundingBox units)
+    const buildInsidePath = (x, y, w, h, rX = rxFracX, rY = rxFracY) => {
+      const rx = Math.max(0, Math.min(rX, Math.min(w, h) / 2))
+      const ry = Math.max(0, Math.min(rY, Math.min(w, h) / 2))
+      const x2 = x + w
+      const y2 = y + h
+      return [
+        `M${x + rx},${y}`,
+        `H${x2 - rx}`,
+        `A${rx},${ry} 0 0 1 ${x2},${y + ry}`,
+        `V${y2}`,
+        `H${x}`,
+        `V${y + ry}`,
+        `A${rx},${ry} 0 0 1 ${x + rx},${y}`,
+        'Z',
+      ].join(' ')
+    }
+    clipPathRect.setAttribute(
+      'd',
+      buildInsidePath(xFrac, 1 - startH, widthFrac, startH)
+    )
     try {
       // eslint-disable-next-line no-console
       console.debug('[host-clip] created', {
@@ -712,7 +737,8 @@ export function createClipForHost(hostEl, options = {}) {
         xFrac,
         widthFrac,
         startH,
-        rxFrac,
+        rX: rxFracX,
+        rY: rxFracY,
       })
     } catch (e) {
       // ignore
@@ -724,32 +750,40 @@ export function createClipForHost(hostEl, options = {}) {
       y: 1 - startH,
       w: widthFrac,
       h: startH,
-      r: rxFrac,
+      rX: rxFracX,
+      rY: rxFracY,
     }
     tl.set({}, {}, 0)
     tl.to(animState, {
       x: 0,
       w: 1,
       h: 1,
-      r: 0,
+      rX: 0,
+      rY: 0,
       duration: 1.2,
       ease: gsap.parseEase(`custom(${easeCurve})`),
       onUpdate: () => {
         try {
           const derivedY = 1 - animState.h
-          clipRect.setAttribute('x', String(animState.x))
-          clipRect.setAttribute('y', String(derivedY))
-          clipRect.setAttribute('width', String(animState.w))
-          clipRect.setAttribute('height', String(animState.h))
-          clipRect.setAttribute('rx', String(animState.r))
-          clipRect.setAttribute('ry', String(animState.r))
+          clipPathRect.setAttribute(
+            'd',
+            buildInsidePath(
+              animState.x,
+              derivedY,
+              animState.w,
+              animState.h,
+              animState.rX,
+              animState.rY
+            )
+          )
           // eslint-disable-next-line no-console
           console.debug('[host-clip] update', {
             x: animState.x,
             y: derivedY,
             w: animState.w,
             h: animState.h,
-            r: animState.r,
+            rX: animState.rX,
+            rY: animState.rY,
           })
         } catch (e) {
           // ignore
@@ -761,10 +795,11 @@ export function createClipForHost(hostEl, options = {}) {
       svg,
       defs,
       clipPath,
-      clipRect,
+      clipPathRect,
+      buildInsidePath,
       tl,
       animState,
-      rxFrac,
+      rxFrac: rxFracX,
     }
     return hostEl.__clip
   } catch (err) {
@@ -807,14 +842,12 @@ export function resetHostClipBaseState(hostEl, topPx) {
     const yFrac = Math.max(0, Math.min(1, topPxResolved / hostH))
     const startH = Math.max(0, Math.min(1, 1 - yFrac))
 
-    const clipRect = hostEl.__clip.clipRect
-    if (clipRect) {
-      clipRect.setAttribute('x', String(xFrac))
-      clipRect.setAttribute('y', String(1 - startH))
-      clipRect.setAttribute('width', String(widthFrac))
-      clipRect.setAttribute('height', String(startH))
-      clipRect.setAttribute('rx', String(hostEl.__clip.rxFrac || 0.02))
-      clipRect.setAttribute('ry', String(hostEl.__clip.rxFrac || 0.02))
+    const clipPathRect = hostEl.__clip.clipPathRect
+    if (clipPathRect && typeof hostEl.__clip.buildInsidePath === 'function') {
+      clipPathRect.setAttribute(
+        'd',
+        hostEl.__clip.buildInsidePath(xFrac, 1 - startH, widthFrac, startH)
+      )
     }
     if (hostEl.__clip.animState) {
       hostEl.__clip.animState.x = xFrac
@@ -867,7 +900,7 @@ export function tweenHostClipSlideX(
   try {
     if (!(hostEl && hostEl.__clip && hostEl.__clip.animState)) return false
     const animState = hostEl.__clip.animState
-    const clipRect = hostEl.__clip.clipRect
+    const clipPathRect = hostEl.__clip.clipPathRect
     const clampedToX = Math.max(0, Math.min(1, toX))
     gsap.to(animState, {
       x: clampedToX,
@@ -876,13 +909,21 @@ export function tweenHostClipSlideX(
       onUpdate: () => {
         try {
           const derivedY = 1 - animState.h
-          if (clipRect) {
-            clipRect.setAttribute('x', String(animState.x))
-            clipRect.setAttribute('y', String(derivedY))
-            clipRect.setAttribute('width', String(animState.w))
-            clipRect.setAttribute('height', String(animState.h))
-            clipRect.setAttribute('rx', String(animState.r))
-            clipRect.setAttribute('ry', String(animState.r))
+          if (
+            clipPathRect &&
+            typeof hostEl.__clip.buildInsidePath === 'function'
+          ) {
+            clipPathRect.setAttribute(
+              'd',
+              hostEl.__clip.buildInsidePath(
+                animState.x,
+                derivedY,
+                animState.w,
+                animState.h,
+                animState.rX,
+                animState.rY
+              )
+            )
           }
           // eslint-disable-next-line no-console
           console.debug('[host-clip] slideX', { x: animState.x })

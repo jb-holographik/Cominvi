@@ -223,11 +223,13 @@
           color: var(--white);
         }
 
-        .toggle.is-white>.toggle-option>.toggle-id {
+        .toggle.is-white>.toggle-option>.toggle-id,
+        .toggle.is-black>.toggle-option>.toggle-id.is-active {
           color: var(--primary);
         }
 
-        .toggle.is-white>.toggle-option>.toggle-id.is-active {
+        .toggle.is-white>.toggle-option>.toggle-id.is-active,
+        .toggle.is-black>.toggle-option>.toggle-id {
           color: var(--white);
         }
 
@@ -235,12 +237,19 @@
           background-color: var(--primary);
         }
 
-        .toggle.is-white {
+        .toggle.is-black>.toggle-indicator {
+          background-color: var(--white);
+        }
+
+        .toggle.is-white,
+        .toggle.is-black {
           width: 8.75em;
         }
 
         .toggle.is-white>.toggle-option,
-        .toggle.is-white>.toggle-indicator {
+        .toggle.is-white>.toggle-indicator,
+        .toggle.is-black>.toggle-option,
+        .toggle.is-black>.toggle-indicator {
           width: 4em;
         }
 

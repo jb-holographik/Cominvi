@@ -32,7 +32,7 @@ export function initTechnology(root = document) {
 
   const machinesWrapper = root.querySelector('.machines-wrapper')
   const machinesGridWrapper = root.querySelector('.machines-grid-wrapper')
-  const gridToggle = root.querySelector('.toggle.is-white')
+  const gridToggle = root.querySelector('.toggle.is-black')
   const machines = root.querySelector('.machines')
   if (!machinesWrapper || !machines) return
 

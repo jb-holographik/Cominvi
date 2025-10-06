@@ -42,11 +42,18 @@ export function initTextDisplayReveal(root = document) {
       })
     }
 
+    // Determine target width based on viewport (<479px => 130%)
+    const isNarrowMobile =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 478px)').matches
+    const targetWidth = isNarrowMobile ? '130%' : '100%'
+
     const tl = gsap.timeline({
       paused: true,
       defaults: { duration: 2, ease: CustomEase.create('custom', easeCurve) },
     })
-    tl.to(gradients, { width: '100%', stagger: 0.025 }, 0)
+    tl.to(gradients, { width: targetWidth, stagger: 0.025 }, 0)
     if (words.length) {
       tl.to(
         words,

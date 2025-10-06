@@ -470,10 +470,16 @@ export function slideScaleEnter({ next }) {
     )
   }
   // Animate page-info during the slide window
+  const pageInfoLiftY =
+    typeof window !== 'undefined' &&
+    window.matchMedia &&
+    window.matchMedia('(max-width: 991px)').matches
+      ? '-2.5em'
+      : '-4.5em'
   tl.to(
     '.page-info_inner',
     {
-      y: '-4.5em',
+      y: pageInfoLiftY,
       duration: slideDur,
       ease: gsap.parseEase(`custom(${easeCurve})`),
     },

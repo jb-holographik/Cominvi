@@ -1,4 +1,5 @@
 import './styles/style.css'
+import { initAboutValuesScroll } from './animation/about-scroll.js'
 import { initAbout } from './animation/about-us.js'
 import { blogArticleInit } from './animation/blog-article.js'
 import { initBlog } from './animation/blog.js'
@@ -91,6 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // About Us page behaviors
   try {
     initAbout(document)
+  } catch (e) {
+    // ignore
+  }
+
+  // About Us: values scroll ticks and active item highlighting
+  try {
+    initAboutValuesScroll(document)
   } catch (e) {
     // ignore
   }

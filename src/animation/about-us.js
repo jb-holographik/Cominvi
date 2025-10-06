@@ -63,6 +63,7 @@ export function initAbout(root = document) {
     const v3 = root.querySelector('.story_videos.is-3')
     const v4 = root.querySelector('.story_videos.is-4')
     const vids = [v1, v2, v3, v4]
+    const storyIntros = Array.from(root.querySelectorAll('.intro.is-story'))
     vids.forEach(withFadeHelpers)
     // Ensure scroll-items on About page use opacity-only animations and never display:none
     try {
@@ -166,6 +167,16 @@ export function initAbout(root = document) {
         }
       })()
       const s = getAfterIntroProgressPx()
+      // Toggle 100svh on .intro.is-story when .story_intro_inner has exited the top of the viewport
+      try {
+        storyIntros.forEach((intro) => {
+          if (!intro || !intro.style) return
+          if (s > 0) intro.style.height = '100svh'
+          else intro.style.height = ''
+        })
+      } catch (e) {
+        // ignore
+      }
       const eyebrowsStarted = s > 0
       if (prevEyebrowsStarted !== eyebrowsStarted) {
         // toggle eyebrows classes with smooth transitions

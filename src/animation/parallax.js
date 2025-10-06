@@ -48,8 +48,19 @@ export function initParallax(root = document) {
       if (cs.position === 'static') container.style.position = 'relative'
       container.style.overflow = 'hidden'
 
+      // Exceptions: do not resize containers inside `.section_img.is-big-safety`
+      // and keep width of `.image-p.is-safety` inside that section
+      const inBigSafetySection = !!(
+        img.closest && img.closest('.section_img.is-big-safety')
+      )
+      const isImageSafety = !!(
+        img.classList && img.classList.contains('is-safety')
+      )
+
       // Compute container height from image intrinsic ratio
       const computeAndApplyHeight = () => {
+        // Skip height adjustments for big safety sections
+        if (inBigSafetySection) return
         const containerWidth = container.clientWidth || img.clientWidth
         let ratio = 0
         if (img.naturalWidth && img.naturalHeight) {
@@ -123,13 +134,15 @@ export function initParallax(root = document) {
       img.style.left = '0'
       img.style.right = '0'
       img.style.top = `${topCompPercent}%`
-      if (
-        container.classList &&
-        container.classList.contains('machine-card_bg')
-      ) {
-        img.style.width = '100%'
-      } else {
-        img.style.width = '120%'
+      if (!(isImageSafety && inBigSafetySection)) {
+        if (
+          container.classList &&
+          container.classList.contains('machine-card_bg')
+        ) {
+          img.style.width = '100%'
+        } else {
+          img.style.width = '120%'
+        }
       }
       img.style.height = `${overscanFactor * 100}%`
       img.style.objectFit = 'cover'

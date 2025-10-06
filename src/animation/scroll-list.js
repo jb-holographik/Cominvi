@@ -1,13 +1,12 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import SplitType from 'split-type'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function initScrollList(root = document) {
   // Support multiple sections that share the same behavior
   const sections = Array.from(
-    (root || document).querySelectorAll('.section_partners, .section_values')
+    (root || document).querySelectorAll('.section_partners')
   )
   if (!sections.length) return
 
@@ -44,116 +43,6 @@ function initScrollItems(section) {
   )
   if (!items.length) return
 
-  // Values section: sync descriptions visibility with active title
-  const isValues = section.classList.contains('section_values')
-  const descContainer = isValues ? section.querySelector('.scroll-desc') : null
-  const descItems = descContainer
-    ? Array.from(descContainer.querySelectorAll('.scroll-item'))
-    : []
-  // Initial state: all descriptions hidden via opacity only (never display:none)
-  if (descItems.length) {
-    descItems.forEach((el) => {
-      el.style.willChange = 'opacity'
-      el.style.transition = el.style.transition?.includes('opacity')
-        ? el.style.transition
-        : 'opacity 0.3s ease'
-      el.style.opacity = '0'
-      if (getComputedStyle(el).display === 'none') {
-        el.style.display = 'block'
-      }
-    })
-  }
-
-  const splitAndAnimateLines = (container, skipAnimation = false) => {
-    const paragraphs = Array.from(container.querySelectorAll('p'))
-    const targets = paragraphs.length ? paragraphs : [container]
-    targets.forEach((el) => {
-      try {
-        if (!el.__splitLines) {
-          const split = new SplitType(el, { types: 'lines', tagName: 'span' })
-          el.__splitLines = split
-          el.__lines = split.lines || []
-        }
-        const lines = el.__lines || []
-        if (lines.length) {
-          // Wrap line contents in an inner span (once) and apply overflow hidden to line
-          const inners = []
-          lines.forEach((line) => {
-            // Ensure block and overflow hidden on the line wrapper
-            line.style.display = 'block'
-            line.style.overflow = 'hidden'
-            if (!line.__inner) {
-              const inner = document.createElement('span')
-              inner.className = 'line-inner'
-              while (line.firstChild) inner.appendChild(line.firstChild)
-              line.appendChild(inner)
-              line.__inner = inner
-            }
-            inners.push(line.__inner)
-          })
-          if (skipAnimation) {
-            gsap.set(inners, { display: 'block', yPercent: 0 })
-          } else {
-            gsap.set(inners, {
-              display: 'block',
-              yPercent: 100,
-              willChange: 'transform',
-            })
-            gsap.to(inners, {
-              yPercent: 0,
-              duration: 0.2,
-              ease: 'power1.inOut',
-              stagger: 0.03,
-              clearProps: 'willChange',
-            })
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
-    })
-  }
-
-  const showDescForIndex = (idx, skipAnimation = false) => {
-    if (descItems.length) {
-      descItems.forEach((el, i) => {
-        if (i === idx) {
-          if (getComputedStyle(el).display === 'none') {
-            el.style.display = 'block'
-          }
-          // Skip animation only when explicitly requested
-          splitAndAnimateLines(el, skipAnimation)
-          // fade in
-          el.style.opacity = '1'
-        } else {
-          // fade out only
-          el.style.opacity = '0'
-        }
-      })
-    }
-    // Keep headings (.body-xxl, etc.) in sync with desc index
-    try {
-      const item = items[idx]
-      const span = item
-        ? item.querySelector('.body-xl, .body-xxl, .body-next')
-        : null
-      if (span) {
-        if (currentActive && currentActive !== span) {
-          currentActive.classList.remove('is-active')
-          const prevDim = currentActive.dataset.dimClass || 'is-o-20'
-          if (!currentActive.classList.contains(prevDim))
-            currentActive.classList.add(prevDim)
-        }
-        const dim = span.dataset.dimClass || 'is-o-20'
-        if (span.classList.contains(dim)) span.classList.remove(dim)
-        span.classList.add('is-active')
-        currentActive = span
-      }
-    } catch (e) {
-      // ignore
-    }
-  }
-
   // Support different typography sizes used across sections
   const spans = items.map((el) =>
     el.querySelector('.body-xl, .body-xxl, .body-next')
@@ -174,7 +63,6 @@ function initScrollItems(section) {
   })
 
   let currentActive = null
-  const lastIndex = items.length - 1
 
   // (removed unused helper)
 
@@ -197,36 +85,11 @@ function initScrollItems(section) {
           if (span.classList.contains(dim)) span.classList.remove(dim)
           span.classList.add('is-active')
           currentActive = span
-          // Skip animation if: scrolling upward onto the last item, OR
-          // scrolling downward onto the first item (initial downward passes)
-          const skip =
-            (self.direction === -1 && index === lastIndex) ||
-            (self.direction === 1 && index === 0)
-          showDescForIndex(index, skip)
         } else {
           // No-op on deactivate; active state is managed centrally by showDescForIndex
         }
       },
     })
-  })
-
-  // Ensure first/last active when entering/leaving the section
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top bottom',
-    end: 'bottom top',
-    onEnter: () => {
-      showDescForIndex(0, true) // arriving from top → skip first anim
-    },
-    onEnterBack: () => {
-      showDescForIndex(lastIndex, true) // arriving from bottom → last active, skip anim
-    },
-    onLeave: () => {
-      showDescForIndex(lastIndex) // leaving downward keeps last
-    },
-    onLeaveBack: () => {
-      showDescForIndex(0) // leaving upward keeps first
-    },
   })
 }
 
@@ -263,7 +126,7 @@ function buildIndicator(indicator) {
     containerHeight = r && r.height ? r.height : 0
   }
   // Prefer matching the scroll-list height so indicators mirror the list column
-  const section = indicator.closest('.section_partners, .section_values')
+  const section = indicator.closest('.section_partners')
   if (section) {
     const list = section.querySelector('.scroll-list')
     if (list) {

@@ -949,11 +949,13 @@ export function initTechnology(root = document) {
                 pointerEvents: 'none',
                 objectFit: 'contain',
               })
+              const targetLeft = isTablet() ? '50%' : '80%'
+              const targetTop = isTablet() ? '35%' : '70%'
               tl.to(
                 clonedImg,
                 {
-                  left: '80%',
-                  top: '70%',
+                  left: targetLeft,
+                  top: targetTop,
                   width: '60em',
                   duration: 1.2,
                   ease: gsap.parseEase('machinesStep') || 'power2.out',

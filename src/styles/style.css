@@ -8,7 +8,7 @@
 }
 
 /* Allow article pages to extend beyond 100vh and be scrollable */
-[data-barba-namespace="article"] .page-wrap {
+[data-barba-namespace='article'] .page-wrap {
   height: auto;
   min-height: 100vh;
   overflow: visible;
@@ -23,9 +23,9 @@
   white-space: nowrap;
 }
 
-.scroll-item>.body-xl,
-.scroll-item>.body-xxl,
-.scroll-item>.body-next {
+.scroll-item > .body-xl,
+.scroll-item > .body-xxl,
+.scroll-item > .body-next {
   transition: all 0.2s ease-in-out;
 }
 
@@ -45,7 +45,7 @@
 
 .mask-overlay,
 .mask-overlay.is-active {
-  display: none !important
+  display: none !important;
 }
 
 .region,
@@ -61,7 +61,7 @@
 
 .region.highlight {
   fill: rgba(244, 121, 32, 0.05);
-  stroke: rgba(244, 121, 32, 0.50);
+  stroke: rgba(244, 121, 32, 0.5);
   z-index: 2;
 }
 
@@ -75,9 +75,9 @@
 }
 
 .marker.highlight circle {
-  fill: #FF9345;
-  filter:
-    drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 5px #FF8832) drop-shadow(0 0 12px #FF8832);
+  fill: #ff9345;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5))
+    drop-shadow(0 0 5px #ff8832) drop-shadow(0 0 12px #ff8832);
 }
 
 .marker.highlight rect {
@@ -108,7 +108,7 @@
   height: calc(100vh - 2em);
 }
 
-[data-video="last"].video {
+[data-video='last'].video {
   position: relative;
   top: 0;
 }
@@ -117,12 +117,18 @@
   padding-top: 1px;
 }
 
-.is-text-mask>.mask-fill:last-child {
+.is-text-mask > .mask-fill:last-child {
   margin-left: -1px;
 }
 
-.machines-inner>.machines_wrap:first-of-type .machines-list-list>.machines-list-item:first-of-type,
-.machines-bottom>.machines_wrap:first-of-type .machines-list-list>.machines-list-item:first-of-type {
+.machines-inner
+  > .machines_wrap:first-of-type
+  .machines-list-list
+  > .machines-list-item:first-of-type,
+.machines-bottom
+  > .machines_wrap:first-of-type
+  .machines-list-list
+  > .machines-list-item:first-of-type {
   padding-top: 0.6em;
 }
 
@@ -168,7 +174,7 @@
   pointer-events: none;
 }
 
-.workshops_left_top>.eyebrows {
+.workshops_left_top > .eyebrows {
   padding-top: 0;
 }
 
@@ -198,7 +204,7 @@
   transform-origin: bottom left;
 }
 
-h1>.is-h1-span-wrap:last-child>span {
+h1 > .is-h1-span-wrap:last-child > span {
   padding-bottom: 0.025em;
 }
 
@@ -206,7 +212,7 @@ h1>.is-h1-span-wrap:last-child>span {
   cursor: default;
 }
 
-.w-background-video>video {
+.w-background-video > video {
   inset: 0;
 }
 
@@ -224,7 +230,7 @@ h1>.is-h1-span-wrap:last-child>span {
   mix-blend-mode: normal;
 }
 
-.machines-grid_name-inner .body-xl>span {
+.machines-grid_name-inner .body-xl > span {
   padding-bottom: 0.2em;
   overflow: hidden;
 }
@@ -233,7 +239,7 @@ h1>.is-h1-span-wrap:last-child>span {
   line-height: 80%;
 }
 
-.is-plus-wrap>.is-plus {
+.is-plus-wrap > .is-plus {
   width: 0.875em;
 }
 
@@ -241,7 +247,7 @@ h1>.is-h1-span-wrap:last-child>span {
   line-height: 0.8;
 }
 
-.story-maskwrap>.svgtext-mask {
+.story-maskwrap > .svgtext-mask {
   padding: 0;
 }
 
@@ -281,7 +287,7 @@ h1>.is-h1-span-wrap:last-child>span {
   position: relative;
 }
 
-.blog-name>.body-l>.blogline-line::after {
+.blog-name > .body-l > .blogline-line::after {
   content: '';
   position: absolute;
   width: 100%;
@@ -294,8 +300,8 @@ h1>.is-h1-span-wrap:last-child>span {
   transition: transform 0.5s cubic-bezier(0.32, 0.01, 0, 1);
 }
 
-.blog-inner_item.is-green:hover>.blog-name>.body-l>.blogline-line::after,
-.blog-inner_item:hover>.blog-name>.body-l>.blogline-line::after {
+.blog-inner_item.is-green:hover > .blog-name > .body-l > .blogline-line::after,
+.blog-inner_item:hover > .blog-name > .body-l > .blogline-line::after {
   transform: scaleX(1) !important;
   transform-origin: bottom left;
 }
@@ -326,22 +332,22 @@ h1>.is-h1-span-wrap:last-child>span {
   height: 30em;
 }
 
-.w-richtext figure>div,
-.w-richtext figure.w-richtext-align-fullwidth>div {
+.w-richtext figure > div,
+.w-richtext figure.w-richtext-align-fullwidth > div {
   position: relative;
   width: 100%;
   height: 30em;
   overflow: hidden;
 }
 
-.w-richtext figure>div>img,
-.w-richtext figure.w-richtext-align-fullwidth>div>img {
+.w-richtext figure > div > img,
+.w-richtext figure.w-richtext-align-fullwidth > div > img {
   object-fit: cover;
   width: 100%;
   height: 30em;
 }
 
-.blog-content figure>.image-wrapper {
+.blog-content figure > .image-wrapper {
   overflow: hidden;
 }
 
@@ -353,8 +359,8 @@ h1>.is-h1-span-wrap:last-child>span {
   height: 1.1em;
 }
 
-.blog-content .w-richtext figure>.imgage-wrapper,
-.blog-content .w-richtext figure>.imgage-p {
+.blog-content .w-richtext figure > .imgage-wrapper,
+.blog-content .w-richtext figure > .imgage-p {
   border-radius: 8px !important;
 }
 
@@ -362,9 +368,9 @@ h1>.is-h1-span-wrap:last-child>span {
   border-color: var(--primary);
 }
 
-.is-g-map [aria-label="Passer en plein écran"],
-.is-g-map .gm-style div:nth-child(14)>div,
-.is-g-map .gm-style div:nth-child(16)>div,
+.is-g-map [aria-label='Passer en plein écran'],
+.is-g-map .gm-style div:nth-child(14) > div,
+.is-g-map .gm-style div:nth-child(16) > div,
 .is-g-map .gmnoprint,
 .is-g-map .gm-control-active {
   opacity: 0;
@@ -385,7 +391,6 @@ h1>.is-h1-span-wrap:last-child>span {
 
 /* Hide machines sections on mobile and large mobile */
 @media (max-width: 767px) {
-
   .machines-wrapper,
   .machines-grid-wrapper {
     display: none !important;
@@ -406,7 +411,7 @@ h1>.is-h1-span-wrap:last-child>span {
     pointer-events: none;
   }
 
-  .processes>.process:nth-child(10) .process_inner {
+  .processes > .process:nth-child(10) .process_inner {
     border: none;
   }
 
@@ -442,10 +447,10 @@ h1>.is-h1-span-wrap:last-child>span {
     padding: 0 16px;
   }
 
-  .blog-content .w-richtext figure>.imgage-wrapper,
-  .blog-content .w-richtext figure>.imgage-p,
-  .blog-content .w-richtext-align-fullwidth figure>.imgage-wrapper,
-  .blog-content .w-richtext-align-fullwidth figure>.imgage-p {
+  .blog-content .w-richtext figure > .imgage-wrapper,
+  .blog-content .w-richtext figure > .imgage-p,
+  .blog-content .w-richtext-align-fullwidth figure > .imgage-wrapper,
+  .blog-content .w-richtext-align-fullwidth figure > .imgage-p {
     height: 100% !important;
   }
 
@@ -458,5 +463,11 @@ h1>.is-h1-span-wrap:last-child>span {
   .blog-content .w-richtext-align-fullwidth .image-p {
     height: 100% !important;
     border-radius: 0;
+  }
+}
+
+@media screen and (min-width: 991px) {
+  .is-big-safety {
+    aspect-ratio: 2 / 2.5;
   }
 }

@@ -76,7 +76,39 @@ export function initLenis(root = document) {
 
   // Default all ScrollTriggers to use the Lenis wrapper as scroller
   ScrollTrigger.defaults({ scroller: wrapper })
-  ScrollTrigger.refresh()
+  // Force scroll position to the very top on init to avoid residual offsets
+  try {
+    // Hard reset any native positions (fallbacks)
+    wrapper.scrollTop = 0
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  } catch (e) {
+    // ignore
+  }
+  try {
+    // Immediate reset for Lenis' virtual position
+    if (typeof lenis.scrollTo === 'function') {
+      lenis.scrollTo(0, { immediate: true })
+    }
+  } catch (e) {
+    // ignore
+  }
+  // Some browsers (iOS/Safari) need a second frame to settle layout before refresh
+  requestAnimationFrame(() => {
+    try {
+      if (typeof lenis.scrollTo === 'function') {
+        lenis.scrollTo(0, { immediate: true })
+      }
+    } catch (e) {
+      // ignore
+    }
+    try {
+      ScrollTrigger.refresh()
+    } catch (e) {
+      // ignore
+    }
+  })
 
   return lenis
 }

@@ -32,6 +32,17 @@ import { initSticky50 } from './utils/base.js'
 // (deduped)
 
 document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual'
+    }
+    // Defensive: ensure we start at top on hard loads
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  } catch (e) {
+    // ignore
+  }
   initializePageTransitionNav()
   initLoader()
   initLenis()

@@ -82,31 +82,66 @@ export function initAbout(root = document) {
       }
     }
     const handlePlayRejection = () => void 0
-    const playVideo = (idx) => {
+    const videoEls = vids.map((w) => getVideoEl(w))
+    const hasPlayed = new Array(vids.length).fill(false)
+    const indexByWrap = new Map()
+    vids.forEach((wrap, i) => wrap && indexByWrap.set(wrap, i))
+
+    const prepareForAutoplay = (video) => {
+      if (!video) return
       try {
-        const v = getVideoEl(vids[idx])
-        if (v && typeof v.play === 'function') {
-          // Defer without Promise chaining to avoid formatter/lint churn on save
-          setTimeout(() => {
-            try {
-              const maybePromise = v.play()
-              // Avoid .catch; some environments flag it in formatting rules
-              if (maybePromise && typeof maybePromise.then === 'function') {
-                maybePromise.then(undefined, handlePlayRejection)
-              }
-            } catch (err) {
-              handlePlayRejection()
-            }
-          }, 0)
-        }
+        video.muted = true
+        video.playsInline = true
       } catch (e) {
         // ignore
       }
     }
-    let wasStarted = false
-    const wasHidden = new Array(vids.length).fill(false)
-    const hasPlayed = new Array(vids.length).fill(false)
+
+    const pauseAllExcept = (exceptIndex) => {
+      for (let i = 0; i < videoEls.length; i += 1) {
+        const el = videoEls[i]
+        if (!el || i === exceptIndex) continue
+        try {
+          el.pause()
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+
+    const playAtIndex = (idx) => {
+      try {
+        const el = videoEls[idx]
+        if (!el) return
+        prepareForAutoplay(el)
+        // Only reset to start on first play to avoid jumpy behavior on re-entry
+        if (!hasPlayed[idx] && typeof el.currentTime === 'number') {
+          el.currentTime = 0
+        }
+        const p = el.play()
+        if (p && typeof p.then === 'function') {
+          p.then(undefined, handlePlayRejection)
+        }
+        hasPlayed[idx] = true
+        pauseAllExcept(idx)
+      } catch (e) {
+        // ignore
+      }
+    }
     if (!storyContent) return null
+
+    let currentActive = -1
+    const setActive = (idx) => {
+      if (typeof idx !== 'number' || idx < 0 || idx >= vids.length) return
+      if (currentActive === idx) return
+      currentActive = idx
+      vids.forEach((wrap, i) => {
+        if (!wrap) return
+        if (i === idx) fadeIn(wrap)
+        else fadeOut(wrap)
+      })
+      playAtIndex(idx)
+    }
 
     const getAfterIntroProgressPx = () => {
       // Start counting when the bottom of story_intro reaches the top (0)
@@ -150,22 +185,6 @@ export function initAbout(root = document) {
     let prevEyebrowsStarted = null
 
     const update = () => {
-      const vh = (() => {
-        try {
-          const base =
-            (typeof window !== 'undefined' && window.innerHeight) ||
-            document.documentElement.clientHeight ||
-            0
-          // Some setups use rem/em scaling; prefer computed 1vh of the content itself
-          const probe = document.documentElement
-          const oneVh = Math.max(1, probe.clientHeight / 100)
-          // If base is suspiciously small relative to computed oneVh, fallback to 100*oneVh
-          if (base < oneVh * 0.5) return Math.round(oneVh * 100)
-          return base
-        } catch (e) {
-          return 0
-        }
-      })()
       const s = getAfterIntroProgressPx()
       // Toggle 100svh on .intro.is-story when .story_intro_inner has exited the top of the viewport
       try {
@@ -200,34 +219,25 @@ export function initAbout(root = document) {
         })
         prevEyebrowsStarted = eyebrowsStarted
       }
-      const t100 = 0.5 * vh
-      const t200 = 1 * vh
-      const t300 = 1.5 * vh
-      const started = s > 0
-      if (started && !wasStarted) {
-        if (!hasPlayed[0]) {
-          playVideo(0)
-          hasPlayed[0] = true
+      // Determine active video based on scroll progress through the 400vh story section
+      try {
+        const rect = storyContent.getBoundingClientRect()
+        const viewportH =
+          (typeof window !== 'undefined' && window.innerHeight) ||
+          (document.documentElement && document.documentElement.clientHeight) ||
+          0
+        // Work only after intro has started
+        if (viewportH > 0 && s > 0) {
+          const rectHeight = rect && rect.height ? rect.height : 0
+          const totalRange = Math.max(1, rectHeight - viewportH)
+          const clampedTop = Math.max(-rect.top, 0)
+          const scrolled = Math.min(clampedTop, totalRange)
+          const segment = totalRange / vids.length
+          const idx = Math.min(vids.length - 1, Math.floor(scrolled / segment))
+          setActive(idx)
         }
-      }
-      wasStarted = started
-
-      const hiddenNow = [s >= t100, s >= t200, s >= t300]
-      if (hiddenNow[0]) fadeOut(v1)
-      else fadeIn(v1)
-      if (hiddenNow[1]) fadeOut(v2)
-      else fadeIn(v2)
-      if (hiddenNow[2]) fadeOut(v3)
-      else fadeIn(v3)
-      for (let i = 0; i < hiddenNow.length; i += 1) {
-        if (hiddenNow[i] && !wasHidden[i]) {
-          const nextIdx = i + 1
-          if (nextIdx < vids.length && !hasPlayed[nextIdx]) {
-            playVideo(nextIdx)
-            hasPlayed[nextIdx] = true
-          }
-        }
-        wasHidden[i] = hiddenNow[i]
+      } catch (e) {
+        // ignore
       }
     }
 

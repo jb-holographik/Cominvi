@@ -1,6 +1,7 @@
 import barba from '@barba/core'
 
 import { reinitializeWebflowAnimations, initSticky50 } from '../utils/base.js'
+import { initAboutValuesScroll } from './about-scroll.js'
 import { initAbout } from './about-us.js'
 import { blogArticleInit } from './blog-article.js'
 import { initBlog } from './blog.js'
@@ -496,6 +497,11 @@ export function initializePageTransitionNav() {
             /* ignore */
           }
           try {
+            initAboutValuesScroll(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             destroyVideoClipStickyTransform()
           } catch (e) {
             /* ignore */
@@ -660,6 +666,11 @@ export function initializePageTransitionNav() {
           }
           try {
             initAbout(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            initAboutValuesScroll(next && next.container)
           } catch (e) {
             /* ignore */
           }
@@ -832,6 +843,11 @@ export function initializePageTransitionNav() {
             /* ignore */
           }
           try {
+            initAboutValuesScroll(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             destroyVideoClipStickyTransform()
           } catch (e) {
             /* ignore */
@@ -926,6 +942,11 @@ export function initializePageTransitionNav() {
             /* ignore */
           }
           try {
+            initAboutValuesScroll(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             destroyVideoClipStickyTransform()
           } catch (e) {
             /* ignore */
@@ -943,6 +964,14 @@ export function initializePageTransitionNav() {
           }
           try {
             initContact(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
+            const st = window.ScrollTrigger
+            if (st && typeof st.refresh === 'function') {
+              requestAnimationFrame(() => st.refresh())
+            }
           } catch (e) {
             /* ignore */
           }
@@ -1057,6 +1086,11 @@ export function initializePageTransitionNav() {
       /* ignore */
     }
     try {
+      initAboutValuesScroll(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
       destroyVideoClipStickyTransform()
     } catch (e) {
       /* ignore */
@@ -1110,6 +1144,11 @@ export function initializePageTransitionNav() {
     }
     try {
       initServiceCards(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      initAboutValuesScroll(next && next.container)
     } catch (e) {
       /* ignore */
     }

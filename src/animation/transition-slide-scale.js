@@ -74,7 +74,12 @@ export function slideScaleEnter({ next }) {
   })
 
   const viewportWidth = window.innerWidth
-  const targetWidth = Math.max(0, viewportWidth - 64)
+  const isTabletOrBelow =
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(max-width: 991px)').matches
+  const horizontalGutter = isTabletOrBelow ? 32 : 64
+  const targetWidth = Math.max(0, viewportWidth - horizontalGutter)
   const startScale = targetWidth > 0 ? targetWidth / viewportWidth : 1
 
   // Next page starts to the right and slightly scaled, with rounded corners

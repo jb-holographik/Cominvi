@@ -1,12 +1,28 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import SplitType from 'split-type'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function initAboutValuesScroll(root = document) {
-  const page = (root || document).querySelector(
-    '[data-barba-namespace="About us"][data-barba="container"]'
-  )
+  const scope = root || document
+  let page = null
+  try {
+    const isSelfContainer =
+      scope &&
+      scope.getAttribute &&
+      scope.getAttribute('data-barba-namespace') === 'About us' &&
+      scope.getAttribute('data-barba') === 'container'
+    if (isSelfContainer) {
+      page = scope
+    } else if (scope && scope.querySelector) {
+      page = scope.querySelector(
+        '[data-barba-namespace="About us"][data-barba="container"]'
+      )
+    }
+  } catch (e) {
+    // ignore
+  }
   if (!page) return
 
   const sections = Array.from(page.querySelectorAll('.section_values'))
@@ -235,6 +251,53 @@ function setupTickHighlighting(section, indicators) {
   // Maintain only last active index per indicator; compute positions on demand
   const lastIndexByIndicator = new Map()
   let updateScheduled = false
+  let forcedIndex = null
+  let forceNoAnimOnce = false
+
+  // Initial state: hide all body-s inside scroll items until activation
+  try {
+    const allItems = Array.from(
+      section.querySelectorAll('.scroll-list .scroll-item-h')
+    )
+    allItems.forEach((el) => {
+      const p = el.querySelector('.body-s')
+      if (p) p.style.opacity = '0'
+    })
+    // Pre-activate first item content so it's immediately visible on arrival
+    const firstItem = allItems[0]
+    if (firstItem) {
+      firstItem.classList.add('is-active')
+      const p = firstItem.querySelector('.body-s')
+      if (p) {
+        try {
+          p.style.opacity = '1'
+          if (!p.__split) {
+            p.__split = new SplitType(p, { types: 'lines', tagName: 'span' })
+          }
+          let lines = (p.__split && p.__split.lines) || []
+          if (!lines.length) lines = [p]
+          const inners = []
+          lines.forEach((line) => {
+            line.style.display = 'block'
+            line.style.overflow = 'hidden'
+            if (!line.__inner) {
+              const inner = document.createElement('span')
+              inner.className = 'line-inner'
+              while (line.firstChild) inner.appendChild(line.firstChild)
+              line.appendChild(inner)
+              line.__inner = inner
+            }
+            inners.push(line.__inner)
+          })
+          if (inners.length) gsap.set(inners, { yPercent: 0 })
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
 
   const doUpdate = () => {
     let viewportRect
@@ -270,9 +333,13 @@ function setupTickHighlighting(section, indicators) {
         }
       }
 
+      // Allow forcing a specific index (e.g., when entering the section)
+      const selectedIndex =
+        typeof forcedIndex === 'number' ? forcedIndex : closestIndex
+
       const prev = lastIndexByIndicator.get(indicator)
-      if (prev === closestIndex) return
-      lastIndexByIndicator.set(indicator, closestIndex)
+      if (prev === selectedIndex) return
+      lastIndexByIndicator.set(indicator, selectedIndex)
 
       // Update classes only when index changed
       ticks.forEach((tick) => {
@@ -281,13 +348,13 @@ function setupTickHighlighting(section, indicators) {
       const set = (i, cls) => {
         if (i >= 0 && i < ticks.length) ticks[i].classList.add(cls)
       }
-      set(closestIndex, 'is-xxl')
-      set(closestIndex - 1, 'is-xl')
-      set(closestIndex + 1, 'is-xl')
-      set(closestIndex - 2, 'is-l')
-      set(closestIndex + 2, 'is-l')
-      set(closestIndex - 3, 'is-m')
-      set(closestIndex + 3, 'is-m')
+      set(selectedIndex, 'is-xxl')
+      set(selectedIndex - 1, 'is-xl')
+      set(selectedIndex + 1, 'is-xl')
+      set(selectedIndex - 2, 'is-l')
+      set(selectedIndex + 2, 'is-l')
+      set(selectedIndex - 3, 'is-m')
+      set(selectedIndex + 3, 'is-m')
     })
 
     const items = Array.from(
@@ -301,12 +368,80 @@ function setupTickHighlighting(section, indicators) {
         const d = Math.abs(center - viewportCenter)
         if (d < closest.dist) closest = { index: idx, dist: d }
       })
+      const targetIndex =
+        typeof forcedIndex === 'number' ? forcedIndex : closest.index
       items.forEach((el, idx) => {
-        if (idx === closest.index) {
-          if (!el.classList.contains('is-active')) el.classList.add('is-active')
-        } else {
-          if (el.classList.contains('is-active'))
-            el.classList.remove('is-active')
+        const isTarget = idx === targetIndex
+        const wasActive = el.classList.contains('is-active')
+        if (isTarget) {
+          if (!wasActive) {
+            el.classList.add('is-active')
+            // Split and animate body-s lines on activation
+            const p = el.querySelector('.body-s')
+            if (p) {
+              try {
+                // Ensure paragraph is visible for the duration of the line reveal
+                gsap.set(p, { opacity: 1 })
+                // Split only once per paragraph
+                if (!p.__split) {
+                  p.__split = new SplitType(p, {
+                    types: 'lines',
+                    tagName: 'span',
+                  })
+                }
+                let lines = (p.__split && p.__split.lines) || []
+                const inners = []
+                if (!lines.length) {
+                  // Fallback: treat the whole paragraph as one line
+                  lines = [p]
+                }
+                lines.forEach((line) => {
+                  line.style.display = 'block'
+                  line.style.overflow = 'hidden'
+                  if (!line.__inner) {
+                    const inner = document.createElement('span')
+                    inner.className = 'line-inner'
+                    while (line.firstChild) inner.appendChild(line.firstChild)
+                    line.appendChild(inner)
+                    line.__inner = inner
+                  }
+                  inners.push(line.__inner)
+                })
+                if (forceNoAnimOnce) {
+                  gsap.set(inners, { display: 'block', yPercent: 0 })
+                } else {
+                  gsap.set(inners, {
+                    display: 'block',
+                    yPercent: 100,
+                    willChange: 'transform',
+                  })
+                  gsap.to(inners, {
+                    yPercent: 0,
+                    duration: 0.35,
+                    ease: 'power2.out',
+                    stagger: 0.06,
+                    clearProps: 'willChange',
+                  })
+                }
+              } catch (e) {
+                // ignore split errors
+              }
+            }
+          }
+        } else if (wasActive) {
+          el.classList.remove('is-active')
+          const p = el.querySelector('.body-s')
+          if (p) {
+            // Hide paragraph when item is not active and reset inner transforms
+            p.style.opacity = '0'
+            try {
+              const lines = (p.__split && p.__split.lines) || []
+              const inners = lines.map((line) => line.__inner).filter(Boolean)
+              if (inners.length) gsap.set(inners, { yPercent: 100 })
+            } catch (e) {
+              // ignore
+            }
+          }
         }
       })
     }
@@ -326,8 +461,20 @@ function setupTickHighlighting(section, indicators) {
     start: 'top bottom',
     end: 'bottom -50%',
     onUpdate: update,
-    onEnter: update,
-    onEnterBack: update,
+    onEnter: () => {
+      forcedIndex = 0
+      forceNoAnimOnce = true
+      update()
+      forcedIndex = null
+      forceNoAnimOnce = false
+    },
+    onEnterBack: () => {
+      forcedIndex = Infinity // will clamp to last by logic
+      forceNoAnimOnce = true
+      update()
+      forcedIndex = null
+      forceNoAnimOnce = false
+    },
   })
 
   update()

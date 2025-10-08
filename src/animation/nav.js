@@ -355,6 +355,31 @@ export function initializeMenuClick(options = {}, root = document) {
     menuElement.addEventListener('click', menuElement.__menuHandler)
   })
 
+  // Close menu when clicking on page content while menu is open
+  try {
+    if (pageWrapElement.__menuOutsideHandler) {
+      pageWrapElement.removeEventListener(
+        'click',
+        pageWrapElement.__menuOutsideHandler
+      )
+    }
+  } catch (err) {
+    // ignore
+  }
+  pageWrapElement.__menuOutsideHandler = () => {
+    try {
+      if (document.documentElement.getAttribute('data-menu-open') === 'true') {
+        handleMenuClick()
+      }
+    } catch (err) {
+      // ignore
+    }
+  }
+  pageWrapElement.addEventListener(
+    'click',
+    pageWrapElement.__menuOutsideHandler
+  )
+
   document.documentElement.setAttribute('data-menu-open', 'false')
   // On init (menu closed), ensure the brand link triggers inner transition
   if (brandLink) brandLink.setAttribute('pt-inner', '')

@@ -2,7 +2,38 @@ import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 
 gsap.registerPlugin(CustomEase)
-const easeCurve = 'M0,0 C0.6,0 0,1 1,1'
+const easeCurve = 'M0,0 C0.51,0 0,1 1,1'
+
+// Resolve site side margin in pixels using CSS variable when available,
+// otherwise fall back to 1em (tablet/mobile) or 2em (desktop) in root pixels
+function resolveSideMarginPx(rootFontPx) {
+  try {
+    const body = document.body || document.documentElement
+    const cs = window.getComputedStyle && window.getComputedStyle(body)
+    const varVal =
+      (cs && cs.getPropertyValue('--_spacings---site-margin')) || ''
+    const trimmed = String(varVal || '').trim()
+    if (trimmed.endsWith('px')) {
+      const n = parseFloat(trimmed)
+      if (Number.isFinite(n)) return n
+    }
+    if (trimmed.endsWith('em')) {
+      const em = parseFloat(trimmed)
+      const basePx =
+        parseFloat((cs && cs.fontSize) || String(rootFontPx || 16)) || 16
+      if (Number.isFinite(em)) return em * basePx
+    }
+  } catch (e) {
+    // ignore
+  }
+  const isTabletOrMobile =
+    typeof window !== 'undefined' &&
+    window.matchMedia &&
+    window.matchMedia('(max-width: 991px)').matches
+  const basePx = Number.isFinite(rootFontPx) ? rootFontPx : 16
+  const ems = isTabletOrMobile ? 1 : 2
+  return ems * basePx
+}
 
 /**
  * Creates a full-viewport overlay (z-index 999) containing an SVG clipPath.
@@ -83,7 +114,7 @@ export function createViewportClipOverlay(options = {}) {
     // ignore
   }
   const topOffsetPx = 12.5 * rootFontPx
-  const sideMarginPx = 2 * rootFontPx
+  const sideMarginPx = resolveSideMarginPx(rootFontPx)
 
   // Geometry will be computed after the container is created and appended
   clipPath.appendChild(ringPath)
@@ -291,7 +322,7 @@ export function playOverlayClipOnce(cleanup = true) {
         // ignore
       }
       const topOffsetPx = 12.5 * (Number.isFinite(rootFontPx) ? rootFontPx : 16)
-      const sideMarginPx = 2 * (Number.isFinite(rootFontPx) ? rootFontPx : 16)
+      const sideMarginPx = resolveSideMarginPx(rootFontPx)
       const xFrac = Math.max(0, Math.min(1, sideMarginPx / overlayW))
       const widthFrac = Math.max(
         0,
@@ -368,8 +399,7 @@ export function playOverlayClipOnce(cleanup = true) {
               }
               const topOffsetPx2 =
                 12.5 * (Number.isFinite(rootFontPx2) ? rootFontPx2 : 16)
-              const sideMarginPx2 =
-                2 * (Number.isFinite(rootFontPx2) ? rootFontPx2 : 16)
+              const sideMarginPx2 = resolveSideMarginPx(rootFontPx2)
               const xFrac2 = Math.max(0, Math.min(1, sideMarginPx2 / overlayW))
               const widthFrac2 = Math.max(
                 0,
@@ -465,7 +495,7 @@ export function playOverlayClipOnceWithTop(topPx, cleanup = true) {
           return 16
         }
       })()
-      const sideMarginPx = 2 * rootFontPx
+      const sideMarginPx = resolveSideMarginPx(rootFontPx)
       // Resolve topPx from DOM if not provided or zero
       let topPxResolved = Number.isFinite(topPx) && topPx > 0 ? topPx : 0
       if (!topPxResolved) {
@@ -580,7 +610,7 @@ export function resetOverlayClipBaseState(topPx) {
         return 16
       }
     })()
-    const sideMarginPx = 2 * rootFontPx
+    const sideMarginPx = resolveSideMarginPx(rootFontPx)
     let topPxResolved = Number.isFinite(topPx) && topPx > 0 ? topPx : 0
     if (!topPxResolved) {
       try {
@@ -683,7 +713,7 @@ export function createClipForHost(hostEl, options = {}) {
       // ignore
     }
     const topOffsetPx = 12.5 * rootFontPx
-    const sideMarginPx = 2 * rootFontPx
+    const sideMarginPx = resolveSideMarginPx(rootFontPx)
 
     clipPath.appendChild(clipPathRect)
     defs.appendChild(clipPath)
@@ -823,7 +853,7 @@ export function resetHostClipBaseState(hostEl, topPx) {
         return 16
       }
     })()
-    const sideMarginPx = 2 * rootFontPx
+    const sideMarginPx = resolveSideMarginPx(rootFontPx)
     let topPxResolved = Number.isFinite(topPx) && topPx > 0 ? topPx : 0
     if (!topPxResolved) {
       try {

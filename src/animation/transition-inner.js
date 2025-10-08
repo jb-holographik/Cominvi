@@ -17,7 +17,7 @@ gsap.registerPlugin(CustomEase)
 // keep for parity with slide-scale if needed later
 let lastTopOffsetPx = 0 // eslint-disable-line no-unused-vars
 let baseTopPx = 0
-const easeCurve = 'M0,0 C0.6,0 0,1 1,1 '
+const easeCurve = 'M0,0 C0.51,0 0,1 1,1'
 
 function setMaskOverlayActive(active) {
   try {
@@ -162,11 +162,35 @@ export function slideScaleLeave({ current }) {
 
   // Pre-scale like nav open, then slide
   const viewportWidth = window.innerWidth
+  const isTabletOrMobile =
+    typeof window !== 'undefined' &&
+    window.matchMedia &&
+    window.matchMedia('(max-width: 991px)').matches
   gsap.set(currentPage, { transformOrigin: '50% 0%' })
 
   const tl = gsap.timeline()
-  const preDur = 1.2
-  const slideDur = 1.2
+  const preDur = 0.75
+  const slideDur = 1.0
+  // Sync menu theme to the same as when opening the menu ("menu") at leave start
+  tl.call(
+    () => {
+      try {
+        // Lock theme controller (prevents scroll-based theme override)
+        try {
+          document.documentElement.setAttribute('data-menu-open', 'true')
+        } catch (e) {
+          // ignore
+        }
+        if (window.__theme && typeof window.__theme.menuOpen === 'function') {
+          window.__theme.menuOpen()
+        }
+      } catch (e) {
+        // ignore
+      }
+    },
+    [],
+    0
+  )
   // Phase 1: top + scale + radius like nav open
   tl.to(
     currentPage,
@@ -175,8 +199,8 @@ export function slideScaleLeave({ current }) {
       // keep scale change as previously defined by nav-open parity
       // remove if not needed
       scale:
-        Math.max(0, viewportWidth - 64) > 0
-          ? (viewportWidth - 64) / viewportWidth
+        Math.max(0, viewportWidth - (isTabletOrMobile ? 32 : 64)) > 0
+          ? (viewportWidth - (isTabletOrMobile ? 32 : 64)) / viewportWidth
           : 1,
       borderRadius: '1rem',
       duration: preDur,
@@ -191,6 +215,27 @@ export function slideScaleLeave({ current }) {
     duration: slideDur,
     ease: gsap.parseEase(`custom(${easeCurve})`),
   })
+  // Animate page-info: during position move to top (y:0), then lift up during slide
+  tl.to(
+    '.page-info_inner',
+    {
+      y: 0,
+      duration: preDur,
+      ease: gsap.parseEase(`custom(${easeCurve})`),
+      overwrite: 'auto',
+    },
+    0
+  )
+  tl.to(
+    '.page-info_inner',
+    {
+      y: '-7.5em',
+      duration: slideDur,
+      ease: gsap.parseEase(`custom(${easeCurve})`),
+      overwrite: 'auto',
+    },
+    preDur
+  )
   // No overlay slide here; mask will be applied on destination during enter
   return tl
 }
@@ -227,13 +272,17 @@ export function slideScaleEnter({ next }) {
     y: 0,
   })
 
-  // no-op; previously used values removed
   // Prepare timeline and labels before any calls
   const tl = gsap.timeline()
-  const preDur = 1.2
-  const slideDur = 1.2
-  tl.addLabel('lift', preDur)
-  tl.addLabel('descale', preDur + slideDur)
+  // Durations
+  const preDur = 1.0 // duration of lift-related tweens
+  const slideDur = 1.0 // duration of slide-related tweens
+  // Align start time of incoming slide with the outgoing slide start (0.75s)
+  const liftStart = 0.75
+  const liftDur = preDur
+  const descaleStart = liftStart + liftDur // 1.75s
+  tl.addLabel('lift', liftStart)
+  tl.addLabel('descale', descaleStart)
 
   // Ensure the mask is applied to destination as soon as it appears (t=0)
   tl.call(
@@ -312,7 +361,7 @@ export function slideScaleEnter({ next }) {
               // ignore
             }
             // Slide window from 100vw to 2em
-            tweenHostClipSlideX(host, targetX, preDur, `custom(${easeCurve})`)
+            tweenHostClipSlideX(host, targetX, liftDur, `custom(${easeCurve})`)
           }
         }
       } catch (err) {
@@ -359,8 +408,18 @@ export function slideScaleEnter({ next }) {
             try {
               clip.tl.eventCallback('onComplete', () => {
                 try {
-                  // Reset page-info transform only after the transition fully ends
-                  gsap.set('.page-info_inner', { y: 0 })
+                  // Final cleanup after transition fully ends
+                  // 1) Hide page-info again
+                  try {
+                    const pi = document.querySelector('.page-info')
+                    if (pi) pi.style.display = 'none'
+                  } catch (e) {
+                    // ignore
+                  }
+                  // 2) Reset destination label position
+                  gsap.set('#page-to', { y: 0 })
+                  // 3) Restore base offset of page-info_inner
+                  gsap.set('.page-info_inner', { y: '7.5em' })
                 } catch (e) {
                   // ignore
                 }
@@ -401,10 +460,16 @@ export function slideScaleEnter({ next }) {
     [],
     'descale'
   )
-  // Compute and apply destination theme at the same moment bars close
+  // Apply destination theme only during descale (keep 'menu' theme until then)
   tl.call(
     () => {
       try {
+        // Unlock theme controller and apply destination
+        try {
+          document.documentElement.setAttribute('data-menu-open', 'false')
+        } catch (e) {
+          // ignore
+        }
         if (
           window.__theme &&
           typeof window.__theme.setDestination === 'function'
@@ -422,7 +487,7 @@ export function slideScaleEnter({ next }) {
       }
     },
     [],
-    'lift'
+    'descale'
   )
   // Animate menu icon back to closed state while destination page descales
   const menuIconElement = document.querySelector('.menu-icon')
@@ -437,7 +502,7 @@ export function slideScaleEnter({ next }) {
       menuIconElement,
       {
         gap: '5px',
-        duration: 1.2,
+        duration: liftDur,
         ease: gsap.parseEase(`custom(${easeCurve})`),
       },
       'lift'
@@ -450,7 +515,7 @@ export function slideScaleEnter({ next }) {
         rotation: 0,
         yPercent: 0,
         top: '42%',
-        duration: 1.2,
+        duration: liftDur,
         ease: gsap.parseEase(`custom(${easeCurve})`),
       },
       'lift'
@@ -463,19 +528,14 @@ export function slideScaleEnter({ next }) {
         rotation: 0,
         yPercent: 0,
         bottom: '42%',
-        duration: 1.2,
+        duration: liftDur,
         ease: gsap.parseEase(`custom(${easeCurve})`),
       },
       'lift'
     )
   }
   // Animate page-info during the slide window
-  const pageInfoLiftY =
-    typeof window !== 'undefined' &&
-    window.matchMedia &&
-    window.matchMedia('(max-width: 991px)').matches
-      ? '-2.5em'
-      : '-4.5em'
+  const pageInfoLiftY = '-7.5em'
   tl.to(
     '.page-info_inner',
     {
@@ -484,6 +544,16 @@ export function slideScaleEnter({ next }) {
       ease: gsap.parseEase(`custom(${easeCurve})`),
     },
     'lift'
+  )
+  // During descale, move destination page name down by 7.5em
+  tl.to(
+    '#page-to',
+    {
+      y: '7.5em',
+      duration: 1.2,
+      ease: gsap.parseEase(`custom(${easeCurve})`),
+    },
+    'descale'
   )
   // After slide window, perform cleanup without descale on destination
   tl.call(
@@ -499,7 +569,7 @@ export function slideScaleEnter({ next }) {
       // Do NOT remove .is-active here; it is removed in the clip timeline onComplete
     },
     [],
-    preDur + slideDur
+    liftStart + slideDur
   )
   return tl
 }

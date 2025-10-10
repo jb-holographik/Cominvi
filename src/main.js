@@ -4,6 +4,7 @@ import { initAbout } from './animation/about-us.js'
 import { blogArticleInit } from './animation/blog-article.js'
 import { initBlog } from './animation/blog.js'
 import { initContact } from './animation/contact.js'
+import { initCylinder } from './animation/cylinder.js'
 import { initTeam } from './animation/join-the-team.js'
 import { initLoader } from './animation/loader.js'
 import { initMap } from './animation/map.js'
@@ -47,6 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initLoader()
   initLenis()
   initializeNav2()
+  try {
+    initCylinder(document)
+  } catch (e) {
+    // ignore
+  }
   initParallax()
   initNextBackgroundParallax()
   initServiceCards()

@@ -1850,6 +1850,227 @@ export function initTechnology(root = document) {
 
       gridItems.forEach((it) => attachClickForItem(it))
 
+      // Hover interactions: custom cursor + name translate/dimming
+      try {
+        const cursor = document.querySelector('.cursor-pointer')
+        if (cursor) {
+          // Prepare cursor initial state (hidden, no pointer events)
+          try {
+            cursor.style.display = 'none'
+            cursor.style.pointerEvents = 'none'
+          } catch (e0) {
+            // ignore
+          }
+          // Prepare inner transition for enter/leave like blog
+          try {
+            const inner =
+              cursor.querySelector('.cursor-pointer_inner') ||
+              cursor.firstElementChild
+            if (inner) {
+              const current = getComputedStyle(inner).transition || ''
+              if (!/transform/.test(current)) {
+                inner.style.transition =
+                  (current ? current + ', ' : '') +
+                  'transform 300ms cubic-bezier(0.6, 0, 0, 1)'
+              }
+              inner.style.transform = 'translateY(100%)'
+              // Cache inner size so container keeps stable size on enter
+              const prevVis = cursor.style.visibility
+              const prevDisp = cursor.style.display
+              const wasHidden = getComputedStyle(cursor).display === 'none'
+              if (wasHidden) {
+                cursor.style.visibility = 'hidden'
+                cursor.style.display = 'flex'
+              }
+              const rect = inner.getBoundingClientRect()
+              cursor.dataset.__cursorInnerW = String(Math.ceil(rect.width))
+              cursor.dataset.__cursorInnerH = String(Math.ceil(rect.height))
+              if (wasHidden) {
+                cursor.style.display = prevDisp || 'none'
+                cursor.style.visibility = prevVis || ''
+              }
+            }
+          } catch (e1) {
+            // ignore
+          }
+
+          let cursorOffsetPx = 8
+          let endHandler = null
+          const computeCursorOffset = () => {
+            try {
+              const fs = parseFloat(getComputedStyle(cursor).fontSize) || 16
+              cursorOffsetPx = fs
+            } catch (e) {
+              cursorOffsetPx = 8
+            }
+          }
+          computeCursorOffset()
+
+          const onCursorEnter = () => {
+            const inner =
+              cursor.querySelector('.cursor-pointer_inner') ||
+              cursor.firstElementChild
+            try {
+              const w = cursor.dataset.__cursorInnerW
+              const h = cursor.dataset.__cursorInnerH
+              if (w) cursor.style.width = w + 'px'
+              if (h) cursor.style.height = h + 'px'
+            } catch (e) {
+              // ignore
+            }
+            cursor.style.display = 'flex'
+            if (inner) {
+              if (endHandler) {
+                try {
+                  inner.removeEventListener('transitionend', endHandler)
+                } catch (e) {
+                  // ignore
+                }
+                endHandler = null
+              }
+              inner.style.transform = 'translateY(100%)'
+              void inner.getBoundingClientRect()
+              inner.style.transform = 'translateY(0)'
+            }
+          }
+          const onCursorLeave = () => {
+            const inner =
+              cursor.querySelector('.cursor-pointer_inner') ||
+              cursor.firstElementChild
+            if (inner) {
+              endHandler = () => {
+                cursor.style.display = 'none'
+                try {
+                  inner.removeEventListener('transitionend', endHandler)
+                } catch (e) {
+                  // ignore
+                }
+                endHandler = null
+                inner.style.transform = 'translateY(100%)'
+              }
+              // Manually remove listener inside handler to simulate once behavior
+              inner.addEventListener('transitionend', endHandler)
+              inner.style.transform = 'translateY(100%)'
+            } else {
+              cursor.style.display = 'none'
+            }
+          }
+          const onCursorMove = (e) => {
+            cursor.style.left = e.pageX + cursorOffsetPx + 'px'
+            cursor.style.top = e.pageY + cursorOffsetPx + 'px'
+          }
+
+          const ease = gsap.parseEase('machinesStep') || ((t) => t)
+
+          const bindHoverHandlers = (item) => {
+            if (!item || item.__gridHoverBound) return
+            item.__gridHoverBound = true
+
+            const nameWrap = item.querySelector('.is-m-name_wrap')
+
+            const onEnter = () => {
+              onCursorEnter()
+              if (nameWrap) {
+                try {
+                  gsap.killTweensOf(nameWrap)
+                } catch (e) {
+                  // ignore
+                }
+                gsap.to(nameWrap, {
+                  y: '-1.8em',
+                  opacity: 1,
+                  duration: 0.3,
+                  ease,
+                })
+              }
+              // Dim other items' names
+              try {
+                gridItems.forEach((other) => {
+                  if (other === item) return
+                  const otherWrap = other.querySelector('.is-m-name_wrap')
+                  if (otherWrap) {
+                    gsap.to(otherWrap, { opacity: 0.4, duration: 0.3, ease })
+                  }
+                })
+              } catch (e) {
+                // ignore
+              }
+            }
+
+            const onLeave = () => {
+              onCursorLeave()
+              if (nameWrap) {
+                try {
+                  gsap.killTweensOf(nameWrap)
+                } catch (e) {
+                  // ignore
+                }
+                gsap.to(nameWrap, { y: '0em', duration: 0.3, ease })
+              }
+              // Restore others
+              try {
+                gridItems.forEach((other) => {
+                  const otherWrap = other.querySelector('.is-m-name_wrap')
+                  if (otherWrap) {
+                    gsap.to(otherWrap, { opacity: 1, duration: 0.3, ease })
+                  }
+                })
+              } catch (e) {
+                // ignore
+              }
+            }
+
+            const onMove = (e) => onCursorMove(e)
+
+            item.addEventListener('mouseenter', onEnter)
+            item.addEventListener('mouseleave', onLeave)
+            item.addEventListener('mousemove', onMove)
+          }
+
+          // Ensure a clean initial state
+          try {
+            const allNameWraps =
+              machinesGridWrapper.querySelectorAll('.is-m-name_wrap')
+            if (allNameWraps && allNameWraps.length) {
+              allNameWraps.forEach((el) => gsap.set(el, { opacity: 1, y: 0 }))
+            }
+          } catch (e) {
+            // ignore
+          }
+
+          gridItems.forEach((it) => bindHoverHandlers(it))
+
+          // Observe dynamic changes (Webflow CMS, filters, pagination) and bind on the fly
+          try {
+            const mo = new MutationObserver(() => {
+              try {
+                gridItems = Array.from(
+                  machinesGridWrapper.querySelectorAll('.machines-grid_item')
+                )
+              } catch (e) {
+                gridItems = []
+              }
+              gridItems.forEach((it) => bindHoverHandlers(it))
+            })
+            mo.observe(gridList || machinesGridWrapper, {
+              childList: true,
+              subtree: true,
+            })
+          } catch (e) {
+            // ignore
+          }
+
+          // Recompute cursor offset on resize
+          try {
+            window.addEventListener('resize', computeCursorOffset)
+          } catch (e) {
+            // ignore
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+
       // Also support close via inner close button when available
       machinesGridWrapper
         .querySelectorAll(

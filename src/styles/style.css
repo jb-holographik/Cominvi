@@ -377,6 +377,75 @@ h1 > .is-h1-span-wrap:last-child > span {
   transition: opacity 0.3s ease-in-out;
 }
 
+.cylindar__wrapper {
+  width: 100%;
+  height: 100svh;
+  position: relative;
+  perspective: 70vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cylindar__text__wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  text-align: center;
+}
+
+/* Cylindar ticks columns */
+.scroll-indicator_c {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  pointer-events: none;
+  position: relative;
+}
+
+/* Individual ticks (cylinder only): ensure backface culling and center anchoring for 3D transforms */
+.scroll-indicator_c .scroll-tick {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-style: preserve-3d;
+}
+
+.cylindar__text__item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  backface-visibility: hidden;
+}
+
+.scroll-indicator_c .scroll-tick {
+  /* width: 16px; */
+  height: 1.5px;
+  background-color: var(--primary);
+}
+
+.cursor-pointer.is-white .cursor-pointer_inner {
+  background-color: var(--white);
+}
+
+.cursor-pointer.is-white .cursor-pointer_label,
+.cursor-pointer.is-white .read-icon {
+  color: var(--primary);
+}
+
 @media (min-width: 991px) {
   .processes .process:first-child .process-infos {
     padding-top: 0;

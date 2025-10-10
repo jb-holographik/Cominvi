@@ -6,6 +6,7 @@ import { initAbout } from './about-us.js'
 import { blogArticleInit } from './blog-article.js'
 import { initBlog } from './blog.js'
 import { initContact } from './contact.js'
+import { initCylinder } from './cylinder.js'
 import { initTeam } from './join-the-team.js'
 import { initMap } from './map.js'
 import { initMinerals } from './minerals.js'
@@ -467,6 +468,11 @@ export function initializePageTransitionNav() {
           initTestimonials()
           initTextDisplayReveal()
           try {
+            initCylinder(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             initSticky50(next && next.container)
           } catch (e) {
             /* ignore */
@@ -640,6 +646,11 @@ export function initializePageTransitionNav() {
           initTestimonials()
           initTextDisplayReveal()
           try {
+            initCylinder(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             initSticky50(next && next.container)
           } catch (e) {
             /* ignore */
@@ -812,6 +823,11 @@ export function initializePageTransitionNav() {
           initProcessProgression(next && next.container)
           initTestimonials()
           initTextDisplayReveal()
+          try {
+            initCylinder(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
           try {
             initSticky50(next && next.container)
           } catch (e) {

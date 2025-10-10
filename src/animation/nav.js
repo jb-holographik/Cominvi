@@ -490,10 +490,75 @@ export function animateNavbarSpreadForGrid(isOpen, root = document) {
   }
 }
 
+// Hover animation for the main logo
+function initializeLogoHover(root = document) {
+  try {
+    const scope = root && root.querySelector ? root : document
+    const logoMain = scope.querySelector('.is-logo_main')
+    if (!logoMain) return
+
+    const t1 = logoMain.querySelector('.is-t-1')
+    const t2 = logoMain.querySelector('.is-t-2')
+    const t1Paths = t1 ? t1.querySelectorAll('.logo-path') : []
+    const t2Paths = t2 ? t2.querySelectorAll('.logo-path') : []
+
+    // Initial states
+    if (t1) gsap.set(t1, { yPercent: 0, overwrite: 'auto' })
+    if (t2) gsap.set(t2, { yPercent: 0, overwrite: 'auto' })
+    if (t1Paths && t1Paths.length)
+      gsap.set(t1Paths, { yPercent: 0, overwrite: 'auto' })
+    if (t2Paths && t2Paths.length)
+      gsap.set(t2Paths, { yPercent: 100, overwrite: 'auto' }) // .is-t-2 .logo-path -> 100%
+
+    const duration = 0.5
+    const ease = CustomEase.create('custom', 'M0,0 C0.51,0 0,1 1,1')
+    let isAnimating = false
+
+    const onEnter = () => {
+      if (isAnimating) return
+      isAnimating = true
+      const tl = gsap.timeline({
+        defaults: { duration, ease, overwrite: 'auto' },
+        onComplete: () => {
+          // Reset to initial positions
+          if (t1) gsap.set(t1, { yPercent: 0, overwrite: 'auto' })
+          if (t2) gsap.set(t2, { yPercent: 0, overwrite: 'auto' })
+          if (t1Paths && t1Paths.length)
+            gsap.set(t1Paths, { yPercent: 0, overwrite: 'auto' })
+          if (t2Paths && t2Paths.length)
+            gsap.set(t2Paths, { yPercent: 100, overwrite: 'auto' })
+          isAnimating = false
+        },
+      })
+
+      if (t1) tl.to(t1, { yPercent: -120 }, 0)
+      if (t2) tl.to(t2, { yPercent: -100 }, 0)
+
+      const allPaths = [...t1Paths, ...t2Paths]
+      if (allPaths.length) {
+        tl.to(allPaths, { yPercent: -42, stagger: { each: 0.03 } }, 0)
+      }
+    }
+
+    try {
+      if (logoMain.__logoHoverEnter) {
+        logoMain.removeEventListener('mouseenter', logoMain.__logoHoverEnter)
+      }
+    } catch (e) {
+      // ignore
+    }
+    logoMain.__logoHoverEnter = onEnter
+    logoMain.addEventListener('mouseenter', onEnter)
+  } catch (e) {
+    // ignore
+  }
+}
+
 export function initializeNav2(root = document) {
   initializeMenuClick({}, root)
   initializeNavbarScroll(root)
   initializeThemeController()
+  initializeLogoHover(root)
   // Keep navbar base offsets in sync with breakpoint changes when menu is closed
   try {
     const onResizeRebase = () => {

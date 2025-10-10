@@ -162,15 +162,17 @@ export function initTestimonials(root = document) {
 
     let activeIndex = 0
 
-    const setActiveIndex = (i) => {
+    const setActiveIndex = (i, animateIndicator = true) => {
       if (i === activeIndex) return
       // Move indicator with GSAP
-      gsap.to(indicator, {
-        duration: 0.5,
-        xPercent: i * 110,
-        ease: 'custom',
-        overwrite: 'auto',
-      })
+      if (animateIndicator) {
+        gsap.to(indicator, {
+          duration: 0.6,
+          xPercent: i * 110,
+          ease: 'custom',
+          overwrite: 'auto',
+        })
+      }
 
       // Option visual state per provided snippet
       options.forEach((o) => o.classList.remove('active'))
@@ -193,13 +195,13 @@ export function initTestimonials(root = document) {
           const textEls = getTestimonialTextElements(next)
           animateElementsLinesStaggered(textEls)
           gsap.to(prev, {
-            duration: 0.5,
+            duration: 0.6,
             opacity: 0,
             ease: 'custom',
             overwrite: 'auto',
           })
           gsap.to(next, {
-            duration: 0.5,
+            duration: 0.6,
             opacity: 1,
             ease: 'custom',
             overwrite: 'auto',
@@ -217,6 +219,8 @@ export function initTestimonials(root = document) {
     })
     activeIndex = initial
     setInitialVisibility(initial)
+    // Ensure indicator reflects initial position without animation
+    gsap.set(indicator, { xPercent: initial * 110 })
 
     // Auto-toggle when in view every 5 seconds
     let autoToggleInterval = null
@@ -247,10 +251,39 @@ export function initTestimonials(root = document) {
     observer.observe(container)
 
     options.forEach((opt, i) => {
+      // Animate indicator on hover
+      opt.addEventListener('mouseenter', () => {
+        gsap.to(indicator, {
+          duration: 0.6,
+          xPercent: i * 110,
+          ease: 'custom',
+          overwrite: 'auto',
+        })
+        // Eyebrow (toggle-id) color preview on hover
+        toggleIds.forEach((idEl) => idEl.classList.remove('is-active'))
+        toggleIds[i]?.classList.add('is-active')
+      })
+
+      // Switch testimonial on click without animating indicator (indicator handled by hover)
       opt.addEventListener('click', () => {
         stopAutoToggle()
-        setActiveIndex(i)
+        setActiveIndex(i, false)
         startAutoToggle()
+      })
+    })
+
+    // When leaving the toggle area, return indicator to the active index
+    container.addEventListener('mouseleave', () => {
+      gsap.to(indicator, {
+        duration: 0.6,
+        xPercent: activeIndex * 110,
+        ease: 'custom',
+        overwrite: 'auto',
+      })
+      // Restore eyebrow (toggle-id) color to actual active
+      toggleIds.forEach((idEl, idx) => {
+        if (idx === activeIndex) idEl.classList.add('is-active')
+        else idEl.classList.remove('is-active')
       })
     })
   })

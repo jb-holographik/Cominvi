@@ -491,6 +491,48 @@ export function initTechnology(root = document) {
                 // ignore
               }
             })
+            .add(() => {
+              // After showing list view, force a sync of measurements and ScrollTrigger
+              try {
+                if (!isGrid) {
+                  try {
+                    setItemHeightFromName()
+                  } catch (_) {
+                    // ignore
+                  }
+                  try {
+                    measureSteps()
+                    updateWrapperHeight()
+                  } catch (_) {
+                    // ignore
+                  }
+                  try {
+                    st.refresh()
+                  } catch (_) {
+                    try {
+                      ScrollTrigger.refresh()
+                    } catch (__) {
+                      // ignore
+                    }
+                  }
+                  try {
+                    imagesStepPx = getImagesBasePx()
+                    const dist = getCurrentDistance()
+                    setImagesByDistance(dist)
+                    try {
+                      const idx = getNearestStepForScroll(dist)
+                      markActiveImage(idx)
+                    } catch (___) {
+                      // ignore
+                    }
+                  } catch (____) {
+                    // ignore
+                  }
+                }
+              } catch (syncErr) {
+                // ignore
+              }
+            })
           tl.eventCallback('onComplete', () => {
             modeTl = null
           })

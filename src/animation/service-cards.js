@@ -43,22 +43,94 @@ export function initServiceCards(root = document) {
     const isTablet = isTabletOrBelowNow()
     try {
       if (!isTablet) {
-        bloc.style.transition = 'none'
-        const rect = desc.getBoundingClientRect()
-        const h =
-          rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
-        bloc.style.transform = `translateY(${h}px)`
-        void bloc.offsetWidth
-        bloc.style.transition = 'transform 0.5s ease, opacity 0.3s ease'
+        // Desktop: new reveal behavior
+        // 1) Position .body-l visually at the bottom of .card-inner
+        const bodyL = bloc.querySelector('.body-l')
+        if (bodyL) {
+          const blocRect = bloc.getBoundingClientRect()
+          const bodyLRect = bodyL.getBoundingClientRect()
+          // Compute remaining space below .body-l inside the bloc
+          const offsetWithinBloc = bodyLRect.bottom - blocRect.bottom
+          const distanceToBottom = Math.max(0, Math.round(-offsetWithinBloc))
+          bodyL.__svcBottomOffsetPx = distanceToBottom
+          bodyL.style.transition = 'transform 0.8s cubic-bezier(0.5, 0, 0, 1)'
+          bodyL.style.transform = `translateY(${distanceToBottom}px)`
+        }
+
+        // 2) Split .desc .body-s into lines and set initial translateY(100%)
+        const small = desc.querySelector('.body-s')
+        if (small) {
+          try {
+            if (
+              small.__splitLines &&
+              typeof small.__splitLines.revert === 'function'
+            ) {
+              small.__splitLines.revert()
+              small.__splitLines = null
+              small.__lines = null
+            }
+            const split = new SplitType(small, {
+              types: 'lines',
+              tagName: 'span',
+            })
+            small.__splitLines = split
+            small.__lines = split.lines || []
+            const inners = []
+            small.__lines.forEach((line) => {
+              line.style.display = 'block'
+              line.style.overflow = 'hidden'
+              if (!line.__inner) {
+                const inner = document.createElement('span')
+                inner.className = 'line-inner'
+                inner.style.display = 'inline-block'
+                while (line.firstChild) inner.appendChild(line.firstChild)
+                line.appendChild(inner)
+                line.__inner = inner
+              }
+              inners.push(line.__inner)
+            })
+            inners.forEach((el) => {
+              el.style.transform = 'translateY(100%)'
+              el.style.willChange = 'transform'
+              el.style.transition = 'transform 0.8s cubic-bezier(0.5, 0, 0, 1)'
+            })
+            small.__lineInners = inners
+          } catch (e) {
+            // ignore
+          }
+        }
       } else {
+        // Mobile/tablet: reset transforms
         bloc.style.transition = ''
         bloc.style.transform = ''
         bloc.style.willChange = ''
+        const bodyL = bloc.querySelector('.body-l')
+        if (bodyL) {
+          bodyL.style.transition = ''
+          bodyL.style.transform = ''
+        }
+        const small = desc.querySelector('.body-s')
+        if (small) {
+          // Revert split if present
+          try {
+            if (
+              small.__splitLines &&
+              typeof small.__splitLines.revert === 'function'
+            ) {
+              small.__splitLines.revert()
+              small.__splitLines = null
+              small.__lines = null
+              small.__lineInners = null
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
       }
       const existing = card.style.transition?.trim()
       card.style.transition = existing
-        ? `${existing}, background-color 0.3s ease`
-        : 'background-color 0.3s ease'
+        ? `${existing}, background-color 0.8s cubic-bezier(0.5, 0, 0, 1)`
+        : 'background-color 0.8s cubic-bezier(0.5, 0, 0, 1)'
       if (!card.style.backgroundColor) {
         card.style.backgroundColor = 'var(--white)'
       }
@@ -83,27 +155,102 @@ export function initServiceCards(root = document) {
       isTabletOrBelow = false
     }
 
-    // Set initial hidden state (no flicker on arrival)
+    // Set initial reveal state (no flicker on arrival)
     try {
       if (!isTabletOrBelow) {
-        bloc.style.transition = 'none'
-        const rect = desc.getBoundingClientRect()
-        const h =
-          rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
-        bloc.style.transform = `translateY(${h}px)`
-        void bloc.offsetWidth
-        bloc.style.transition = 'transform 0.5s ease, opacity 0.3s ease'
+        // Desktop: bottom-align .body-l instantly, prepare .body-s lines
+        const bodyL = bloc.querySelector('.body-l')
+        if (bodyL) {
+          // Measure natural position without transform
+          bodyL.style.transform = ''
+          const blocRect = bloc.getBoundingClientRect()
+          const bodyLRect = bodyL.getBoundingClientRect()
+          const offsetWithinBloc = bodyLRect.bottom - blocRect.bottom
+          const distanceToBottom = Math.max(0, Math.round(-offsetWithinBloc))
+          bodyL.__svcBottomOffsetPx = distanceToBottom
+          // Set instantly (no animation), then re-enable transition
+          const prevTransition = bodyL.style.transition
+          bodyL.style.transition = 'none'
+          bodyL.style.transform = `translateY(${distanceToBottom}px)`
+          void bodyL.offsetWidth
+          bodyL.style.transition =
+            prevTransition || 'transform 0.8s cubic-bezier(0.5, 0, 0, 1)'
+          // restore previous inline transform var if any (not needed here)
+        }
+
+        const smallNodes = Array.from(desc.querySelectorAll('.body-s'))
+        smallNodes.forEach((small) => {
+          try {
+            if (
+              small.__splitLines &&
+              typeof small.__splitLines.revert === 'function'
+            ) {
+              small.__splitLines.revert()
+              small.__splitLines = null
+              small.__lines = null
+            }
+            const split = new SplitType(small, {
+              types: 'lines',
+              tagName: 'span',
+            })
+            small.__splitLines = split
+            small.__lines = split.lines || []
+            const inners = []
+            small.__lines.forEach((line) => {
+              line.style.display = 'block'
+              line.style.overflow = 'hidden'
+              if (!line.__inner) {
+                const inner = document.createElement('span')
+                inner.className = 'line-inner'
+                inner.style.display = 'inline-block'
+                while (line.firstChild) inner.appendChild(line.firstChild)
+                line.appendChild(inner)
+                line.__inner = inner
+              }
+              inners.push(line.__inner)
+            })
+            inners.forEach((el) => {
+              el.style.transform = 'translateY(100%)'
+              el.style.willChange = 'transform'
+              el.style.transition = 'transform 0.8s cubic-bezier(0.5, 0, 0, 1)'
+            })
+            small.__lineInners = inners
+          } catch (e) {
+            // ignore
+          }
+        })
       } else {
-        // On tablet/mobile: no transform on .card-inner
+        // On tablet/mobile: reset transforms and revert splits
         bloc.style.transition = ''
         bloc.style.transform = ''
         bloc.style.willChange = ''
+        const bodyL = bloc.querySelector('.body-l')
+        if (bodyL) {
+          bodyL.style.transition = ''
+          bodyL.style.transform = ''
+        }
+        const smallNodes = Array.from(desc.querySelectorAll('.body-s'))
+        smallNodes.forEach((small) => {
+          try {
+            if (
+              small.__splitLines &&
+              typeof small.__splitLines.revert === 'function'
+            ) {
+              small.__splitLines.revert()
+              small.__splitLines = null
+              small.__lines = null
+              small.__lineInners = null
+            }
+          } catch (e) {
+            // ignore
+          }
+        })
       }
       // Prepare background-color transition on the card itself
       const existing = card.style.transition?.trim()
       card.style.transition = existing
-        ? `${existing}, background-color 0.3s ease`
-        : 'background-color 0.3s ease'
+        ? `${existing}, background-color 0.8s cubic-bezier(0.5, 0, 0, 1)`
+        : 'background-color 0.8s cubic-bezier(0.5, 0, 0, 1)'
       // Ensure initial bg is white
       if (!card.style.backgroundColor) {
         card.style.backgroundColor = 'var(--white)'
@@ -112,38 +259,55 @@ export function initServiceCards(root = document) {
       // ignore
     }
     if (!isTabletOrBelow) {
+      const small = desc.querySelector('.body-s')
+      const bodyL = bloc.querySelector('.body-l')
+      const STAGGER_S = 0.03
+      const animateSmallLines = (to) => {
+        if (!small || !small.__lineInners) return
+        small.__lineInners.forEach((el, i) => {
+          el.style.transitionDelay = `${i * STAGGER_S}s`
+          el.style.transform = `translateY(${to})`
+        })
+      }
+      const moveBodyL = (toPx) => {
+        if (!bodyL) return
+        bodyL.style.transition = 'transform 0.8s cubic-bezier(0.5, 0, 0, 1)'
+        bodyL.style.transform = `translateY(${toPx}px)`
+      }
+
       card.addEventListener('mouseenter', () => {
         if (isTabletOrBelowNow()) return
-        const height = desc.getBoundingClientRect().height
-        bloc.style.transition = 'transform 0.5s ease'
-        bloc.style.transform = `translateY(${height}px)`
-        // Force reflow pour que la transition parte bien du bas
-        void desc.offsetWidth
-        bloc.style.transform = 'translateY(0)'
+        moveBodyL(0)
+        animateSmallLines('0%')
         // bg to accent on hover
         card.style.backgroundColor = 'var(--accent)'
       })
       card.addEventListener('mouseleave', () => {
         if (isTabletOrBelowNow()) return
-        const rect = desc.getBoundingClientRect()
-        const height =
-          rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
-        bloc.style.transform = `translateY(${height}px)`
+        let back = 0
+        if (bodyL && typeof bodyL.__svcBottomOffsetPx === 'number') {
+          back = bodyL.__svcBottomOffsetPx
+        }
+        moveBodyL(back)
+        animateSmallLines('100%')
         // bg back to white
         card.style.backgroundColor = 'var(--white)'
       })
       // Pointer events for broader support
       card.addEventListener('pointerenter', () => {
         if (isTabletOrBelowNow()) return
-        bloc.style.transform = 'translateY(0)'
+        moveBodyL(0)
+        animateSmallLines('0%')
         card.style.backgroundColor = 'var(--accent)'
       })
       card.addEventListener('pointerleave', () => {
         if (isTabletOrBelowNow()) return
-        const rect = desc.getBoundingClientRect()
-        const height =
-          rect.height + parseFloat(getComputedStyle(desc).fontSize || '16') * 2
-        bloc.style.transform = `translateY(${height}px)`
+        let back = 0
+        if (bodyL && typeof bodyL.__svcBottomOffsetPx === 'number') {
+          back = bodyL.__svcBottomOffsetPx
+        }
+        moveBodyL(back)
+        animateSmallLines('100%')
         card.style.backgroundColor = 'var(--white)'
       })
 
@@ -248,6 +412,90 @@ export function initServiceCards(root = document) {
     try {
       const allCards = scope.querySelectorAll('.service-card')
       allCards.forEach((c) => updateServiceCardBaseState(c))
+      // Recompute .body-l bottom offsets and rebuild .body-s splits for desktop
+      allCards.forEach((card) => {
+        const desc = card.querySelector('.desc')
+        const bloc = card.querySelector('.card-inner') || desc
+        if (!desc || !bloc) return
+        if (isTabletOrBelowNow()) {
+          const bodyL = bloc.querySelector('.body-l')
+          if (bodyL) {
+            bodyL.style.transition = ''
+            bodyL.style.transform = ''
+          }
+          const smallNodes = Array.from(desc.querySelectorAll('.body-s'))
+          smallNodes.forEach((small) => {
+            try {
+              if (
+                small.__splitLines &&
+                typeof small.__splitLines.revert === 'function'
+              ) {
+                small.__splitLines.revert()
+                small.__splitLines = null
+                small.__lines = null
+                small.__lineInners = null
+              }
+            } catch (e) {
+              // ignore
+            }
+          })
+          return
+        }
+        const bodyL = bloc.querySelector('.body-l')
+        if (bodyL) {
+          bodyL.style.transform = ''
+          const blocRect = bloc.getBoundingClientRect()
+          const bodyLRect = bodyL.getBoundingClientRect()
+          const offsetWithinBloc = bodyLRect.bottom - blocRect.bottom
+          const distanceToBottom = Math.max(0, Math.round(-offsetWithinBloc))
+          bodyL.__svcBottomOffsetPx = distanceToBottom
+          bodyL.style.transition = 'none'
+          bodyL.style.transform = `translateY(${distanceToBottom}px)`
+          void bodyL.offsetWidth
+          bodyL.style.transition = 'transform 0.5s ease'
+        }
+        const smallNodes = Array.from(desc.querySelectorAll('.body-s'))
+        smallNodes.forEach((small) => {
+          try {
+            if (
+              small.__splitLines &&
+              typeof small.__splitLines.revert === 'function'
+            ) {
+              small.__splitLines.revert()
+              small.__splitLines = null
+              small.__lines = null
+            }
+            const split = new SplitType(small, {
+              types: 'lines',
+              tagName: 'span',
+            })
+            small.__splitLines = split
+            small.__lines = split.lines || []
+            const inners = []
+            small.__lines.forEach((line) => {
+              line.style.display = 'block'
+              line.style.overflow = 'hidden'
+              if (!line.__inner) {
+                const inner = document.createElement('span')
+                inner.className = 'line-inner'
+                inner.style.display = 'inline-block'
+                while (line.firstChild) inner.appendChild(line.firstChild)
+                line.appendChild(inner)
+                line.__inner = inner
+              }
+              inners.push(line.__inner)
+            })
+            inners.forEach((el) => {
+              el.style.transform = 'translateY(100%)'
+              el.style.willChange = 'transform'
+              el.style.transition = 'transform 0.4s ease'
+            })
+            small.__lineInners = inners
+          } catch (e) {
+            // ignore
+          }
+        })
+      })
 
       const machineCards = scope.querySelectorAll('.machine-card')
       machineCards.forEach((card) => {
@@ -478,11 +726,11 @@ export function serviceCardsHover(root = document) {
   }
 
   const images = Array.from(viewer.querySelectorAll('.service-image'))
-  const OPACITY_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)'
+  const OPACITY_EASING = 'cubic-bezier(0.5, 0, 0, 1)'
   const viewerButton = viewer.querySelector('.button')
   // Ensure base state
   images.forEach((img) => {
-    img.style.transition = `opacity 0.5s ${OPACITY_EASING}`
+    img.style.transition = `opacity 0.8s ${OPACITY_EASING}`
     if (!img.style.position) {
       // don't force; assume CSS sets absolute if already configured
     }
@@ -504,9 +752,47 @@ export function serviceCardsHover(root = document) {
 
   // Button initial state: visible when no image is shown
   if (viewerButton) {
-    viewerButton.style.transition = `opacity 0.5s ${OPACITY_EASING}`
+    viewerButton.style.transition = `opacity 0.8s ${OPACITY_EASING}`
     viewerButton.style.opacity = '1'
     viewerButton.style.display = 'block'
+  }
+
+  // Section variant .section_services.is-2: disable hover-driven image reveal entirely
+  const disableHoverForThisViewer = !!(
+    viewer.closest && viewer.closest('.section_services.is-2')
+  )
+  if (disableHoverForThisViewer) {
+    const fixedImage = viewer.querySelector('.service-image.is-4')
+    // Ensure current state respects the rule: .service-image.is-4 must not be display:none
+    if (fixedImage) {
+      fixedImage.style.display = 'block'
+      fixedImage.style.opacity = '1'
+      fixedImage.style.zIndex = '2'
+    }
+    if (!viewer.__svcViewerNoHoverResizeBound) {
+      const onResize = debounce(() => {
+        images.forEach((img) => {
+          img.style.transition = `opacity 0.8s ${OPACITY_EASING}`
+          if (fixedImage && img === fixedImage) {
+            img.style.display = 'block'
+            img.style.opacity = '1'
+            img.style.zIndex = '2'
+          } else {
+            img.style.opacity = '0'
+            img.style.zIndex = '0'
+            img.style.display = 'none'
+          }
+        })
+        if (viewerButton) {
+          viewerButton.style.display = 'block'
+          viewerButton.style.opacity = '1'
+        }
+      }, 150)
+      window.addEventListener('resize', onResize)
+      viewer.__svcViewerNoHoverResizeBound = true
+    }
+    viewer.__serviceViewerBound = true
+    return
   }
 
   // Button initial state handled above; if mobile, don't bind hover handlers
@@ -515,7 +801,7 @@ export function serviceCardsHover(root = document) {
       const onResize = debounce(() => {
         // Re-apply base state when viewport crosses breakpoints
         images.forEach((img) => {
-          img.style.transition = `opacity 0.5s ${OPACITY_EASING}`
+          img.style.transition = `opacity 0.8s ${OPACITY_EASING}`
           img.style.opacity = '0'
           img.style.zIndex = '0'
           img.style.display = 'none'

@@ -446,6 +446,10 @@ h1 > .is-h1-span-wrap:last-child > span {
   color: var(--primary);
 }
 
+.section_services.is-2 .service-image.is-4 {
+  display: block;
+}
+
 @media (min-width: 991px) {
   .processes .process:first-child .process-infos {
     padding-top: 0;

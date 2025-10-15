@@ -70,8 +70,9 @@ export function initLenis(root = document) {
         height: window.innerHeight,
       }
     },
-    pinType:
-      getComputedStyle(wrapper).transform !== 'none' ? 'transform' : 'fixed',
+    // Always use transform-based pinning because `.page-wrap` is animated/scaled
+    // by the menu, and "fixed" pinning breaks inside transformed ancestors.
+    pinType: 'transform',
   })
 
   // Default all ScrollTriggers to use the Lenis wrapper as scroller

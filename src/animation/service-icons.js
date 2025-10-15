@@ -42,7 +42,7 @@ export function initIcons(root = document) {
 
     const icons = Array.from(
       scope.querySelectorAll(
-        '.service-card .service-icon_icon, .team-card .service-icon_icon, .service-card [data-lottie], .team-card [data-lottie]'
+        '.service-card .service-icon_icon, .team-card .service-icon_icon, .stats-card .service-icon_icon, .service-card [data-lottie], .team-card [data-lottie], .stats-card [data-lottie]'
       )
     )
     try {
@@ -61,7 +61,7 @@ export function initIcons(root = document) {
           const waitObs = new MutationObserver(() => {
             try {
               const found = scope.querySelector(
-                '.service-card .service-icon_icon, .team-card .service-icon_icon'
+                '.service-card .service-icon_icon, .team-card .service-icon_icon, .stats-card .service-icon_icon'
               )
               if (found) {
                 waitObs.disconnect()
@@ -152,8 +152,7 @@ export function initIcons(root = document) {
         // Resolve path from data-lottie (URL or id) or legacy WF attributes
         let path = null
         try {
-          const dl =
-            icon && icon.getAttribute && icon.getAttribute('data-lottie')
+          const dl = icon?.getAttribute?.('data-lottie')
           if (dl) {
             if (/^(https?:)?\/\//i.test(dl) || (dl && dl.startsWith('/')))
               path = dl
@@ -251,13 +250,10 @@ export function initIcons(root = document) {
 
     const bindIcon = (icon) => {
       if (!icon || icon.__svcIconBound) return
-      const card = icon.closest('.service-card, .team-card') || icon
+      const card =
+        icon.closest('.service-card, .team-card, .stats-card') || icon
       // const debugId =
       //   icon.getAttribute('data-w-id') || icon.getAttribute('data-src') || ''
-
-      const firstEnd = 90
-      const secondStart = 90
-      const secondEnd = 179
 
       const onReadyWrap = (anim, pendingRef) => {
         try {
@@ -271,6 +267,50 @@ export function initIcons(root = document) {
           anim.goToAndStop(0, true)
         } catch (e) {
           // ignore
+        }
+        // Compute segments and speeds once frames are known
+        let total = 0
+        try {
+          total = Math.max(0, Math.floor(anim.totalFrames || 0))
+        } catch (e) {
+          total = 0
+        }
+        // Default midpoint is 50%; allow per-icon override via data-lottie-mid
+        let mid = 0.5
+        try {
+          const midAttr = icon?.getAttribute?.('data-lottie-mid')
+          if (midAttr != null && midAttr !== '') {
+            let v = parseFloat(midAttr)
+            if (Number.isFinite(v)) {
+              if (v > 1) v = v / 100 // allow 0-100 values
+              if (v > 0 && v < 1) mid = v
+            }
+          }
+        } catch (e) {
+          /* ignore */
+        }
+        const firstEndFrame = Math.max(
+          1,
+          Math.min(total - 1, Math.floor(total * mid))
+        )
+        const secondStartFrame = firstEndFrame
+        const secondEndFrame = Math.max(secondStartFrame, total - 1)
+        // Uniform speeds; allow per-icon override
+        let speedIn = 1
+        let speedOut = 1
+        try {
+          const sIn = icon?.getAttribute?.('data-lottie-speed-in')
+          const sOut = icon?.getAttribute?.('data-lottie-speed-out')
+          const s = icon?.getAttribute?.('data-lottie-speed')
+          if (s && Number.isFinite(parseFloat(s)) && parseFloat(s) > 0) {
+            speedIn = speedOut = parseFloat(s)
+          }
+          if (sIn && Number.isFinite(parseFloat(sIn)) && parseFloat(sIn) > 0)
+            speedIn = parseFloat(sIn)
+          if (sOut && Number.isFinite(parseFloat(sOut)) && parseFloat(sOut) > 0)
+            speedOut = parseFloat(sOut)
+        } catch (e) {
+          /* ignore */
         }
         const playFirst = () => {
           try {
@@ -291,7 +331,8 @@ export function initIcons(root = document) {
           }
           try {
             anim.setDirection(1)
-            anim.playSegments([0, firstEnd], true)
+            anim.setSpeed && anim.setSpeed(speedIn)
+            anim.playSegments([0, firstEndFrame], true)
           } catch (e) {
             /* ignore */
           }
@@ -316,7 +357,8 @@ export function initIcons(root = document) {
           }
           try {
             anim.setDirection(1)
-            anim.playSegments([secondStart, secondEnd], true)
+            anim.setSpeed && anim.setSpeed(speedOut)
+            anim.playSegments([secondStartFrame, secondEndFrame], true)
           } catch (e) {
             /* ignore */
           }
@@ -699,7 +741,7 @@ export function resetServiceCardIcons(root = document) {
     const scope = root && root.querySelector ? root : document
     const icons = Array.from(
       scope.querySelectorAll(
-        '.service-card .service-icon_icon, .team-card .service-icon_icon'
+        '.service-card .service-icon_icon, .team-card .service-icon_icon, .stats-card .service-icon_icon'
       )
     )
     if (!icons.length) return
@@ -814,7 +856,7 @@ export function destroyIcons(root = document) {
 
     const icons = Array.from(
       scope.querySelectorAll(
-        '.service-card .service-icon_icon, .team-card .service-icon_icon'
+        '.service-card .service-icon_icon, .team-card .service-icon_icon, .stats-card .service-icon_icon'
       )
     )
     const getAnimForIcon = (icon) => {

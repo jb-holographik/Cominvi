@@ -9,7 +9,6 @@ import {
   resetOverlayClipBaseState,
   createClipForHost,
   resetHostClipBaseState,
-  tweenHostClipSlideX,
 } from './svg-clip-overlay.js'
 
 gsap.registerPlugin(CustomEase)
@@ -166,6 +165,49 @@ export function slideScaleLeave({ current }) {
     typeof window !== 'undefined' &&
     window.matchMedia &&
     window.matchMedia('(max-width: 991px)').matches
+  // Compute side margin px using the same logic as clip overlay to keep parity
+  function computeRootFontPx() {
+    try {
+      const cs =
+        window.getComputedStyle &&
+        window.getComputedStyle(document.documentElement)
+      const n = parseFloat((cs && cs.fontSize) || '16')
+      return Number.isFinite(n) ? n : 16
+    } catch (e) {
+      return 16
+    }
+  }
+  function computeSiteMarginPx(rootPx) {
+    try {
+      const body = document.body || document.documentElement
+      const cs = window.getComputedStyle && window.getComputedStyle(body)
+      const val = (cs && cs.getPropertyValue('--_spacings---site-margin')) || ''
+      const trimmed = String(val || '').trim()
+      if (trimmed) {
+        if (trimmed.endsWith('px')) {
+          const n = parseFloat(trimmed)
+          if (Number.isFinite(n)) return n
+        }
+        if (trimmed.endsWith('em')) {
+          const em = parseFloat(trimmed)
+          const basePx = parseFloat((cs && cs.fontSize) || String(rootPx || 16))
+          const base = Number.isFinite(basePx) ? basePx : 16
+          if (Number.isFinite(em)) return em * base
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    const base = Number.isFinite(rootPx) ? rootPx : 16
+    return (isTabletOrMobile ? 1 : 2) * base
+  }
+  const rootFontPx = computeRootFontPx()
+  const sideMarginPx = computeSiteMarginPx(rootFontPx)
+  try {
+    window.__ptSideMarginPx = sideMarginPx
+  } catch (e) {
+    // ignore
+  }
   gsap.set(currentPage, { transformOrigin: '50% 0%' })
 
   const tl = gsap.timeline()
@@ -196,11 +238,10 @@ export function slideScaleLeave({ current }) {
     currentPage,
     {
       top: baseTopPx,
-      // keep scale change as previously defined by nav-open parity
-      // remove if not needed
+      // Scale computed from the same side margins as the clip window
       scale:
-        Math.max(0, viewportWidth - (isTabletOrMobile ? 32 : 64)) > 0
-          ? (viewportWidth - (isTabletOrMobile ? 32 : 64)) / viewportWidth
+        Math.max(0, viewportWidth - sideMarginPx * 2) > 0
+          ? (viewportWidth - sideMarginPx * 2) / viewportWidth
           : 1,
       borderRadius: '1rem',
       duration: preDur,
@@ -210,11 +251,32 @@ export function slideScaleLeave({ current }) {
     0
   )
   // Phase 2: slide out current page
-  tl.to(currentPage, {
-    xPercent: -100,
-    duration: slideDur,
-    ease: gsap.parseEase(`custom(${easeCurve})`),
-  })
+  tl.addLabel('leave-slide', preDur)
+  tl.call(
+    () => {
+      try {
+        window.dispatchEvent(new CustomEvent('pt-leave-slide-start'))
+      } catch (e) {
+        // ignore
+      }
+    },
+    [],
+    'leave-slide'
+  )
+  tl.to(
+    currentPage,
+    {
+      // Déplacement géométrique simple: 100vw - 2em (sans compensation de pre-scale)
+      x: (function () {
+        const twoEmPx = 1 * (Number.isFinite(rootFontPx) ? rootFontPx : 16)
+        const distancePx = Math.max(0, viewportWidth - twoEmPx)
+        return -distancePx
+      })(),
+      duration: slideDur,
+      ease: gsap.parseEase(`custom(${easeCurve})`),
+    },
+    'leave-slide'
+  )
   // Animate page-info: during position move to top (y:0), then lift up during slide
   tl.to(
     '.page-info_inner',
@@ -284,6 +346,29 @@ export function slideScaleEnter({ next }) {
   tl.addLabel('lift', liftStart)
   tl.addLabel('descale', descaleStart)
 
+  // Ensure menu-icon shows a primary border during the first phase (before descale)
+  tl.call(
+    () => {
+      try {
+        const el = document.querySelector('.menu-icon')
+        const bars = document.querySelectorAll('.menu-icon_bar')
+        if (el) {
+          gsap.set(el, { borderColor: 'var(--primary)', overwrite: 'auto' })
+        }
+        if (bars && bars.length) {
+          gsap.set(bars, {
+            backgroundColor: 'var(--primary)',
+            overwrite: 'auto',
+          })
+        }
+      } catch (e) {
+        // ignore
+      }
+    },
+    [],
+    0
+  )
+
   // Ensure the mask is applied to destination as soon as it appears (t=0)
   tl.call(
     () => {
@@ -310,6 +395,27 @@ export function slideScaleEnter({ next }) {
               const clip = createClipForHost(host, { repeat: 0, yoyo: false })
               if (clip) {
                 resetHostClipBaseState(host, baseTopPx)
+                try {
+                  const rect2 = host.getBoundingClientRect()
+                  let measured = 0
+                  if (
+                    rect2 &&
+                    Number.isFinite(rect2.width) &&
+                    rect2.width > 0
+                  ) {
+                    measured = rect2.width
+                  } else if (
+                    typeof window !== 'undefined' &&
+                    Number.isFinite(window.innerWidth) &&
+                    window.innerWidth > 0
+                  ) {
+                    measured = window.innerWidth
+                  }
+                  const hostW = measured > 1 ? measured : 1
+                  window.__ptDestW = hostW
+                } catch (e) {
+                  // ignore
+                }
                 // eslint-disable-next-line no-console
                 console.debug('[host-clip] init@enter ready', {
                   tries,
@@ -332,45 +438,74 @@ export function slideScaleEnter({ next }) {
   // Destination appears without pre-scale or top offset (no incoming slide)
   gsap.set(nextPage, { transformOrigin: '50% 0%' })
 
-  // Prepare and slide the clip window horizontally during 'lift'
+  // Démarrer le slide de la fenêtre de clip au même label 'lift' et sur la même timeline
+  const clipProxy = { x: 1 }
+  let clipTargetX = 0
+  // Remettre la géométrie du clip à l'instant 'lift' puis animer via le même timeline
   tl.call(
     () => {
       try {
         const host = nextPage
-        if (host) {
-          const clip = createClipForHost(host, { repeat: 0, yoyo: false })
-          if (clip && clip.animState) {
-            // Reset to base state first
-            resetHostClipBaseState(host, baseTopPx)
-            // Capture target base x (2em normalized)
-            const targetX = clip.animState.x
-            // Start from offscreen right: left = 100vw -> x = 1
-            clip.animState.x = 1
-            try {
-              const rectEl = clip.clipRect
-              if (rectEl) {
-                const derivedY = 1 - clip.animState.h
-                rectEl.setAttribute('x', String(clip.animState.x))
-                rectEl.setAttribute('y', String(derivedY))
-                rectEl.setAttribute('width', String(clip.animState.w))
-                rectEl.setAttribute('height', String(clip.animState.h))
-                rectEl.setAttribute('rx', String(clip.animState.r))
-                rectEl.setAttribute('ry', String(clip.animState.r))
-              }
-            } catch (e) {
-              // ignore
-            }
-            // Slide window from 100vw to 2em
-            tweenHostClipSlideX(host, targetX, liftDur, `custom(${easeCurve})`)
-          }
+        if (!host) return
+        let clip = host.__clip
+        if (!clip) {
+          clip = createClipForHost(host, { repeat: 0, yoyo: false })
         }
-      } catch (err) {
+        if (clip && clip.animState) {
+          resetHostClipBaseState(host, baseTopPx)
+          try {
+            clipTargetX = clip.animState.x || 0
+          } catch (e2) {
+            clipTargetX = 0
+          }
+          clip.animState.x = 1
+        }
+      } catch (e) {
         // ignore
       }
     },
     [],
     'lift'
   )
+  tl.to(
+    clipProxy,
+    {
+      x: () => clipTargetX,
+      duration: slideDur,
+      ease: gsap.parseEase(`custom(${easeCurve})`),
+      onUpdate: () => {
+        try {
+          const host = nextPage
+          const clip = host && host.__clip
+          if (
+            clip &&
+            clip.animState &&
+            clip.clipPathRect &&
+            clip.buildInsidePath
+          ) {
+            clip.animState.x = clipProxy.x
+            const derivedY = 1 - clip.animState.h
+            clip.clipPathRect.setAttribute(
+              'd',
+              clip.buildInsidePath(
+                clip.animState.x,
+                derivedY,
+                clip.animState.w,
+                clip.animState.h,
+                clip.animState.rX,
+                clip.animState.rY
+              )
+            )
+          }
+        } catch (e) {
+          // ignore
+        }
+      },
+    },
+    'lift'
+  )
+
+  // Note: do not slide the destination container; the clip window handles the perceived slide.
 
   // Apply clip-path directly on destination page at descale (animate to fullscreen)
   tl.call(
@@ -378,7 +513,10 @@ export function slideScaleEnter({ next }) {
       try {
         const host = nextPage
         if (host) {
-          const clip = createClipForHost(host, { repeat: 0, yoyo: false })
+          let clip = host.__clip
+          if (!clip) {
+            clip = createClipForHost(host, { repeat: 0, yoyo: false })
+          }
           if (clip && clip.tl) {
             // Use baseTopPx from leave (page-info height) as the top reference
             resetHostClipBaseState(host, baseTopPx)
@@ -470,6 +608,17 @@ export function slideScaleEnter({ next }) {
         } catch (e) {
           // ignore
         }
+        try {
+          if (
+            window.__theme &&
+            typeof window.__theme.setIconThemeSuppressed === 'function'
+          ) {
+            // Allow icon colors to follow destination theme from descale on
+            window.__theme.setIconThemeSuppressed(false)
+          }
+        } catch (e) {
+          // ignore
+        }
         if (
           window.__theme &&
           typeof window.__theme.setDestination === 'function'
@@ -502,6 +651,7 @@ export function slideScaleEnter({ next }) {
       menuIconElement,
       {
         gap: '5px',
+        rotation: 0,
         duration: liftDur,
         ease: gsap.parseEase(`custom(${easeCurve})`),
       },
@@ -512,6 +662,7 @@ export function slideScaleEnter({ next }) {
     tl.to(
       menuIconBar1,
       {
+        backgroundColor: 'var(--primary)',
         rotation: 0,
         yPercent: 0,
         top: '42%',
@@ -525,6 +676,7 @@ export function slideScaleEnter({ next }) {
     tl.to(
       menuIconBar2,
       {
+        backgroundColor: 'var(--primary)',
         rotation: 0,
         yPercent: 0,
         bottom: '42%',

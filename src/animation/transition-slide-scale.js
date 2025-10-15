@@ -23,6 +23,19 @@ gsap.registerPlugin(CustomEase)
 let lastTopOffsetPx = 0
 const easeCurve = 'M0,0 C0.6,0 0,1 1,1 '
 
+// Récupération sûre du thème destination sans ternaires/parenthèses qui gênent Prettier
+function getDestinationTheme() {
+  try {
+    const api = window.__theme
+    if (!api || typeof api.getThemeFor !== 'function') return null
+    const key = api && api.destinationKey ? api.destinationKey : 'white'
+    const t = api.getThemeFor(key)
+    return t || null
+  } catch (e) {
+    return null
+  }
+}
+
 export function slideScaleLeave({ current }) {
   const currentPage =
     current.container.querySelector('.page-wrap') || current.container
@@ -202,6 +215,27 @@ export function slideScaleEnter({ next }) {
         ) {
           window.__theme.applyDestination(false)
         }
+        // Immediately reflect destination theme on menu-icon during descale
+        try {
+          const theme = getDestinationTheme()
+          const el = document.querySelector('.menu-icon')
+          const bars = document.querySelectorAll('.menu-icon_bar')
+          if (theme && el) {
+            gsap.set(el, {
+              backgroundColor: theme.menuIconBg,
+              borderColor: theme.menuIconBorder,
+              overwrite: 'auto',
+            })
+          }
+          if (theme && bars && bars.length) {
+            gsap.set(bars, {
+              backgroundColor: theme.menuIconBarsBg,
+              overwrite: 'auto',
+            })
+          }
+        } catch (e) {
+          // ignore
+        }
       } catch (err) {
         // ignore
       }
@@ -222,6 +256,7 @@ export function slideScaleEnter({ next }) {
       menuIconElement,
       {
         gap: '5px',
+        rotation: 0,
         duration: 1.2,
         ease: gsap.parseEase(`custom(${easeCurve})`),
       },
@@ -254,6 +289,39 @@ export function slideScaleEnter({ next }) {
       'lift'
     )
   }
+  // Ensure final state after descale: reset icon and bars to initial closed positions
+  tl.call(
+    () => {
+      try {
+        const el = document.querySelector('.menu-icon')
+        const bar1 = document.querySelector(
+          '.menu-icon_bar.is-1, .menu-icon_bar .is-1'
+        )
+        const bar2 = document.querySelector(
+          '.menu-icon_bar.is-2, .menu-icon_bar .is-2'
+        )
+        if (el) gsap.set(el, { rotation: 0, gap: '5px', overwrite: 'auto' })
+        if (bar1)
+          gsap.set(bar1, {
+            rotation: 0,
+            yPercent: 0,
+            top: '42%',
+            overwrite: 'auto',
+          })
+        if (bar2)
+          gsap.set(bar2, {
+            rotation: 0,
+            yPercent: 0,
+            bottom: '42%',
+            overwrite: 'auto',
+          })
+      } catch (e) {
+        // ignore
+      }
+    },
+    [],
+    'lift+=1.2'
+  )
   tl.to(
     [next.container, nextPage],
     {

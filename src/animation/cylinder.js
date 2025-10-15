@@ -168,7 +168,7 @@ export function initCylinder(root = document) {
   } catch (e) {
     // ignore
   }
-  tl.fromTo(textWrapper, { rotateX: 0 }, { rotateX: 160 }, 0)
+  tl.fromTo(textWrapper, { rotateX: 0 }, { rotateX: 150 }, 0)
   // Animer aussi les conteneurs de ticks pour faire tourner l'ensemble du cylindre
   const indicatorNodes = Array.from(
     wrapper.querySelectorAll('.scroll-indicator_c')
@@ -176,18 +176,164 @@ export function initCylinder(root = document) {
   if (indicatorNodes.length)
     tl.fromTo(indicatorNodes, { rotateX: 0 }, { rotateX: 160 }, 0)
 
+  // Enforce a fixed .pin-spacer height on small mobile viewports
+  const getPinSpacer = () => {
+    try {
+      const p = wrapper && wrapper.parentElement
+      if (p && p.classList && p.classList.contains('pin-spacer')) return p
+      const c = wrapper && wrapper.closest && wrapper.closest('.pin-spacer')
+      if (c) return c
+    } catch (e) {
+      // ignore
+    }
+    return null
+  }
+  let spacerObserver = null
+  let spacerObservedNode = null
+  const attachSpacerObserver = (spacer) => {
+    try {
+      if (!spacer || typeof MutationObserver !== 'function') return
+      if (spacerObservedNode === spacer && spacerObserver) return
+      if (spacerObserver) {
+        try {
+          spacerObserver.disconnect()
+        } catch (e) {
+          /* ignore */
+        }
+        spacerObserver = null
+        spacerObservedNode = null
+      }
+      spacerObserver = new MutationObserver(() => {
+        try {
+          enforceSpacerHeight()
+        } catch (e) {
+          /* ignore */
+        }
+      })
+      spacerObserver.observe(spacer, {
+        attributes: true,
+        attributeFilter: ['style'],
+      })
+      spacerObservedNode = spacer
+    } catch (e) {
+      // ignore
+    }
+  }
+  const getDurationPx = () => {
+    try {
+      if (
+        trigger &&
+        typeof trigger.start === 'number' &&
+        typeof trigger.end === 'number'
+      ) {
+        return Math.max(0, Math.round(trigger.end - trigger.start))
+      }
+    } catch (e) {
+      // ignore
+    }
+    // Fallback: parse svh value from end string
+    try {
+      const match = (
+        typeof trigger?.vars?.end === 'string' ? trigger.vars.end : '+=2000svh'
+      ).match(/\+=\s*(\d+)\s*svh/i)
+      const units = match && match[1] ? parseInt(match[1], 10) : 2000
+      return Math.max(0, Math.round(units * (window.innerHeight || 0)))
+    } catch (e) {
+      return Math.max(0, Math.round(2000 * (window.innerHeight || 0)))
+    }
+  }
+  const enforceSpacerHeight = () => {
+    try {
+      const spacer = getPinSpacer()
+      if (!spacer) return
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      const isMobile = Math.min(vw, vh) < 767
+      const wrapperHeight = (() => {
+        try {
+          const r = wrapper.getBoundingClientRect()
+          return Math.max(0, Math.round(r.height || 0))
+        } catch (e) {
+          return 0
+        }
+      })()
+      const durationPx = getDurationPx()
+      const desiredTotal = isMobile
+        ? 2500
+        : Math.max(wrapperHeight + durationPx, 1)
+      const px = `${desiredTotal}px`
+      spacer.style.setProperty('height', px, 'important')
+      spacer.style.setProperty('min-height', px, 'important')
+      attachSpacerObserver(spacer)
+    } catch (e) {
+      // ignore
+    }
+  }
+
   const trigger = ScrollTrigger.create({
     trigger: triggerEl,
     start: 'center center',
     end: '+=2000svh',
     pin: wrapper,
+    // Prevent visual jumps when ancestors transform (menu open/close)
+    anticipatePin: 1,
+    pinReparent: true,
+    // keep default pinSpacing to preserve layout consistency
+    invalidateOnRefresh: true,
     // pinSpacing: false,
     scrub: true,
     animation: tl,
+    onRefresh: enforceSpacerHeight,
   })
+  try {
+    ScrollTrigger.addEventListener('refresh', enforceSpacerHeight)
+  } catch (e) {
+    // ignore
+  }
+  try {
+    ScrollTrigger.addEventListener('refreshInit', enforceSpacerHeight)
+  } catch (e) {
+    // ignore
+  }
+  enforceSpacerHeight()
+  // Handle device orientation toggles explicitly
+  let recalcRaf = null
+  const scheduleRecalc = () => {
+    if (recalcRaf !== null) return
+    recalcRaf = requestAnimationFrame(() => {
+      recalcRaf = null
+      try {
+        calculatePositions()
+      } catch (e) {
+        // ignore
+      }
+      try {
+        enforceSpacerHeight()
+      } catch (e) {
+        // ignore
+      }
+      try {
+        ScrollTrigger.refresh()
+      } catch (e) {
+        // ignore
+      }
+    })
+  }
+  const onOrientationChange = () => scheduleRecalc()
 
   // Highlight: enlarge ticks closest to viewport center (like scroll-list)
   const updateTickHighlight = () => {
+    // Freeze highlighting when the menu is open to keep the current active item
+    try {
+      if (
+        typeof document !== 'undefined' &&
+        document?.documentElement?.getAttribute('data-menu-open') === 'true'
+      ) {
+        return
+      }
+    } catch (e) {
+      // ignore
+    }
     const viewportCenter = window.innerHeight / 2
     // Highlight text item at viewport center with .is-active
     try {
@@ -275,8 +421,30 @@ export function initCylinder(root = document) {
   }
   updateTickHighlight()
 
-  const onResize = () => calculatePositions()
+  const onResize = () => scheduleRecalc()
   window.addEventListener('resize', onResize)
+  // Recompute after page transitions complete (Barba after hooks)
+  try {
+    window.addEventListener('page:transition:after', scheduleRecalc)
+  } catch (e) {
+    // ignore
+  }
+  try {
+    if (
+      window.visualViewport &&
+      typeof window.visualViewport.addEventListener === 'function'
+    ) {
+      window.visualViewport.addEventListener('resize', scheduleRecalc)
+      window.visualViewport.addEventListener('scroll', scheduleRecalc)
+    }
+  } catch (e) {
+    // ignore
+  }
+  try {
+    window.addEventListener('orientationchange', onOrientationChange)
+  } catch (e) {
+    // ignore
+  }
 
   wrapper.__cylinderCleanup = () => {
     try {
@@ -295,8 +463,52 @@ export function initCylinder(root = document) {
       // ignore
     }
     try {
+      window.removeEventListener('page:transition:after', scheduleRecalc)
+    } catch (e) {
+      // ignore
+    }
+    try {
+      if (
+        window.visualViewport &&
+        typeof window.visualViewport.removeEventListener === 'function'
+      ) {
+        window.visualViewport.removeEventListener('resize', scheduleRecalc)
+        window.visualViewport.removeEventListener('scroll', scheduleRecalc)
+      }
+    } catch (e) {
+      // ignore
+    }
+    try {
+      window.removeEventListener('orientationchange', onOrientationChange)
+    } catch (e) {
+      // ignore
+    }
+    try {
+      if (recalcRaf !== null) {
+        cancelAnimationFrame(recalcRaf)
+        recalcRaf = null
+      }
+    } catch (e) {
+      // ignore
+    }
+    try {
       if (highlightTrigger && typeof highlightTrigger.kill === 'function')
         highlightTrigger.kill()
+    } catch (e) {
+      // ignore
+    }
+    try {
+      ScrollTrigger.removeEventListener('refresh', enforceSpacerHeight)
+    } catch (e) {
+      // ignore
+    }
+    try {
+      ScrollTrigger.removeEventListener('refreshInit', enforceSpacerHeight)
+    } catch (e) {
+      // ignore
+    }
+    try {
+      if (spacerObserver) spacerObserver.disconnect()
     } catch (e) {
       // ignore
     }

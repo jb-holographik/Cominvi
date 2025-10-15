@@ -1,9 +1,10 @@
 import { gsap } from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import { initializeNavbarTheme as themeBase } from '../utils/base.js'
 
-gsap.registerPlugin(CustomEase)
+gsap.registerPlugin(CustomEase, ScrollTrigger)
 
 let linkBaseMarginsConfig = null
 let lastScrollPosition = 0
@@ -56,6 +57,7 @@ export function initializeMenuClick(options = {}, root = document) {
   const menuElements = root.querySelectorAll('.is-menu')
   const pageWrapElement = root.querySelector('.page-wrap')
   const menuIconElement = root.querySelector('.menu-icon')
+  const menuLabelInner = root.querySelector('.is-menu_label-inner')
   const contentWrapElement = root.querySelector('.content-wrap')
   const brandLink = root.querySelector('.navbar > a')
   const linkAnchors = root.querySelectorAll('.links .link-item a')
@@ -68,9 +70,234 @@ export function initializeMenuClick(options = {}, root = document) {
   const menuIconBar2 = root.querySelector(
     '.menu-icon_bar.is-2, .menu-icon_bar .is-2'
   )
+  const menuIconBars = root.querySelectorAll('.menu-icon_bar')
 
   if (menuElements.length === 0 || !pageWrapElement) {
     return
+  }
+
+  // Hover: form a "+" when menu is closed; on click it rotates into an "X"
+  // Ensures no conflict when the menu is open or during page transitions
+  const hoverEase = CustomEase.create('custom', 'M0,0 C0.68,0 0,1 1,1 ')
+  const hoverDuration = 0.6
+  const onMenuIconEnter = () => {
+    if (!menuIconElement) return
+    try {
+      if (
+        isOpen ||
+        document.documentElement.getAttribute('data-menu-open') === 'true'
+      )
+        return
+    } catch (e) {
+      // ignore
+    }
+    try {
+      menuIconElement.dataset.bgLocked = 'hover'
+      // Force bg on hover and prevent flash by disabling transitions
+      if (menuIconElement && menuIconElement.style) {
+        menuIconElement.style.setProperty(
+          'background-color',
+          'var(--primary)',
+          'important'
+        )
+        menuIconElement.style.setProperty(
+          'border-color',
+          'var(--primary)',
+          'important'
+        )
+        menuIconElement.style.setProperty('transition', 'none', 'important')
+      }
+      if (menuIconBars && menuIconBars.length) {
+        menuIconBars.forEach((el) => {
+          try {
+            if (el && el.style) {
+              el.style.setProperty('background-color', '#fff', 'important')
+              el.style.setProperty('transition', 'none', 'important')
+            }
+          } catch (e) {
+            // ignore
+          }
+        })
+      }
+    } catch (e) {
+      // ignore
+    }
+    const tl = gsap.timeline({
+      defaults: { duration: hoverDuration, ease: hoverEase, overwrite: 'auto' },
+    })
+    tl.to(menuIconElement, { gap: '0px' }, 0)
+    if (menuLabelInner) {
+      try {
+        menuLabelInner.style.setProperty('will-change', 'transform')
+      } catch (e) {
+        // ignore
+      }
+      tl.to(menuLabelInner, { yPercent: -50 }, 0)
+    }
+    if (menuIconBars && menuIconBars.length) {
+      tl.to(menuIconBars, { backgroundColor: '#fff' }, 0)
+    }
+    if (menuIconBar1) {
+      tl.to(
+        menuIconBar1,
+        {
+          top: '49%',
+          rotation: 0,
+          transformOrigin: '50% 50%',
+        },
+        0
+      )
+    }
+    if (menuIconBar2) {
+      tl.to(
+        menuIconBar2,
+        {
+          bottom: '49%',
+          rotation: 90,
+          transformOrigin: '50% 50%',
+        },
+        0
+      )
+    }
+  }
+  const onMenuIconPointerDown = (e) => {
+    // Prevent default to avoid blur/hover-leave races on some browsers
+    if (e && typeof e.preventDefault === 'function') e.preventDefault()
+    if (!menuIconElement) return
+    try {
+      // Snap label instantly to rest on click start
+      if (menuLabelInner) {
+        gsap.set(menuLabelInner, { yPercent: 0, overwrite: 'auto' })
+        try {
+          menuLabelInner.style.removeProperty('will-change')
+        } catch (err) {
+          // ignore
+        }
+      }
+      menuIconElement.dataset.bgLocked = 'open'
+      if (menuIconElement.style) {
+        menuIconElement.style.setProperty(
+          'background-color',
+          'var(--primary)',
+          'important'
+        )
+        menuIconElement.style.setProperty(
+          'border-color',
+          'var(--primary)',
+          'important'
+        )
+        menuIconElement.style.setProperty('transition', 'none', 'important')
+      }
+      if (menuIconBars && menuIconBars.length) {
+        menuIconBars.forEach((el) => {
+          try {
+            if (el && el.style) {
+              // Keep bars white at pointer down; timeline will tween to orange
+              el.style.setProperty('background-color', '#fff', 'important')
+              el.style.setProperty('transition', 'none', 'important')
+            }
+          } catch (e) {
+            // ignore
+          }
+        })
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+  const onMenuIconLeave = () => {
+    if (!menuIconElement) return
+    try {
+      if (
+        isOpen ||
+        document.documentElement.getAttribute('data-menu-open') === 'true'
+      )
+        return
+      // If a click just began, colors are locked for open; skip cleanup
+      if (menuIconElement?.dataset?.bgLocked === 'open') return
+    } catch (e) {
+      // ignore
+    }
+    gsap.to(menuIconElement, {
+      duration: hoverDuration,
+      ease: hoverEase,
+      gap: '5px',
+      overwrite: 'auto',
+    })
+    if (menuIconBar1) {
+      gsap.to(menuIconBar1, {
+        duration: hoverDuration,
+        ease: hoverEase,
+        top: '42%',
+        rotation: 0,
+        transformOrigin: '50% 50%',
+        overwrite: 'auto',
+      })
+    }
+    if (menuIconBar2) {
+      gsap.to(menuIconBar2, {
+        duration: hoverDuration,
+        ease: hoverEase,
+        bottom: '42%',
+        rotation: 0,
+        transformOrigin: '50% 50%',
+        overwrite: 'auto',
+      })
+    }
+    if (menuLabelInner) {
+      gsap.to(menuLabelInner, {
+        duration: hoverDuration,
+        ease: hoverEase,
+        yPercent: 0,
+        overwrite: 'auto',
+        onComplete: () => {
+          try {
+            menuLabelInner.style.removeProperty('will-change')
+          } catch (e) {
+            // ignore
+          }
+        },
+      })
+    }
+    try {
+      // Snap directly back to the current theme colors to avoid flashes
+      const key = (window.__theme && window.__theme.currentKey) || 'white'
+      const getFor = window.__theme && window.__theme.getThemeFor
+      const t = getFor ? getFor(key) : {}
+      if (menuIconElement) {
+        gsap.set(menuIconElement, {
+          backgroundColor: t.menuIconBg,
+          borderColor: t.menuIconBorder,
+          overwrite: 'auto',
+        })
+      }
+      if (menuIconBars && menuIconBars.length) {
+        gsap.set(menuIconBars, {
+          backgroundColor: t.menuIconBarsBg,
+          overwrite: 'auto',
+        })
+      }
+
+      if (menuIconElement && menuIconElement.dataset)
+        delete menuIconElement.dataset.bgLocked
+      // Only remove transition to end the hover lock; keep computed colors
+      if (menuIconElement && menuIconElement.style) {
+        menuIconElement.style.removeProperty('transition')
+      }
+      if (menuIconBars && menuIconBars.length) {
+        menuIconBars.forEach((el) => {
+          try {
+            if (el && el.style) {
+              el.style.removeProperty('transition')
+            }
+          } catch (e) {
+            // ignore
+          }
+        })
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   const computedTop = getComputedStyle(pageWrapElement).top
@@ -153,8 +380,23 @@ export function initializeMenuClick(options = {}, root = document) {
     })
   }
 
+  // Removed cylinder CSS freeze; we rely on ScrollTrigger pinReparent/anticipatePin
+
   const handleMenuClick = () => {
     const wasOpen = isOpen
+    // Any trigger click should instantly reset label to rest
+    try {
+      if (menuLabelInner) {
+        gsap.set(menuLabelInner, { yPercent: 0, overwrite: 'auto' })
+        try {
+          menuLabelInner.style.removeProperty('will-change')
+        } catch (err) {
+          // ignore
+        }
+      }
+    } catch (err) {
+      // ignore
+    }
     // Toggle pt-inner on the brand link depending on intended state
     if (!wasOpen) {
       // opening → disable inner transition on brand link
@@ -166,13 +408,14 @@ export function initializeMenuClick(options = {}, root = document) {
       } catch (err) {
         // ignore
       }
+      // Do not refresh ScrollTrigger before the menu animation to avoid jumps
     } else {
       // closing → re-enable inner transition on brand link
       if (brandLink) brandLink.setAttribute('pt-inner', '')
     }
 
-    const targetOverflow = isOpen ? originalOverflow : 'hidden'
-    const targetBodyOverflow = isOpen ? originalBodyOverflow : 'hidden'
+    const targetOverflow = originalOverflow
+    const targetBodyOverflow = originalBodyOverflow
     const targetBorderRadius = isOpen ? '0rem' : '1rem'
     const viewportWidth = window.innerWidth
     const isTablet = viewportWidth >= 768 && viewportWidth <= 991
@@ -193,11 +436,42 @@ export function initializeMenuClick(options = {}, root = document) {
       viewportWidth > 0 ? desiredWidth / viewportWidth : 1
     const targetScale = isOpen ? 1 : computedScaleOpen
     const targetMenuIconGap = isOpen ? '5px' : '0px'
-    const targetBar1Rotation = isOpen ? 0 : -45
-    const targetBar2Rotation = isOpen ? 0 : 45
+    const targetIconRotation = isOpen ? 0 : 45
 
     if (!wasOpen) {
       document.documentElement.setAttribute('data-menu-open', 'true')
+      // Pre-lock and force colors to avoid flash when clicking from hover
+      try {
+        if (menuIconElement) {
+          menuIconElement.dataset.bgLocked = 'open'
+          if (menuIconElement.style) {
+            menuIconElement.style.setProperty(
+              'background-color',
+              'var(--primary)',
+              'important'
+            )
+            menuIconElement.style.setProperty(
+              'border-color',
+              'var(--primary)',
+              'important'
+            )
+          }
+        }
+        if (menuIconBars && menuIconBars.length) {
+          menuIconBars.forEach((el) => {
+            try {
+              if (el && el.style) {
+                // Maintain white until timeline animates to orange
+                el.style.setProperty('background-color', '#fff', 'important')
+              }
+            } catch (e) {
+              // ignore
+            }
+          })
+        }
+      } catch (e) {
+        // ignore
+      }
       if (window.__theme && typeof window.__theme.menuOpen === 'function') {
         window.__theme.menuOpen()
       }
@@ -269,6 +543,60 @@ export function initializeMenuClick(options = {}, root = document) {
         } catch (err) {
           // ignore
         }
+        // After closing, re-enable icon theme updates
+        try {
+          if (
+            !isOpen &&
+            window.__theme &&
+            typeof window.__theme.setIconThemeSuppressed === 'function'
+          ) {
+            window.__theme.setIconThemeSuppressed(false)
+          }
+        } catch (err) {
+          // ignore
+        }
+        // Recalc and resize only when closing (avoid jump at end of opening)
+        if (!isOpen) {
+          try {
+            if (
+              typeof ScrollTrigger !== 'undefined' &&
+              ScrollTrigger &&
+              typeof ScrollTrigger.refresh === 'function'
+            ) {
+              ScrollTrigger.refresh()
+              requestAnimationFrame(() => {
+                try {
+                  ScrollTrigger.refresh()
+                } catch (e) {
+                  // ignore
+                }
+              })
+            }
+          } catch (e) {
+            // ignore
+          }
+          // Nudge layout systems that rely on resize and 3D promotion
+          try {
+            window.dispatchEvent(new Event('resize'))
+          } catch (e) {
+            // ignore
+          }
+          try {
+            const nodes = document.querySelectorAll(
+              '.cylindar__text__wrapper, .scroll-indicator_c'
+            )
+            if (nodes && nodes.length) {
+              gsap.set(nodes, {
+                force3D: true,
+                z: 0.01,
+                transformOrigin: '50% 50% 0',
+                overwrite: 'auto',
+              })
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
       },
     })
 
@@ -276,33 +604,74 @@ export function initializeMenuClick(options = {}, root = document) {
     animateMenuLinks(tl, wasOpen)
 
     if (menuIconElement) {
-      tl.to(menuIconElement, { gap: targetMenuIconGap, overwrite: 'auto' }, 0)
+      tl.to(
+        menuIconElement,
+        {
+          gap: targetMenuIconGap,
+          rotation: targetIconRotation,
+          transformOrigin: '50% 50%',
+          overwrite: 'auto',
+        },
+        0
+      )
+      try {
+        menuIconElement.dataset.bgLocked = 'open'
+        if (menuIconElement && menuIconElement.style) {
+          menuIconElement.style.setProperty(
+            'background-color',
+            'var(--primary)',
+            'important'
+          )
+          menuIconElement.style.setProperty(
+            'border-color',
+            'var(--primary)',
+            'important'
+          )
+          menuIconElement.style.setProperty('transition', 'none', 'important')
+        }
+        if (menuIconBars && menuIconBars.length) {
+          menuIconBars.forEach((el) => {
+            try {
+              if (el && el.style) {
+                el.style.setProperty(
+                  'background-color',
+                  'var(--accent)',
+                  'important'
+                )
+                el.style.setProperty('transition', 'none', 'important')
+              }
+            } catch (e) {
+              // ignore
+            }
+          })
+        }
+      } catch (e) {
+        // ignore
+      }
+      // Ensure direct white → orange transition without intermediate colors
+      if (menuIconBars && menuIconBars.length) {
+        tl.set(menuIconBars, { backgroundColor: '#fff', overwrite: 'auto' }, 0)
+        tl.to(
+          menuIconBars,
+          { backgroundColor: 'var(--accent)', overwrite: 'auto' },
+          0
+        )
+      }
     }
     if (!wasOpen) {
-      if (menuIconBar1) {
-        tl.to(
+      // Ensure bars are in "+" configuration before rotating container into "X"
+      if (menuIconBar1)
+        tl.set(
           menuIconBar1,
-          {
-            top: '49%',
-            rotation: targetBar1Rotation,
-            transformOrigin: '50% 50%',
-            overwrite: 'auto',
-          },
+          { top: '49%', rotation: 0, transformOrigin: '50% 50%' },
           0
         )
-      }
-      if (menuIconBar2) {
-        tl.to(
+      if (menuIconBar2)
+        tl.set(
           menuIconBar2,
-          {
-            bottom: '49%',
-            rotation: targetBar2Rotation,
-            transformOrigin: '50% 50%',
-            overwrite: 'auto',
-          },
+          { bottom: '49%', rotation: 90, transformOrigin: '50% 50%' },
           0
         )
-      }
     } else {
       if (menuIconBar1) {
         tl.to(
@@ -327,6 +696,55 @@ export function initializeMenuClick(options = {}, root = document) {
           },
           0
         )
+      }
+      // Closing: tween icon colors directly to stored theme without intermediate changes
+      try {
+        const targetKey =
+          (window.__theme && window.__theme.storedKey) || 'white'
+        const theme =
+          window.__theme && window.__theme.getThemeFor
+            ? window.__theme.getThemeFor(targetKey)
+            : {}
+        if (menuIconElement) {
+          tl.set(
+            menuIconElement,
+            {
+              backgroundColor: theme.menuIconBg,
+              borderColor: theme.menuIconBorder,
+              overwrite: 'auto',
+            },
+            0
+          )
+        }
+        if (menuIconBars && menuIconBars.length) {
+          tl.to(
+            menuIconBars,
+            {
+              backgroundColor: theme.menuIconBarsBg,
+              overwrite: 'auto',
+            },
+            0
+          )
+        }
+        // Unlock and clean transition flag but keep colors so they finish at target theme
+        if (menuIconElement && menuIconElement.dataset)
+          delete menuIconElement.dataset.bgLocked
+        if (menuIconElement && menuIconElement.style) {
+          menuIconElement.style.removeProperty('transition')
+        }
+        if (menuIconBars && menuIconBars.length) {
+          menuIconBars.forEach((el) => {
+            try {
+              if (el && el.style) {
+                el.style.removeProperty('transition')
+              }
+            } catch (e) {
+              // ignore
+            }
+          })
+        }
+      } catch (e) {
+        // ignore
       }
     }
 
@@ -383,6 +801,60 @@ export function initializeMenuClick(options = {}, root = document) {
   document.documentElement.setAttribute('data-menu-open', 'false')
   // On init (menu closed), ensure the brand link triggers inner transition
   if (brandLink) brandLink.setAttribute('pt-inner', '')
+
+  // Bind hover handlers on the menu icon (cleanup any previous bindings)
+  try {
+    if (menuIconElement) {
+      if (menuIconElement.__hoverEnter) {
+        menuIconElement.removeEventListener(
+          'mouseenter',
+          menuIconElement.__hoverEnter
+        )
+      }
+      if (menuIconElement.__hoverLeave) {
+        menuIconElement.removeEventListener(
+          'mouseleave',
+          menuIconElement.__hoverLeave
+        )
+      }
+      menuIconElement.__hoverEnter = onMenuIconEnter
+      menuIconElement.__hoverLeave = onMenuIconLeave
+      menuIconElement.addEventListener(
+        'mouseenter',
+        menuIconElement.__hoverEnter
+      )
+      menuIconElement.addEventListener(
+        'mouseleave',
+        menuIconElement.__hoverLeave
+      )
+      // Lock early at pointerdown to prevent hover-leave repaint before click
+      try {
+        if (menuIconElement.__pointerDownLock) {
+          menuIconElement.removeEventListener(
+            'pointerdown',
+            menuIconElement.__pointerDownLock
+          )
+        }
+      } catch (e) {
+        // ignore
+      }
+      menuIconElement.__pointerDownLock = onMenuIconPointerDown
+      menuIconElement.addEventListener(
+        'pointerdown',
+        menuIconElement.__pointerDownLock
+      )
+      // Force initial visual baseline regardless of theme
+      // Remove any previous lock at init; theme will apply normally until hover/open
+      try {
+        if (menuIconElement && menuIconElement.dataset)
+          delete menuIconElement.dataset.bgLocked
+      } catch (e) {
+        // ignore
+      }
+    }
+  } catch (err) {
+    // ignore
+  }
 }
 
 // Animation de scroll de la navbar
@@ -684,6 +1156,8 @@ export function initializeThemeController() {
   let activeKey = 'white'
   let destinationKey = 'white'
   let snapshotKey = 'white'
+  let storedKey = 'white'
+  let suppressMenuIconTheme = false
 
   const navbarElement = document.querySelector('.navbar')
   const logoBgElement = document.querySelector('.logo-bg')
@@ -694,31 +1168,55 @@ export function initializeThemeController() {
   const applyTheme = (key, instant = false) => {
     const t = themes[key] || themes.white || {}
     const to = { ...tr, overwrite: 'auto' }
+    const isLocked = !!menuIconElement?.dataset?.bgLocked
     if (instant) {
       if (navbarElement) gsap.set(navbarElement, { color: t.navbarColor })
       if (logoBgElement) gsap.set(logoBgElement, { fill: t.logoBgFill })
       if (logoPathElements.length)
         gsap.set(logoPathElements, { fill: t.logoPathFill })
-      if (menuIconElement)
-        gsap.set(menuIconElement, {
-          borderColor: t.menuIconBorder,
-          backgroundColor: t.menuIconBg,
-        })
-      if (menuIconBars.length)
-        gsap.set(menuIconBars, { backgroundColor: t.menuIconBarsBg })
+      if (!suppressMenuIconTheme) {
+        if (menuIconElement)
+          gsap.set(menuIconElement, {
+            borderColor: isLocked ? 'var(--primary)' : t.menuIconBorder,
+            backgroundColor: isLocked ? 'var(--primary)' : t.menuIconBg,
+          })
+        if (menuIconBars.length) {
+          const lockedHover =
+            isLocked && menuIconElement?.dataset?.bgLocked === 'hover'
+          gsap.set(menuIconBars, {
+            backgroundColor: lockedHover
+              ? '#fff'
+              : isLocked
+              ? 'var(--accent)'
+              : t.menuIconBarsBg,
+          })
+        }
+      }
     } else {
       if (navbarElement) gsap.to(navbarElement, { color: t.navbarColor, ...to })
       if (logoBgElement) gsap.to(logoBgElement, { fill: t.logoBgFill, ...to })
       if (logoPathElements.length)
         gsap.to(logoPathElements, { fill: t.logoPathFill, ...to })
-      if (menuIconElement)
-        gsap.to(menuIconElement, {
-          borderColor: t.menuIconBorder,
-          backgroundColor: t.menuIconBg,
-          ...to,
-        })
-      if (menuIconBars.length)
-        gsap.to(menuIconBars, { backgroundColor: t.menuIconBarsBg, ...to })
+      if (!suppressMenuIconTheme) {
+        if (menuIconElement)
+          gsap.to(menuIconElement, {
+            borderColor: isLocked ? 'var(--primary)' : t.menuIconBorder,
+            backgroundColor: isLocked ? 'var(--primary)' : t.menuIconBg,
+            ...to,
+          })
+        if (menuIconBars.length) {
+          const lockedHover =
+            isLocked && menuIconElement?.dataset?.bgLocked === 'hover'
+          gsap.to(menuIconBars, {
+            backgroundColor: lockedHover
+              ? '#fff'
+              : isLocked
+              ? 'var(--accent)'
+              : t.menuIconBarsBg,
+            ...to,
+          })
+        }
+      }
     }
     currentKey = key
   }
@@ -747,6 +1245,7 @@ export function initializeThemeController() {
       applyTheme(key)
     }
     activeKey = key
+    storedKey = key
   }
 
   window.__theme = {
@@ -758,6 +1257,13 @@ export function initializeThemeController() {
     },
     get destinationKey() {
       return destinationKey
+    },
+    get storedKey() {
+      return storedKey
+    },
+    getThemeFor: (key) => themes[key] || themes.white || {},
+    setIconThemeSuppressed: (v) => {
+      suppressMenuIconTheme = !!v
     },
     setDestination: (rootContainer = document) => {
       const rootEl =
@@ -776,12 +1282,17 @@ export function initializeThemeController() {
     compute: () => computeActiveTheme(),
     menuOpen: () => {
       snapshotKey = computeActiveTheme()
-      applyTheme('menu')
+      suppressMenuIconTheme = true
+      // Snap instantly to menu theme to avoid flashes
+      applyTheme('menu', true)
     },
     menuCloseSamePage: () => {
       const latest = computeActiveTheme()
-      const keyToApply = snapshotKey || latest
-      applyTheme(keyToApply)
+      const keyToApply = storedKey || snapshotKey || latest
+      // Keep icon suppressed; external code will tween icon to stored theme
+      suppressMenuIconTheme = true
+      // Snap instantly on close to avoid flashes
+      applyTheme(keyToApply, true)
       snapshotKey = latest
     },
     bindScroll: (root = document) => {

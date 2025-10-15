@@ -536,6 +536,12 @@ export function initializePageTransitionNav() {
           } catch (e) {
             /* ignore */
           }
+          // Notify components that rely on layout to recalc after transition
+          try {
+            window.dispatchEvent(new Event('page:transition:after'))
+          } catch (e) {
+            /* ignore */
+          }
         },
       },
       {
@@ -716,6 +722,12 @@ export function initializePageTransitionNav() {
           }
           try {
             window.__barbaHistoryNav = false
+          } catch (e) {
+            /* ignore */
+          }
+          // Notify components that rely on layout to recalc after transition
+          try {
+            window.dispatchEvent(new Event('page:transition:after'))
           } catch (e) {
             /* ignore */
           }
@@ -928,6 +940,11 @@ export function initializePageTransitionNav() {
           initTestimonials()
           initTextDisplayReveal()
           try {
+            initCylinder(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          try {
             initSticky50(next && next.container)
           } catch (e) {
             /* ignore */
@@ -988,6 +1005,12 @@ export function initializePageTransitionNav() {
             if (st && typeof st.refresh === 'function') {
               requestAnimationFrame(() => st.refresh())
             }
+          } catch (e) {
+            /* ignore */
+          }
+          // Notify components that rely on layout to recalc after transition
+          try {
+            window.dispatchEvent(new Event('page:transition:after'))
           } catch (e) {
             /* ignore */
           }

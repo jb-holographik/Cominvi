@@ -440,6 +440,12 @@ export function initializeMenuClick(options = {}, root = document) {
 
     if (!wasOpen) {
       document.documentElement.setAttribute('data-menu-open', 'true')
+      // Notify listeners (e.g., minerals) that menu is starting to open
+      try {
+        document.dispatchEvent(new CustomEvent('menu:open-start'))
+      } catch (e) {
+        // ignore
+      }
       // Pre-lock and force colors to avoid flash when clicking from hover
       try {
         if (menuIconElement) {
@@ -557,6 +563,24 @@ export function initializeMenuClick(options = {}, root = document) {
         }
         // Recalc and resize only when closing (avoid jump at end of opening)
         if (!isOpen) {
+          // Clean any residual transforms/inline states on the page wrapper to avoid breaking sticky/ScrollTrigger
+          try {
+            if (pageWrapElement && pageWrapElement.style) {
+              pageWrapElement.style.removeProperty('transform')
+              pageWrapElement.style.removeProperty('scale')
+              pageWrapElement.style.removeProperty('top')
+              pageWrapElement.style.removeProperty('border-radius')
+              pageWrapElement.style.removeProperty('transform-origin')
+            }
+          } catch (e) {
+            // ignore
+          }
+          // Inform listeners that menu fully closed
+          try {
+            document.dispatchEvent(new CustomEvent('menu:close-end'))
+          } catch (e) {
+            // ignore
+          }
           try {
             if (
               typeof ScrollTrigger !== 'undefined' &&

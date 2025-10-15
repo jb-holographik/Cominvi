@@ -293,6 +293,8 @@ export function initMinerals(root = document) {
         // ignore
       }
     }
+    // Expose for external consumers (e.g., menu close reflow)
+    section.__mineralsAlignRightEyebrow = alignRightEyebrow
     alignRightEyebrow()
     window.addEventListener('resize', () =>
       requestAnimationFrame(alignRightEyebrow)
@@ -310,6 +312,9 @@ export function initMinerals(root = document) {
       })
     }
     window.addEventListener('resize', handleResize)
+    // Expose helpers for external reflow
+    section.__mineralsCenterActiveNameMobile = centerActiveNameMobile
+    section.__mineralsSetActiveEyebrowIndex = setActiveEyebrowIndex
 
     section.__mineralsActiveIndex = -1
 
@@ -394,7 +399,41 @@ export function initMinerals(root = document) {
   const onMenuCloseEnd = () => {
     restoreAngle()
     try {
+      // Ensure the dark circle mask is intact after menu scaling
+      darkSvg.style.webkitMaskImage = darkSvg.style.webkitMaskImage
+      darkSvg.style.maskImage = darkSvg.style.maskImage
+    } catch (e) {
+      // ignore
+    }
+    // Realign eyebrows and recenter active name after layout shifts
+    try {
+      if (typeof section.__mineralsAlignRightEyebrow === 'function') {
+        section.__mineralsAlignRightEyebrow()
+      }
+      const idx =
+        typeof section.__mineralsActiveIndex === 'number' &&
+        section.__mineralsActiveIndex >= 0
+          ? section.__mineralsActiveIndex
+          : 0
+      if (typeof section.__mineralsCenterActiveNameMobile === 'function') {
+        section.__mineralsCenterActiveNameMobile(idx)
+      }
+      if (typeof section.__mineralsSetActiveEyebrowIndex === 'function') {
+        section.__mineralsSetActiveEyebrowIndex(idx)
+      }
+    } catch (e) {
+      // ignore
+    }
+    // Refresh ScrollTrigger twice (immediate + next frame), helps iOS
+    try {
       ScrollTrigger.refresh()
+      requestAnimationFrame(() => {
+        try {
+          ScrollTrigger.refresh()
+        } catch (e) {
+          // ignore
+        }
+      })
     } catch (err) {
       // no-op
     }

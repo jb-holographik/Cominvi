@@ -80,6 +80,13 @@
   will-change: filter;
   filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5))
     drop-shadow(0 0 5px #ff8832) drop-shadow(0 0 12px #ff8832);
+  /* iOS Safari fallback using box-shadow on ancestor */
+}
+
+/* Fallback: use the rect as a wrapper to paint a shadow via box-shadow on mobile */
+.marker.highlight rect {
+  /* Transparent rect receives a box-shadow that often renders when filter is culled */
+  box-shadow: 0 0 6px rgba(255, 136, 50, 0.4), 0 0 16px rgba(255, 136, 50, 0.35);
 }
 
 .marker.highlight rect {
@@ -479,7 +486,8 @@ h1 > .is-h1-span-wrap:last-child > span {
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
   }
-  .section_projects .project-item.is-active {
+  /* Snap each card to the left when releasing the drag */
+  .section_projects .project-item {
     scroll-snap-align: start;
   }
   .section_projects .projects-list::-webkit-scrollbar {

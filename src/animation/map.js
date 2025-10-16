@@ -138,18 +138,15 @@ export function initMap(root = document) {
         } catch (e) {
           // ignore
         }
-        // On phones: do not open overlays or move panels; only snap the list above
-        if (!isMobileOnlyNow()) {
-          try {
-            const overlays = (scope || document).querySelector(
-              '.projects_overlays'
-            )
-            const isOpen = overlays?.dataset?.open === 'true'
-            if (isOpen) mapClose(scope)
-            else mapOpen(pointKey, scope)
-          } catch (e) {
-            // ignore
-          }
+        try {
+          const overlays = (scope || document).querySelector(
+            '.projects_overlays'
+          )
+          const isOpen = overlays?.dataset?.open === 'true'
+          if (isOpen) mapClose(scope)
+          else mapOpen(pointKey, scope)
+        } catch (e) {
+          // ignore
         }
       })
       document.body.appendChild(btn)
@@ -662,22 +659,6 @@ export function initMap(root = document) {
         // Mobile/mobile-landscape: only activate marker, no animations/overlays
         if (isMobileOnlyNow()) {
           highlightMarkerWithoutDimming(selectedPointKey)
-          // Pin this card to the left in the horizontal list
-          try {
-            const list = scope.querySelector('.projects-list')
-            if (list && cardEl && cardEl.offsetLeft != null) {
-              try {
-                list.scrollTo({
-                  left: Math.max(0, cardEl.offsetLeft - 16),
-                  behavior: 'smooth',
-                })
-              } catch (e) {
-                list.scrollLeft = Math.max(0, cardEl.offsetLeft - 16)
-              }
-            }
-          } catch (e) {
-            // ignore
-          }
           return
         }
         // Tablet/desktop: activate this card only

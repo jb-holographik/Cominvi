@@ -76,17 +76,8 @@
 
 .marker.highlight circle {
   fill: #ff9345;
-  /* Ensure shadow renders on mobile compositors */
-  will-change: filter;
   filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5))
     drop-shadow(0 0 5px #ff8832) drop-shadow(0 0 12px #ff8832);
-  /* iOS Safari fallback using box-shadow on ancestor */
-}
-
-/* Fallback: use the rect as a wrapper to paint a shadow via box-shadow on mobile */
-.marker.highlight rect {
-  /* Transparent rect receives a box-shadow that often renders when filter is culled */
-  box-shadow: 0 0 6px rgba(255, 136, 50, 0.4), 0 0 16px rgba(255, 136, 50, 0.35);
 }
 
 .marker.highlight rect {
@@ -483,31 +474,14 @@ h1 > .is-h1-span-wrap:last-child > span {
     align-items: stretch;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x mandatory; /* snap like a classic slider */
-    scroll-padding-left: 1em; /* match list padding for precise left pin */
-    scroll-behavior: smooth;
-    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 1em;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x; /* ensure finger-following drag */
-  }
-  /* Snap each card to the left when releasing the drag */
-  .section_projects .project-item {
-    flex: 0 0 auto; /* prevent shrinking to keep snap consistent */
-    scroll-snap-align: start;
-    scroll-snap-stop: always; /* don't skip items on fast flicks */
-    touch-action: pan-x; /* allow horizontal panning on the card */
-  }
-  .section_projects .project-card {
-    touch-action: pan-x; /* allow horizontal panning on the inner button */
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-user-drag: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  /* Ensure any child inside the card does not block horizontal panning */
-  .section_projects .project-card * {
     touch-action: pan-x;
-    -webkit-user-drag: none;
+    overscroll-behavior-x: contain;
+  }
+  .section_projects .project-item {
+    scroll-snap-align: start;
   }
   .section_projects .projects-list::-webkit-scrollbar {
     height: 6px;

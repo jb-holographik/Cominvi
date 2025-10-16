@@ -115,15 +115,9 @@ export function initMap(root = document) {
         ev.stopPropagation()
         const pointKey = markerToPoint.get(markerEl)
         if (!pointKey) return
-        // On mobile/mobile-landscape: only highlight and pin the card, no overlays/animations
+        // On mobile: snap-scroll the horizontal list so target card pins to the left
         try {
           if (isMobileOnlyNow()) {
-            try {
-              selectedPointKey = String(pointKey)
-            } catch (e) {
-              // ignore
-            }
-            highlightMarkerWithoutDimming(pointKey)
             const list = scope.querySelector('.projects-list')
             const cards = Array.from(scope.querySelectorAll('.project-item'))
             const target = cards.find((el) => {
@@ -140,7 +134,6 @@ export function initMap(root = document) {
                 list.scrollLeft = Math.max(0, target.offsetLeft - 16)
               }
             }
-            return
           }
         } catch (e) {
           // ignore
@@ -412,149 +405,6 @@ export function initMap(root = document) {
     const projectsList = scope.querySelector('.projects-list')
     const cardsWrapper = scope.querySelector('.cards-wrapper')
     if (projectsList && cardsWrapper && !cardsWrapper.dataset.dragScrollBound) {
-      // On phones, rely on native horizontal scroll but suppress accidental clicks during drags
-      if (isMobileOnlyNow()) {
-        try {
-          projectsList.style.touchAction = 'pan-x'
-          projectsList.style.overflowX = 'auto'
-          projectsList.style.overflowY = 'hidden'
-          cardsWrapper.style.userSelect = ''
-          cardsWrapper.style.touchAction = 'auto'
-        } catch (e) {
-          // ignore
-        }
-        // Lightweight drag detect to suppress click after horizontal movement
-        try {
-          let mStartX = 0
-          let mStartY = 0
-          // Pointer fallback for browsers using Pointer Events
-          const onPStart = (e) => {
-            try {
-              if (e && e.isPrimary === false) return
-              if (
-                e &&
-                e.pointerType &&
-                e.pointerType !== 'touch' &&
-                e.pointerType !== 'pen'
-              )
-                return
-              mStartX = e ? e.clientX : 0
-              mStartY = e ? e.clientY : 0
-            } catch (err) {
-              mStartX = 0
-              mStartY = 0
-            }
-          }
-          const onPMove = (e) => {
-            try {
-              if (e && e.isPrimary === false) return
-              if (
-                e &&
-                e.pointerType &&
-                e.pointerType !== 'touch' &&
-                e.pointerType !== 'pen'
-              )
-                return
-              const dx = (e ? e.clientX : 0) - mStartX
-              const dy = (e ? e.clientY : 0) - mStartY
-              if (
-                Math.abs(dx) > 3 &&
-                Math.abs(Math.abs(dx) - Math.abs(dy)) > 1
-              ) {
-                const until = String(Date.now() + 350)
-                projectsList.dataset.suppressClickUntilTs = until
-                cardsWrapper.dataset.suppressClickUntilTs = until
-              }
-            } catch (err) {
-              // ignore
-            }
-          }
-          const onTStart = (e) => {
-            try {
-              const t = e && e.touches ? e.touches[0] : null
-              mStartX = t ? t.clientX : 0
-              mStartY = t ? t.clientY : 0
-            } catch (err) {
-              mStartX = 0
-              mStartY = 0
-            }
-          }
-          const onTMove = (e) => {
-            try {
-              const t = e && e.touches ? e.touches[0] : null
-              if (!t) return
-              const dx = t.clientX - mStartX
-              const dy = t.clientY - mStartY
-              if (
-                Math.abs(dx) > 3 &&
-                Math.abs(Math.abs(dx) - Math.abs(dy)) > 1
-              ) {
-                const until = String(Date.now() + 350)
-                projectsList.dataset.suppressClickUntilTs = until
-                cardsWrapper.dataset.suppressClickUntilTs = until
-              }
-            } catch (err) {
-              // ignore
-            }
-          }
-          const suppressClickMobile = (ev) => {
-            try {
-              const tsStr =
-                cardsWrapper.dataset.suppressClickUntilTs ||
-                projectsList.dataset.suppressClickUntilTs
-              const ts = tsStr ? Number(tsStr) : 0
-              if (ts && Date.now() < ts) {
-                ev.stopPropagation()
-                ev.preventDefault()
-              }
-            } catch (err) {
-              // ignore
-            }
-          }
-          projectsList.addEventListener('touchstart', onTStart, {
-            passive: true,
-          })
-          cardsWrapper.addEventListener('touchstart', onTStart, {
-            passive: true,
-          })
-          projectsList.addEventListener('touchmove', onTMove, {
-            passive: true,
-          })
-          cardsWrapper.addEventListener('touchmove', onTMove, {
-            passive: true,
-          })
-          // Pointer Events support
-          projectsList.addEventListener('pointerdown', onPStart, true)
-          cardsWrapper.addEventListener('pointerdown', onPStart, true)
-          projectsList.addEventListener('pointermove', onPMove, true)
-          cardsWrapper.addEventListener('pointermove', onPMove, true)
-          projectsList.addEventListener('click', suppressClickMobile, true)
-          cardsWrapper.addEventListener('click', suppressClickMobile, true)
-          // Document-level capture as last resort to catch stray clicks
-          if (!window.__mobileDragClickCapture) {
-            const docClickCap = (ev) => {
-              try {
-                const tsStr =
-                  cardsWrapper.dataset.suppressClickUntilTs ||
-                  projectsList.dataset.suppressClickUntilTs
-                const ts = tsStr ? Number(tsStr) : 0
-                if (ts && Date.now() < ts) {
-                  ev.stopPropagation()
-                  ev.preventDefault()
-                }
-              } catch (err) {
-                // ignore
-              }
-            }
-            window.__mobileDragClickCapture = docClickCap
-            document.addEventListener('click', docClickCap, true)
-          }
-        } catch (e) {
-          // ignore
-        }
-        // Skip desktop drag binding
-        return
-      }
       cardsWrapper.dataset.dragScrollBound = 'true'
       try {
         // Do NOT create a vertical scroll container here; let page handle vertical

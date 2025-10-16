@@ -482,6 +482,11 @@ h1 > .is-h1-span-wrap:last-child > span {
     touch-action: pan-x;
   }
   .section_projects .project-item,
+  .section_projects .project-card {
+    /* Propagate pan-x to children so vertical page scroll is blocked while dragging on them */
+    touch-action: pan-x;
+  }
+  .section_projects .project-item,
   .section_projects .project-item.is-active {
     scroll-snap-align: start;
     scroll-snap-stop: always;

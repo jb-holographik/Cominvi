@@ -467,10 +467,10 @@ export function initMap(root = document) {
         startX = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
         projectsList.style.userSelect = 'none'
         // Constrain to horizontal movement to prevent page vertical scroll during drag
-        projectsList.style.touchAction = 'pan-x'
+        projectsList.style.touchAction = 'none'
         cardsWrapper.style.userSelect = 'none'
         // Constrain container as well
-        cardsWrapper.style.touchAction = 'pan-x'
+        cardsWrapper.style.touchAction = 'none'
         try {
           // Always track current horizontal scroll of the list
           startScrollLeft =
@@ -512,8 +512,7 @@ export function initMap(root = document) {
         } catch (err) {
           // ignore
         }
-        if (isHorizontal && e && typeof e.preventDefault === 'function')
-          e.preventDefault()
+        if (e && typeof e.preventDefault === 'function') e.preventDefault()
       }
 
       const onPointerUp = () => {

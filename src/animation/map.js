@@ -458,10 +458,10 @@ export function initMap(root = document) {
               const dx = (e ? e.clientX : 0) - mStartX
               const dy = (e ? e.clientY : 0) - mStartY
               if (
-                Math.abs(dx) > 6 &&
-                Math.abs(Math.abs(dx) - Math.abs(dy)) > 2
+                Math.abs(dx) > 3 &&
+                Math.abs(Math.abs(dx) - Math.abs(dy)) > 1
               ) {
-                const until = String(Date.now() + 300)
+                const until = String(Date.now() + 350)
                 projectsList.dataset.suppressClickUntilTs = until
                 cardsWrapper.dataset.suppressClickUntilTs = until
               }
@@ -486,10 +486,10 @@ export function initMap(root = document) {
               const dx = t.clientX - mStartX
               const dy = t.clientY - mStartY
               if (
-                Math.abs(dx) > 6 &&
-                Math.abs(Math.abs(dx) - Math.abs(dy)) > 2
+                Math.abs(dx) > 3 &&
+                Math.abs(Math.abs(dx) - Math.abs(dy)) > 1
               ) {
-                const until = String(Date.now() + 250)
+                const until = String(Date.now() + 350)
                 projectsList.dataset.suppressClickUntilTs = until
                 cardsWrapper.dataset.suppressClickUntilTs = until
               }

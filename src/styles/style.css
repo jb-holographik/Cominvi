@@ -501,10 +501,13 @@ h1 > .is-h1-span-wrap:last-child > span {
     touch-action: pan-x; /* allow horizontal panning on the inner button */
     -webkit-user-select: none;
     user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent;
   }
   /* Ensure any child inside the card does not block horizontal panning */
   .section_projects .project-card * {
     touch-action: pan-x;
+    -webkit-user-drag: none;
   }
   .section_projects .projects-list::-webkit-scrollbar {
     height: 6px;

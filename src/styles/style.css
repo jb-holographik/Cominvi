@@ -474,19 +474,11 @@ h1 > .is-h1-span-wrap:last-child > span {
     align-items: stretch;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x proximity;
-    scroll-padding-left: 1em;
+    scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
-    overscroll-behavior-x: contain;
   }
-  .section_projects .project-item {
-    flex: 0 0 auto;
+  .section_projects .project-item.is-active {
     scroll-snap-align: start;
-    scroll-snap-stop: always;
-  }
-  .section_projects .project-card {
-    touch-action: pan-x;
   }
   .section_projects .projects-list::-webkit-scrollbar {
     height: 6px;

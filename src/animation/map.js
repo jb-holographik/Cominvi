@@ -412,7 +412,7 @@ export function initMap(root = document) {
     const projectsList = scope.querySelector('.projects-list')
     const cardsWrapper = scope.querySelector('.cards-wrapper')
     if (projectsList && cardsWrapper && !cardsWrapper.dataset.dragScrollBound) {
-      // On phones, rely entirely on native scroll for finger-following drag
+      // On phones, rely on native horizontal scroll but suppress accidental clicks during drags
       if (isMobileOnlyNow()) {
         try {
           projectsList.style.touchAction = 'pan-x'
@@ -423,7 +423,70 @@ export function initMap(root = document) {
         } catch (e) {
           // ignore
         }
-        // Do not bind custom drag handlers on mobile
+        // Lightweight drag detect to suppress click after horizontal movement
+        try {
+          let mStartX = 0
+          let mStartY = 0
+          const onTStart = (e) => {
+            try {
+              const t = e && e.touches ? e.touches[0] : null
+              mStartX = t ? t.clientX : 0
+              mStartY = t ? t.clientY : 0
+            } catch (err) {
+              mStartX = 0
+              mStartY = 0
+            }
+          }
+          const onTMove = (e) => {
+            try {
+              const t = e && e.touches ? e.touches[0] : null
+              if (!t) return
+              const dx = t.clientX - mStartX
+              const dy = t.clientY - mStartY
+              if (
+                Math.abs(dx) > 6 &&
+                Math.abs(Math.abs(dx) - Math.abs(dy)) > 2
+              ) {
+                const until = String(Date.now() + 250)
+                projectsList.dataset.suppressClickUntilTs = until
+                cardsWrapper.dataset.suppressClickUntilTs = until
+              }
+            } catch (err) {
+              // ignore
+            }
+          }
+          const suppressClickMobile = (ev) => {
+            try {
+              const tsStr =
+                cardsWrapper.dataset.suppressClickUntilTs ||
+                projectsList.dataset.suppressClickUntilTs
+              const ts = tsStr ? Number(tsStr) : 0
+              if (ts && Date.now() < ts) {
+                ev.stopPropagation()
+                ev.preventDefault()
+              }
+            } catch (err) {
+              // ignore
+            }
+          }
+          projectsList.addEventListener('touchstart', onTStart, {
+            passive: true,
+          })
+          cardsWrapper.addEventListener('touchstart', onTStart, {
+            passive: true,
+          })
+          projectsList.addEventListener('touchmove', onTMove, {
+            passive: true,
+          })
+          cardsWrapper.addEventListener('touchmove', onTMove, {
+            passive: true,
+          })
+          projectsList.addEventListener('click', suppressClickMobile, true)
+          cardsWrapper.addEventListener('click', suppressClickMobile, true)
+        } catch (e) {
+          // ignore
+        }
+        // Skip desktop drag binding
         return
       }
       cardsWrapper.dataset.dragScrollBound = 'true'

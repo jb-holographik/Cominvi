@@ -138,15 +138,18 @@ export function initMap(root = document) {
         } catch (e) {
           // ignore
         }
-        try {
-          const overlays = (scope || document).querySelector(
-            '.projects_overlays'
-          )
-          const isOpen = overlays?.dataset?.open === 'true'
-          if (isOpen) mapClose(scope)
-          else mapOpen(pointKey, scope)
-        } catch (e) {
-          // ignore
+        // On phones: do not open overlays or move panels; only snap the list above
+        if (!isMobileOnlyNow()) {
+          try {
+            const overlays = (scope || document).querySelector(
+              '.projects_overlays'
+            )
+            const isOpen = overlays?.dataset?.open === 'true'
+            if (isOpen) mapClose(scope)
+            else mapOpen(pointKey, scope)
+          } catch (e) {
+            // ignore
+          }
         }
       })
       document.body.appendChild(btn)

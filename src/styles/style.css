@@ -480,6 +480,7 @@ h1 > .is-h1-span-wrap:last-child > span {
     overscroll-behavior-x: contain;
     /* Ensure the browser allows horizontal panning and suppresses vertical during drag */
     touch-action: pan-x;
+    will-change: scroll-position;
   }
   .section_projects .project-item,
   .section_projects .project-card {
@@ -492,8 +493,8 @@ h1 > .is-h1-span-wrap:last-child > span {
     scroll-snap-stop: always;
   }
   .section_projects .projects-list.is-dragging {
-    /* Disable snap while dragging for natural follow-the-finger */
-    scroll-snap-type: none;
+    /* Use proximity instead of disabling snap to avoid layout jumps on iOS */
+    scroll-snap-type: x proximity;
   }
   .section_projects .projects-list::-webkit-scrollbar {
     height: 6px;

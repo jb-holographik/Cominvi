@@ -474,6 +474,7 @@ export function initMap(root = document) {
         // Disable any smooth behavior while dragging
         try {
           projectsList.style.scrollBehavior = 'auto'
+          projectsList.style.webkitOverflowScrolling = 'auto'
         } catch (e) {
           // ignore
         }
@@ -556,13 +557,21 @@ export function initMap(root = document) {
           try {
             const cards = Array.from(scope.querySelectorAll('.project-item'))
             const listRect = projectsList.getBoundingClientRect()
+            const paddingLeft = (() => {
+              try {
+                const cs = window.getComputedStyle(projectsList)
+                return parseFloat(cs.paddingLeft || '0') || 0
+              } catch (e) {
+                return 0
+              }
+            })()
             let best = { dx: Infinity, left: 0 }
             cards.forEach((el) => {
               const rect = el.getBoundingClientRect()
               const dx = Math.abs(rect.left - listRect.left)
               if (dx < best.dx) best = { dx, left: el.offsetLeft }
             })
-            const targetLeft = Math.max(0, best.left - 16)
+            const targetLeft = Math.max(0, best.left - paddingLeft)
             try {
               projectsList.scrollTo({ left: targetLeft, behavior: 'smooth' })
             } catch (e) {
@@ -575,6 +584,7 @@ export function initMap(root = document) {
         // Restore styles
         try {
           projectsList.style.scrollBehavior = ''
+          projectsList.style.webkitOverflowScrolling = ''
         } catch (e) {
           // ignore
         }

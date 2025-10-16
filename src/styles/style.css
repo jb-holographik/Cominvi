@@ -488,12 +488,17 @@ h1 > .is-h1-span-wrap:last-child > span {
     scroll-behavior: smooth;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x; /* ensure finger-following drag */
   }
   /* Snap each card to the left when releasing the drag */
   .section_projects .project-item {
     flex: 0 0 auto; /* prevent shrinking to keep snap consistent */
     scroll-snap-align: start;
     scroll-snap-stop: always; /* don't skip items on fast flicks */
+    touch-action: pan-x; /* allow horizontal panning on the card */
+  }
+  .section_projects .project-card {
+    touch-action: pan-x; /* allow horizontal panning on the inner button */
   }
   .section_projects .projects-list::-webkit-scrollbar {
     height: 6px;

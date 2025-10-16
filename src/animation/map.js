@@ -138,13 +138,16 @@ export function initMap(root = document) {
         } catch (e) {
           // ignore
         }
+        // On phones: do not open overlays or animate cards; only marker/card sync handled above
         try {
-          const overlays = (scope || document).querySelector(
-            '.projects_overlays'
-          )
-          const isOpen = overlays?.dataset?.open === 'true'
-          if (isOpen) mapClose(scope)
-          else mapOpen(pointKey, scope)
+          if (!isMobileOnlyNow()) {
+            const overlays = (scope || document).querySelector(
+              '.projects_overlays'
+            )
+            const isOpen = overlays?.dataset?.open === 'true'
+            if (isOpen) mapClose(scope)
+            else mapOpen(pointKey, scope)
+          }
         } catch (e) {
           // ignore
         }

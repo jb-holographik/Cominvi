@@ -440,7 +440,7 @@ export function initMap(root = document) {
       let startX = 0
       let startScrollLeft = 0
       let hasDragged = false
-      const DRAG_THRESHOLD = 2
+      const DRAG_THRESHOLD = 5
 
       const isTabletOrBelow = () => {
         try {
@@ -455,37 +455,16 @@ export function initMap(root = document) {
 
       const onPointerDown = (e) => {
         if (!isTabletOrBelow()) return
-        // Mark dragging state to disable CSS snap while dragging
-        try {
-          projectsList.classList.add('is-dragging')
-        } catch (e) {
-          // ignore
-        }
         isPointerDown = true
         hasDragged = false
         startY = (e && e.touches ? e.touches[0].clientY : e.clientY) || 0
         startX = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
         projectsList.style.userSelect = 'none'
-        // Constrain to horizontal movement to prevent page vertical scroll during drag
-        projectsList.style.touchAction = 'none'
+        // Do not constrain to pan-x; let UA route vertical to page
+        projectsList.style.touchAction = 'auto'
         cardsWrapper.style.userSelect = 'none'
-        // Constrain container as well
-        cardsWrapper.style.touchAction = 'none'
-        // Disable any smooth behavior while dragging
-        try {
-          projectsList.style.scrollBehavior = 'auto'
-          projectsList.style.webkitOverflowScrolling = 'auto'
-        } catch (e) {
-          // ignore
-        }
-        // Stop Lenis page scroll while dragging
-        try {
-          if (window.lenis && typeof window.lenis.stop === 'function') {
-            window.lenis.stop()
-          }
-        } catch (e) {
-          // ignore
-        }
+        // Allow vertical gestures to bubble to page
+        cardsWrapper.style.touchAction = 'auto'
         try {
           // Always track current horizontal scroll of the list
           startScrollLeft =
@@ -515,8 +494,9 @@ export function initMap(root = document) {
         const x = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
         const dy = y - startY
         const dx = x - startX
-        const isHorizontal = Math.abs(dx) >= Math.abs(dy)
-        if (Math.abs(dx) > DRAG_THRESHOLD) hasDragged = true
+        const isHorizontal =
+          Math.abs(dx) > DRAG_THRESHOLD && Math.abs(dx) > Math.abs(dy)
+        if (isHorizontal) hasDragged = true
         try {
           if (isHorizontal) {
             // Only handle horizontal drag; leave vertical to the page
@@ -526,7 +506,8 @@ export function initMap(root = document) {
         } catch (err) {
           // ignore
         }
-        if (e && typeof e.preventDefault === 'function') e.preventDefault()
+        if (isHorizontal && e && typeof e.preventDefault === 'function')
+          e.preventDefault()
       }
 
       const onPointerUp = () => {
@@ -536,57 +517,10 @@ export function initMap(root = document) {
         projectsList.style.touchAction = ''
         cardsWrapper.style.userSelect = ''
         cardsWrapper.style.touchAction = ''
-        try {
-          projectsList.classList.remove('is-dragging')
-        } catch (e) {
-          // ignore
-        }
-        // Re-enable Lenis page scroll
-        try {
-          if (window.lenis && typeof window.lenis.start === 'function') {
-            window.lenis.start()
-          }
-        } catch (e) {
-          // ignore
-        }
         if (hasDragged) {
           const until = String(Date.now() + 250)
           projectsList.dataset.suppressClickUntilTs = until
           cardsWrapper.dataset.suppressClickUntilTs = until
-          // Snap to nearest item manually for robustness
-          try {
-            const cards = Array.from(scope.querySelectorAll('.project-item'))
-            const listRect = projectsList.getBoundingClientRect()
-            const paddingLeft = (() => {
-              try {
-                const cs = window.getComputedStyle(projectsList)
-                return parseFloat(cs.paddingLeft || '0') || 0
-              } catch (e) {
-                return 0
-              }
-            })()
-            let best = { dx: Infinity, left: 0 }
-            cards.forEach((el) => {
-              const rect = el.getBoundingClientRect()
-              const dx = Math.abs(rect.left - listRect.left)
-              if (dx < best.dx) best = { dx, left: el.offsetLeft }
-            })
-            const targetLeft = Math.max(0, best.left - paddingLeft)
-            try {
-              projectsList.scrollTo({ left: targetLeft, behavior: 'smooth' })
-            } catch (e) {
-              projectsList.scrollLeft = targetLeft
-            }
-          } catch (e) {
-            // ignore
-          }
-        }
-        // Restore styles
-        try {
-          projectsList.style.scrollBehavior = ''
-          projectsList.style.webkitOverflowScrolling = ''
-        } catch (e) {
-          // ignore
         }
         try {
           if (

@@ -472,29 +472,13 @@ h1 > .is-h1-span-wrap:last-child > span {
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    gap: 1em;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-    /* Ensure the browser allows horizontal panning and suppresses vertical during drag */
-    touch-action: pan-x;
-    will-change: scroll-position;
   }
-  .section_projects .project-item,
-  .section_projects .project-card {
-    /* Propagate pan-x to children so vertical page scroll is blocked while dragging on them */
-    touch-action: pan-x;
-  }
-  .section_projects .project-item,
   .section_projects .project-item.is-active {
     scroll-snap-align: start;
-    scroll-snap-stop: always;
-  }
-  .section_projects .projects-list.is-dragging {
-    /* Use proximity instead of disabling snap to avoid layout jumps on iOS */
-    scroll-snap-type: x proximity;
   }
   .section_projects .projects-list::-webkit-scrollbar {
     height: 6px;

@@ -33,6 +33,30 @@ import { initSticky50 } from './utils/base.js'
 // (deduped)
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Ensure mobile viewport has viewport-fit=cover for safe area support
+  try {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      const isMobile = window.matchMedia('(max-width: 767px)').matches
+      if (isMobile) {
+        let meta = document.querySelector('meta[name="viewport"]')
+        const desired =
+          'width=device-width, initial-scale=1.0, viewport-fit=cover'
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.setAttribute('name', 'viewport')
+          meta.setAttribute('content', desired)
+          document.head.appendChild(meta)
+        } else {
+          const existing = (meta.getAttribute('content') || '').toLowerCase()
+          if (!existing.includes('viewport-fit=cover')) {
+            meta.setAttribute('content', desired)
+          }
+        }
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
   try {
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual'

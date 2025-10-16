@@ -76,6 +76,8 @@
 
 .marker.highlight circle {
   fill: #ff9345;
+  /* Ensure shadow renders on mobile compositors */
+  will-change: filter;
   filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5))
     drop-shadow(0 0 5px #ff8832) drop-shadow(0 0 12px #ff8832);
 }
@@ -474,7 +476,7 @@ h1 > .is-h1-span-wrap:last-child > span {
     align-items: stretch;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
   }
   .section_projects .project-item.is-active {

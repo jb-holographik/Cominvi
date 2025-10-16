@@ -115,9 +115,15 @@ export function initMap(root = document) {
         ev.stopPropagation()
         const pointKey = markerToPoint.get(markerEl)
         if (!pointKey) return
-        // On mobile: snap-scroll the horizontal list so target card pins to the left
+        // On mobile/mobile-landscape: only highlight and pin the card, no overlays/animations
         try {
           if (isMobileOnlyNow()) {
+            try {
+              selectedPointKey = String(pointKey)
+            } catch (e) {
+              // ignore
+            }
+            highlightMarkerWithoutDimming(pointKey)
             const list = scope.querySelector('.projects-list')
             const cards = Array.from(scope.querySelectorAll('.project-item'))
             const target = cards.find((el) => {
@@ -134,6 +140,7 @@ export function initMap(root = document) {
                 list.scrollLeft = Math.max(0, target.offsetLeft - 16)
               }
             }
+            return
           }
         } catch (e) {
           // ignore

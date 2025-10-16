@@ -483,12 +483,17 @@ h1 > .is-h1-span-wrap:last-child > span {
     align-items: stretch;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x proximity;
+    scroll-snap-type: x mandatory; /* snap like a classic slider */
+    scroll-padding-left: 1em; /* match list padding for precise left pin */
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
   }
   /* Snap each card to the left when releasing the drag */
   .section_projects .project-item {
+    flex: 0 0 auto; /* prevent shrinking to keep snap consistent */
     scroll-snap-align: start;
+    scroll-snap-stop: always; /* don't skip items on fast flicks */
   }
   .section_projects .projects-list::-webkit-scrollbar {
     height: 6px;

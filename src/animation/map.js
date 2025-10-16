@@ -412,6 +412,20 @@ export function initMap(root = document) {
     const projectsList = scope.querySelector('.projects-list')
     const cardsWrapper = scope.querySelector('.cards-wrapper')
     if (projectsList && cardsWrapper && !cardsWrapper.dataset.dragScrollBound) {
+      // On phones, rely entirely on native scroll for finger-following drag
+      if (isMobileOnlyNow()) {
+        try {
+          projectsList.style.touchAction = 'pan-x'
+          projectsList.style.overflowX = 'auto'
+          projectsList.style.overflowY = 'hidden'
+          cardsWrapper.style.userSelect = ''
+          cardsWrapper.style.touchAction = 'auto'
+        } catch (e) {
+          // ignore
+        }
+        // Do not bind custom drag handlers on mobile
+        return
+      }
       cardsWrapper.dataset.dragScrollBound = 'true'
       try {
         // Do NOT create a vertical scroll container here; let page handle vertical

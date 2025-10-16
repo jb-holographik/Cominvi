@@ -481,7 +481,12 @@ h1 > .is-h1-span-wrap:last-child > span {
     overscroll-behavior-x: contain;
   }
   .section_projects .project-item {
+    flex: 0 0 auto;
     scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .section_projects .project-card {
+    touch-action: pan-x;
   }
   .section_projects .projects-list::-webkit-scrollbar {
     height: 6px;

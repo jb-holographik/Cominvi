@@ -440,7 +440,7 @@ export function initMap(root = document) {
       let startX = 0
       let startScrollLeft = 0
       let hasDragged = false
-      const DRAG_THRESHOLD = 5
+      const DRAG_THRESHOLD = 4
 
       const isTabletOrBelow = () => {
         try {
@@ -455,16 +455,22 @@ export function initMap(root = document) {
 
       const onPointerDown = (e) => {
         if (!isTabletOrBelow()) return
+        // Mark dragging state to disable CSS snap while dragging
+        try {
+          projectsList.classList.add('is-dragging')
+        } catch (e) {
+          // ignore
+        }
         isPointerDown = true
         hasDragged = false
         startY = (e && e.touches ? e.touches[0].clientY : e.clientY) || 0
         startX = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
         projectsList.style.userSelect = 'none'
-        // Do not constrain to pan-x; let UA route vertical to page
-        projectsList.style.touchAction = 'auto'
+        // Constrain to horizontal movement to prevent page vertical scroll during drag
+        projectsList.style.touchAction = 'pan-x'
         cardsWrapper.style.userSelect = 'none'
-        // Allow vertical gestures to bubble to page
-        cardsWrapper.style.touchAction = 'auto'
+        // Constrain container as well
+        cardsWrapper.style.touchAction = 'pan-x'
         try {
           // Always track current horizontal scroll of the list
           startScrollLeft =
@@ -517,10 +523,34 @@ export function initMap(root = document) {
         projectsList.style.touchAction = ''
         cardsWrapper.style.userSelect = ''
         cardsWrapper.style.touchAction = ''
+        try {
+          projectsList.classList.remove('is-dragging')
+        } catch (e) {
+          // ignore
+        }
         if (hasDragged) {
           const until = String(Date.now() + 250)
           projectsList.dataset.suppressClickUntilTs = until
           cardsWrapper.dataset.suppressClickUntilTs = until
+          // Snap to nearest item manually for robustness
+          try {
+            const cards = Array.from(scope.querySelectorAll('.project-item'))
+            const listRect = projectsList.getBoundingClientRect()
+            let best = { dx: Infinity, left: 0 }
+            cards.forEach((el) => {
+              const rect = el.getBoundingClientRect()
+              const dx = Math.abs(rect.left - listRect.left)
+              if (dx < best.dx) best = { dx, left: el.offsetLeft }
+            })
+            const targetLeft = Math.max(0, best.left - 16)
+            try {
+              projectsList.scrollTo({ left: targetLeft, behavior: 'smooth' })
+            } catch (e) {
+              projectsList.scrollLeft = targetLeft
+            }
+          } catch (e) {
+            // ignore
+          }
         }
         try {
           if (

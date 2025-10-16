@@ -427,6 +427,48 @@ export function initMap(root = document) {
         try {
           let mStartX = 0
           let mStartY = 0
+          // Pointer fallback for browsers using Pointer Events
+          const onPStart = (e) => {
+            try {
+              if (e && e.isPrimary === false) return
+              if (
+                e &&
+                e.pointerType &&
+                e.pointerType !== 'touch' &&
+                e.pointerType !== 'pen'
+              )
+                return
+              mStartX = e ? e.clientX : 0
+              mStartY = e ? e.clientY : 0
+            } catch (err) {
+              mStartX = 0
+              mStartY = 0
+            }
+          }
+          const onPMove = (e) => {
+            try {
+              if (e && e.isPrimary === false) return
+              if (
+                e &&
+                e.pointerType &&
+                e.pointerType !== 'touch' &&
+                e.pointerType !== 'pen'
+              )
+                return
+              const dx = (e ? e.clientX : 0) - mStartX
+              const dy = (e ? e.clientY : 0) - mStartY
+              if (
+                Math.abs(dx) > 6 &&
+                Math.abs(Math.abs(dx) - Math.abs(dy)) > 2
+              ) {
+                const until = String(Date.now() + 300)
+                projectsList.dataset.suppressClickUntilTs = until
+                cardsWrapper.dataset.suppressClickUntilTs = until
+              }
+            } catch (err) {
+              // ignore
+            }
+          }
           const onTStart = (e) => {
             try {
               const t = e && e.touches ? e.touches[0] : null
@@ -481,8 +523,32 @@ export function initMap(root = document) {
           cardsWrapper.addEventListener('touchmove', onTMove, {
             passive: true,
           })
+          // Pointer Events support
+          projectsList.addEventListener('pointerdown', onPStart, true)
+          cardsWrapper.addEventListener('pointerdown', onPStart, true)
+          projectsList.addEventListener('pointermove', onPMove, true)
+          cardsWrapper.addEventListener('pointermove', onPMove, true)
           projectsList.addEventListener('click', suppressClickMobile, true)
           cardsWrapper.addEventListener('click', suppressClickMobile, true)
+          // Document-level capture as last resort to catch stray clicks
+          if (!window.__mobileDragClickCapture) {
+            const docClickCap = (ev) => {
+              try {
+                const tsStr =
+                  cardsWrapper.dataset.suppressClickUntilTs ||
+                  projectsList.dataset.suppressClickUntilTs
+                const ts = tsStr ? Number(tsStr) : 0
+                if (ts && Date.now() < ts) {
+                  ev.stopPropagation()
+                  ev.preventDefault()
+                }
+              } catch (err) {
+                // ignore
+              }
+            }
+            window.__mobileDragClickCapture = docClickCap
+            document.addEventListener('click', docClickCap, true)
+          }
         } catch (e) {
           // ignore
         }

@@ -440,7 +440,7 @@ export function initMap(root = document) {
       let startX = 0
       let startScrollLeft = 0
       let hasDragged = false
-      const DRAG_THRESHOLD = 4
+      const DRAG_THRESHOLD = 2
 
       const isTabletOrBelow = () => {
         try {
@@ -471,6 +471,20 @@ export function initMap(root = document) {
         cardsWrapper.style.userSelect = 'none'
         // Constrain container as well
         cardsWrapper.style.touchAction = 'none'
+        // Disable any smooth behavior while dragging
+        try {
+          projectsList.style.scrollBehavior = 'auto'
+        } catch (e) {
+          // ignore
+        }
+        // Stop Lenis page scroll while dragging
+        try {
+          if (window.lenis && typeof window.lenis.stop === 'function') {
+            window.lenis.stop()
+          }
+        } catch (e) {
+          // ignore
+        }
         try {
           // Always track current horizontal scroll of the list
           startScrollLeft =
@@ -500,9 +514,8 @@ export function initMap(root = document) {
         const x = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
         const dy = y - startY
         const dx = x - startX
-        const isHorizontal =
-          Math.abs(dx) > DRAG_THRESHOLD && Math.abs(dx) > Math.abs(dy)
-        if (isHorizontal) hasDragged = true
+        const isHorizontal = Math.abs(dx) >= Math.abs(dy)
+        if (Math.abs(dx) > DRAG_THRESHOLD) hasDragged = true
         try {
           if (isHorizontal) {
             // Only handle horizontal drag; leave vertical to the page
@@ -524,6 +537,14 @@ export function initMap(root = document) {
         cardsWrapper.style.touchAction = ''
         try {
           projectsList.classList.remove('is-dragging')
+        } catch (e) {
+          // ignore
+        }
+        // Re-enable Lenis page scroll
+        try {
+          if (window.lenis && typeof window.lenis.start === 'function') {
+            window.lenis.start()
+          }
         } catch (e) {
           // ignore
         }
@@ -550,6 +571,12 @@ export function initMap(root = document) {
           } catch (e) {
             // ignore
           }
+        }
+        // Restore styles
+        try {
+          projectsList.style.scrollBehavior = ''
+        } catch (e) {
+          // ignore
         }
         try {
           if (

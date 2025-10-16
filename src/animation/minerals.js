@@ -400,8 +400,8 @@ export function initMinerals(root = document) {
     restoreAngle()
     try {
       // Ensure the dark circle mask is intact after menu scaling
-      darkSvg.style.webkitMaskImage = darkSvg.style.webkitMaskImage
-      darkSvg.style.maskImage = darkSvg.style.maskImage
+      darkSvg.style.webkitMaskImage = maskCSS
+      darkSvg.style.maskImage = maskCSS
     } catch (e) {
       // ignore
     }

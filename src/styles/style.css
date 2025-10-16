@@ -464,6 +464,29 @@ h1 > .is-h1-span-wrap:last-child > span {
 
 /* Hide machines sections on mobile and large mobile */
 @media (max-width: 767px) {
+  /* Projects list behaves like a horizontal slider */
+  .section_projects .projects-wrapper {
+    overflow: visible;
+  }
+  .section_projects .projects-list {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .section_projects .project-item.is-active {
+    scroll-snap-align: start;
+  }
+  .section_projects .projects-list::-webkit-scrollbar {
+    height: 6px;
+  }
+  .section_projects .projects-list::-webkit-scrollbar-thumb {
+    background: rgba(21, 21, 21, 0.3);
+    border-radius: 3px;
+  }
   .machines-wrapper,
   .machines-grid-wrapper {
     display: none !important;

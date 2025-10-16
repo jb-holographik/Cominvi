@@ -72,26 +72,34 @@ export function initMap(root = document) {
       btn.addEventListener('mouseenter', () => {
         const pointKey = markerToPoint.get(markerEl)
         if (!pointKey) return
-        highlightMarkerForPoint(pointKey)
+        highlightMarkerWithoutDimming(pointKey)
         const regionKey = pointToRegionName.get(pointKey)
         if (regionKey) highlightRegionByName(regionKey)
-        dimCardsExceptPoint(pointKey)
-        // On desktop only: scroll to the corresponding card. On tablet/mobile, do not scroll.
-        try {
-          const isCoarse =
-            typeof window !== 'undefined' &&
-            window.matchMedia &&
-            window.matchMedia('(pointer: coarse)').matches
-          const isNarrow =
-            typeof window !== 'undefined' &&
-            window.matchMedia &&
-            window.matchMedia('(max-width: 991px)').matches
-          if (!(isCoarse || isNarrow)) {
-            scrollMapSectionToCard(pointKey)
+        // On mobile: pin corresponding card to the left by horizontal snapping
+        if (isMobileOnlyNow()) {
+          try {
+            const list = scope.querySelector('.projects-list')
+            const cards = Array.from(scope.querySelectorAll('.project-item'))
+            const target = cards.find((el) => {
+              const pk = el?.dataset?.point ? String(el.dataset.point) : null
+              return pk && pk === String(pointKey)
+            })
+            if (list && target) {
+              try {
+                list.scrollTo({
+                  left: Math.max(0, target.offsetLeft - 16),
+                  behavior: 'smooth',
+                })
+              } catch (e) {
+                list.scrollLeft = Math.max(0, target.offsetLeft - 16)
+              }
+            }
+          } catch (e) {
+            // ignore
           }
-        } catch (e) {
-          // Fallback: assume desktop behavior
-          scrollMapSectionToCard(pointKey)
+        } else {
+          // Desktop/tablet: activate corresponding card only
+          setActiveCardByPoint(pointKey)
         }
       })
       btn.addEventListener('mouseleave', () => {
@@ -99,13 +107,37 @@ export function initMap(root = document) {
           '.projects_overlays'
         )
         if (currentOverlays?.dataset?.open === 'true') return
-        resetAll()
+        resetRegions()
+        reapplyActiveMarker()
       })
       btn.addEventListener('click', (ev) => {
         ev.preventDefault()
         ev.stopPropagation()
         const pointKey = markerToPoint.get(markerEl)
         if (!pointKey) return
+        // On mobile: snap-scroll the horizontal list so target card pins to the left
+        try {
+          if (isMobileOnlyNow()) {
+            const list = scope.querySelector('.projects-list')
+            const cards = Array.from(scope.querySelectorAll('.project-item'))
+            const target = cards.find((el) => {
+              const pk = el?.dataset?.point ? String(el.dataset.point) : null
+              return pk && pk === String(pointKey)
+            })
+            if (list && target) {
+              try {
+                list.scrollTo({
+                  left: Math.max(0, target.offsetLeft - 16),
+                  behavior: 'smooth',
+                })
+              } catch (e) {
+                list.scrollLeft = Math.max(0, target.offsetLeft - 16)
+              }
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
         try {
           const overlays = (scope || document).querySelector(
             '.projects_overlays'
@@ -199,6 +231,43 @@ export function initMap(root = document) {
   })
 
   // Helpers
+  const setActiveCardByPoint = (pointKey) => {
+    try {
+      let target = null
+      projectItems.forEach((cardEl) => {
+        const pk = cardEl?.dataset?.point ? String(cardEl.dataset.point) : null
+        if (!target && pk && String(pk) === String(pointKey)) target = cardEl
+      })
+      projectItems.forEach((cardEl) => {
+        if (cardEl === target) cardEl.classList.add('is-active')
+        else cardEl.classList.remove('is-active')
+      })
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  const highlightMarkerWithoutDimming = (pointKey) => {
+    try {
+      const markerEl = pointToMarker.get(pointKey)
+      markers.forEach((m) => {
+        if (m === markerEl) m.classList.add('highlight')
+        else m.classList.remove('highlight')
+        m.classList.remove('dimmed')
+      })
+    } catch (e) {
+      // ignore
+    }
+  }
+  // Helper: treat phones (portrait and landscape) as <=767px
+  const isMobileOnlyNow = () => {
+    try {
+      if (typeof window === 'undefined' || !window.matchMedia) return false
+      return window.matchMedia('(max-width: 767px)').matches
+    } catch (e) {
+      return false
+    }
+  }
   const resetMarkers = () => {
     markers.forEach((m) => {
       m.classList.remove('highlight')
@@ -214,10 +283,71 @@ export function initMap(root = document) {
     projectItems.forEach((c) => c.classList.remove('is-dimmed'))
   }
 
-  const resetAll = () => {
-    resetMarkers()
-    resetRegions()
-    resetCardsDimming()
+  // Removed resetAll: behavior now persists the active marker instead of resetting everything
+
+  // Initial state: first card active and its marker highlighted (others in base state)
+  let initialActiveCard = projectItems.length ? projectItems[0] : null
+  let initialPointKey = initialActiveCard?.dataset?.point
+    ? String(initialActiveCard.dataset.point)
+    : null
+  let selectedPointKey = initialPointKey || null
+  try {
+    // Ensure only the first card is active on load
+    projectItems.forEach((c) => c.classList.remove('is-active'))
+    if (initialActiveCard) initialActiveCard.classList.add('is-active')
+    if (initialPointKey) highlightMarkerWithoutDimming(initialPointKey)
+  } catch (e) {
+    // ignore
+  }
+  // Apply mobile rule: on phones, all project-items should be active
+  const applyActiveClassesByViewport = () => {
+    try {
+      if (isMobileOnlyNow()) {
+        projectItems.forEach((c) => c.classList.add('is-active'))
+      } else {
+        // Keep only the selected (or first) active on non-mobile
+        let pk = selectedPointKey
+        if (!pk) {
+          const cards = Array.from(scope.querySelectorAll('.project-item'))
+          const active = cards.find(
+            (el) => el.classList && el.classList.contains('is-active')
+          )
+          pk = active?.dataset?.point ? String(active.dataset.point) : null
+        }
+        if (!pk && initialPointKey) pk = initialPointKey
+        projectItems.forEach((cardEl) => {
+          const p = cardEl?.dataset?.point ? String(cardEl.dataset.point) : null
+          if (pk && p && p === pk) cardEl.classList.add('is-active')
+          else cardEl.classList.remove('is-active')
+        })
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+  applyActiveClassesByViewport()
+  try {
+    window.addEventListener('resize', applyActiveClassesByViewport)
+    window.addEventListener('orientationchange', applyActiveClassesByViewport)
+  } catch (e) {
+    // ignore
+  }
+
+  const reapplyActiveMarker = () => {
+    try {
+      let pk = selectedPointKey
+      if (!pk) {
+        const active = Array.from(scope.querySelectorAll('.project-item')).find(
+          (el) => el.classList && el.classList.contains('is-active')
+        )
+        pk = active?.dataset?.point ? String(active.dataset.point) : null
+        if (pk) selectedPointKey = pk
+      }
+      if (pk) highlightMarkerWithoutDimming(pk)
+      else resetMarkers()
+    } catch (e) {
+      // ignore
+    }
   }
 
   const highlightRegionByName = (regionKey) => {
@@ -264,161 +394,9 @@ export function initMap(root = document) {
     })
   }
 
-  const dimCardsExceptPoint = (pointKey) => {
-    const candidates = pointToProjectItems.get(pointKey) || []
-    const firstForPoint = candidates.length ? candidates[0] : null
-    projectItems.forEach((cardEl) => {
-      if (firstForPoint && cardEl === firstForPoint) {
-        cardEl.classList.remove('is-dimmed')
-      } else {
-        cardEl.classList.add('is-dimmed')
-      }
-    })
-  }
+  // Removed dimCardsExceptPoint: no longer used (we keep cards visible and just toggle is-active)
 
-  const scrollMapSectionToCard = (pointKey) => {
-    try {
-      const cards = projectItems
-      if (!cards.length) return
-      const candidates = pointToProjectItems.get(pointKey) || []
-      const target = candidates.length ? candidates[0] : null
-      if (!target) return
-
-      const index = cards.indexOf(target)
-      const beforeLastIdx = Math.max(0, cards.length - 2)
-
-      const wrapper = (() => {
-        try {
-          return window.__lenisWrapper || null
-        } catch (e) {
-          return null
-        }
-      })()
-
-      const viewportH = wrapper
-        ? wrapper.clientHeight
-        : window.innerHeight || document.documentElement.clientHeight
-
-      const rect = target.getBoundingClientRect()
-      const cardsContainer = scope.querySelector('.cards-wrapper')
-      const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0
-      const currentTop = wrapper
-        ? wrapper.scrollTop
-        : window.pageYOffset || document.documentElement.scrollTop || 0
-
-      // Compute offset for top/bottom/center alignment relative to viewport
-      let offset = 0
-      if (index <= 1) {
-        // For the first two cards, always scroll to the same top level: top of cards container
-        if (cardsContainer) {
-          const containerTopRel =
-            cardsContainer.getBoundingClientRect().top - wrapperTop
-          const desiredTop = currentTop + containerTopRel
-          try {
-            if (window.lenis && typeof window.lenis.scrollTo === 'function') {
-              window.lenis.scrollTo(desiredTop, {
-                duration: 1.2,
-                immediate: false,
-              })
-              return
-            }
-          } catch (e) {
-            // ignore
-          }
-          // Fallback
-          try {
-            if (wrapper) {
-              gsap.to(wrapper, {
-                scrollTop: desiredTop,
-                duration: 1.2,
-                ease: CustomEase.create('custom', easeCurve),
-              })
-            } else {
-              window.scrollTo({ top: desiredTop, behavior: 'smooth' })
-            }
-            return
-          } catch (e) {
-            // ignore
-          }
-        }
-        offset = 0 // default top align
-      } else if (index >= beforeLastIdx) {
-        // For the last two cards, always scroll to the same bottom level: bottom of cards container
-        if (cardsContainer) {
-          const containerBottomRel =
-            cardsContainer.getBoundingClientRect().bottom - wrapperTop
-          const desiredTop = currentTop + containerBottomRel - viewportH
-          try {
-            if (window.lenis && typeof window.lenis.scrollTo === 'function') {
-              window.lenis.scrollTo(desiredTop, {
-                duration: 1.2,
-                immediate: false,
-              })
-              return
-            }
-          } catch (e) {
-            // ignore
-          }
-          // Fallback
-          try {
-            if (wrapper) {
-              gsap.to(wrapper, {
-                scrollTop: desiredTop,
-                duration: 1.2,
-                ease: CustomEase.create('custom', easeCurve),
-              })
-            } else {
-              window.scrollTo({ top: desiredTop, behavior: 'smooth' })
-            }
-            return
-          } catch (e) {
-            // ignore
-          }
-        }
-        offset = -(viewportH - rect.height) // default bottom align
-      } else {
-        // On mobile/tablet, do not center vertically; default to top alignment
-        offset = isTouchOrSmallNow() ? 0 : -(viewportH / 2 - rect.height / 2)
-      }
-
-      // Prefer Lenis
-      try {
-        if (window.lenis && typeof window.lenis.scrollTo === 'function') {
-          window.lenis.scrollTo(target, {
-            duration: 1.2,
-            immediate: false,
-            offset,
-          })
-          return
-        }
-      } catch (e) {
-        // ignore
-      }
-
-      // Fallback: manual scroll of wrapper or window
-      try {
-        const currentTop = wrapper
-          ? wrapper.scrollTop
-          : window.pageYOffset || document.documentElement.scrollTop || 0
-        const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0
-        const targetTopRel = rect.top - wrapperTop
-        const desiredTop = currentTop + targetTopRel + offset
-        if (wrapper) {
-          gsap.to(wrapper, {
-            scrollTop: desiredTop,
-            duration: 1.2,
-            ease: CustomEase.create('custom', easeCurve),
-          })
-        } else {
-          window.scrollTo({ top: desiredTop, behavior: 'smooth' })
-        }
-      } catch (e) {
-        // ignore
-      }
-    } catch (e) {
-      // ignore
-    }
-  }
+  // Removed scrollMapSectionToCard: we no longer auto-center/scroll to cards on hover
 
   // Interactions now handled by marker-hitbox buttons
 
@@ -657,11 +635,7 @@ export function initMap(root = document) {
           m.classList.remove('highlight')
         }
       })
-      // Dim other cards while hovering a card
-      projectItems.forEach((other) => {
-        if (other === cardEl) other.classList.remove('is-dimmed')
-        else other.classList.add('is-dimmed')
-      })
+      // Do not change is-active here; hover shouldn't change persistent selection
     })
     cardEl.addEventListener('mouseleave', () => {
       if (isTouchOrSmallNow()) return
@@ -669,7 +643,7 @@ export function initMap(root = document) {
         '.projects_overlays'
       )
       if (currentOverlays?.dataset?.open === 'true') return
-      resetMarkers()
+      reapplyActiveMarker()
       resetRegions()
     })
     cardEl.addEventListener('click', (ev) => {
@@ -680,6 +654,31 @@ export function initMap(root = document) {
         if (!pointKey) return
         ev.preventDefault()
         ev.stopPropagation()
+        // Persist selection to this card's point
+        selectedPointKey = String(pointKey)
+        // Mobile/mobile-landscape: only activate marker, no animations/overlays
+        if (isMobileOnlyNow()) {
+          highlightMarkerWithoutDimming(selectedPointKey)
+          // Pin this card to the left in the horizontal list
+          try {
+            const list = scope.querySelector('.projects-list')
+            if (list && cardEl && cardEl.offsetLeft != null) {
+              try {
+                list.scrollTo({
+                  left: Math.max(0, cardEl.offsetLeft - 16),
+                  behavior: 'smooth',
+                })
+              } catch (e) {
+                list.scrollLeft = Math.max(0, cardEl.offsetLeft - 16)
+              }
+            }
+          } catch (e) {
+            // ignore
+          }
+          return
+        }
+        // Tablet/desktop: activate this card only
+        setActiveCardByPoint(pointKey)
         // On tablet/mobile: scroll page so that .map-section top aligns to viewport top, then open
         if (isTouchOrSmallNow()) {
           try {

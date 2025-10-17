@@ -633,6 +633,7 @@ export function initMap(root = document) {
       try {
         instance.on('slideChange', () => syncFromActiveSlide(instance))
         instance.on('activeIndexChange', () => syncFromActiveSlide(instance))
+        instance.on('transitionEnd', () => syncFromActiveSlide(instance))
       } catch (e) {
         // ignore
       }
@@ -674,9 +675,16 @@ export function initMap(root = document) {
           // ignore
         }
         sw.slideTo(idx, duration)
-        // Apply glow immediately as well (in case event timing differs)
+        // Ensure sync both immediately and after transition
         try {
           highlightPointAndRegion(pointKey)
+        } catch (e) {
+          /* ignore */
+        }
+        try {
+          if (typeof sw.once === 'function') {
+            sw.once('transitionEnd', () => highlightPointAndRegion(pointKey))
+          }
         } catch (e) {
           // ignore
         }

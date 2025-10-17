@@ -464,29 +464,6 @@ h1 > .is-h1-span-wrap:last-child > span {
 
 /* Hide machines sections on mobile and large mobile */
 @media (max-width: 767px) {
-  /* Projects list behaves like a horizontal slider */
-  .section_projects .projects-wrapper {
-    overflow: visible;
-  }
-  .section_projects .projects-list {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .section_projects .project-item.is-active {
-    scroll-snap-align: start;
-  }
-  .section_projects .projects-list::-webkit-scrollbar {
-    height: 6px;
-  }
-  .section_projects .projects-list::-webkit-scrollbar-thumb {
-    background: rgba(21, 21, 21, 0.3);
-    border-radius: 3px;
-  }
   .machines-wrapper,
   .machines-grid-wrapper {
     display: none !important;
@@ -560,6 +537,68 @@ h1 > .is-h1-span-wrap:last-child > span {
     height: 100% !important;
     border-radius: 0;
   }
+}
+
+/* Swiper: ensure horizontal layout and draggable behavior across breakpoints */
+.projects-list.swiper-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start !important;
+}
+.projects-list.swiper-wrapper .swiper-slide {
+  flex: 0 0 auto;
+}
+.swiper.projects-wrapper,
+.projects-list.swiper-wrapper {
+  touch-action: pan-x !important;
+}
+.swiper.projects-wrapper .swiper-wrapper {
+  cursor: grab;
+}
+.swiper.projects-wrapper .swiper-wrapper:active {
+  cursor: grabbing;
+}
+.swiper.projects-wrapper .project-card,
+.swiper.projects-wrapper .project-item {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* Desktop & tablet: hide non-active slides visually (Swiper still manages them) */
+@media (min-width: 768px) {
+  .swiper.projects-wrapper .swiper-slide {
+    opacity: 0;
+    /* display: none; */
+    pointer-events: none;
+  }
+  .swiper.projects-wrapper .swiper-slide.swiper-slide-active {
+    opacity: 1;
+    pointer-events: auto;
+    display: block;
+  }
+  /* Ensure Swiper toggles active state properly even if hidden before */
+  .swiper.projects-wrapper .swiper-wrapper {
+    will-change: transform;
+  }
+  /* Remove gaps/paddings that offset slides on tablet/desktop */
+  .swiper.projects-wrapper .projects-list.swiper-wrapper {
+    gap: 0 !important;
+    column-gap: 0 !important;
+    row-gap: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .swiper.projects-wrapper {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+.swiper.projects-wrapper {
+  padding-left: 0;
+  padding-right: 0;
+  overflow: hidden;
 }
 
 @media screen and (min-width: 991px) {

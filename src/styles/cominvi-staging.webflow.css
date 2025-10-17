@@ -2521,7 +2521,7 @@ p {
 }
 
 .project-item {
-  display: none;
+  display: flex;
 }
 
 .project-item.is-dimmed {
@@ -5983,20 +5983,28 @@ p {
   }
 
   .projects-list {
+    grid-column-gap: 0em;
+    grid-row-gap: 0em;
     flex-flow: row;
     justify-content: flex-start;
     align-items: flex-end;
     height: auto;
     padding-bottom: 1em;
+    padding-left: 0;
   }
 
   .project-item.is-active {
     flex: none;
     width: 21em;
+    padding-left: 1em;
   }
 
   .project-card {
     padding: 1em;
+  }
+
+  .project-card_infos {
+    pointer-events: none;
   }
 
   .map-gradients {
@@ -6447,6 +6455,10 @@ p {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-auto-columns: 1fr;
     display: none;
+  }
+
+  .hero-background {
+    height: 100%;
   }
 
   .scroll-list.is-l-aligned {

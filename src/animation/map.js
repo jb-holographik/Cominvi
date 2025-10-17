@@ -1,7 +1,9 @@
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
+import Swiper from 'swiper'
+import { Mousewheel } from 'swiper/modules'
+import 'swiper/css'
 gsap.registerPlugin(CustomEase)
-const easeCurve = 'M0,0 C0.6,0 0,1 1,1 '
 
 export function initMap(root = document) {
   const scope = root || document
@@ -72,35 +74,11 @@ export function initMap(root = document) {
       btn.addEventListener('mouseenter', () => {
         const pointKey = markerToPoint.get(markerEl)
         if (!pointKey) return
-        highlightMarkerWithoutDimming(pointKey)
-        const regionKey = pointToRegionName.get(pointKey)
-        if (regionKey) highlightRegionByName(regionKey)
-        // On mobile: pin corresponding card to the left by horizontal snapping
-        if (isMobileOnlyNow()) {
-          try {
-            const list = scope.querySelector('.projects-list')
-            const cards = Array.from(scope.querySelectorAll('.project-item'))
-            const target = cards.find((el) => {
-              const pk = el?.dataset?.point ? String(el.dataset.point) : null
-              return pk && pk === String(pointKey)
-            })
-            if (list && target) {
-              try {
-                list.scrollTo({
-                  left: Math.max(0, target.offsetLeft - 16),
-                  behavior: 'smooth',
-                })
-              } catch (e) {
-                list.scrollLeft = Math.max(0, target.offsetLeft - 16)
-              }
-            }
-          } catch (e) {
-            // ignore
-          }
-        } else {
-          // Desktop/tablet: activate corresponding card only
-          setActiveCardByPoint(pointKey)
-        }
+        highlightPointAndRegion(pointKey)
+        // On desktop/tablet: slide to corresponding card
+        if (!isMobileOnlyNow()) slideToPoint(pointKey)
+        // On mobile: keep current behavior (no overlays)
+        if (isMobileOnlyNow()) slideToPoint(pointKey)
       })
       btn.addEventListener('mouseleave', () => {
         const currentOverlays = (scope || document).querySelector(
@@ -115,42 +93,8 @@ export function initMap(root = document) {
         ev.stopPropagation()
         const pointKey = markerToPoint.get(markerEl)
         if (!pointKey) return
-        // On mobile: snap-scroll the horizontal list so target card pins to the left
-        try {
-          if (isMobileOnlyNow()) {
-            const list = scope.querySelector('.projects-list')
-            const cards = Array.from(scope.querySelectorAll('.project-item'))
-            const target = cards.find((el) => {
-              const pk = el?.dataset?.point ? String(el.dataset.point) : null
-              return pk && pk === String(pointKey)
-            })
-            if (list && target) {
-              try {
-                list.scrollTo({
-                  left: Math.max(0, target.offsetLeft - 16),
-                  behavior: 'smooth',
-                })
-              } catch (e) {
-                list.scrollLeft = Math.max(0, target.offsetLeft - 16)
-              }
-            }
-          }
-        } catch (e) {
-          // ignore
-        }
-        // On phones: do not open overlays or animate cards; only marker/card sync handled above
-        try {
-          if (!isMobileOnlyNow()) {
-            const overlays = (scope || document).querySelector(
-              '.projects_overlays'
-            )
-            const isOpen = overlays?.dataset?.open === 'true'
-            if (isOpen) mapClose(scope)
-            else mapOpen(pointKey, scope)
-          }
-        } catch (e) {
-          // ignore
-        }
+        // Always slide to the corresponding card; remove overlay open/close
+        slideToPoint(pointKey)
       })
       document.body.appendChild(btn)
       markerToButton.set(markerEl, btn)
@@ -234,21 +178,6 @@ export function initMap(root = document) {
   })
 
   // Helpers
-  const setActiveCardByPoint = (pointKey) => {
-    try {
-      let target = null
-      projectItems.forEach((cardEl) => {
-        const pk = cardEl?.dataset?.point ? String(cardEl.dataset.point) : null
-        if (!target && pk && String(pk) === String(pointKey)) target = cardEl
-      })
-      projectItems.forEach((cardEl) => {
-        if (cardEl === target) cardEl.classList.add('is-active')
-        else cardEl.classList.remove('is-active')
-      })
-    } catch (e) {
-      // ignore
-    }
-  }
 
   const highlightMarkerWithoutDimming = (pointKey) => {
     try {
@@ -258,6 +187,42 @@ export function initMap(root = document) {
         else m.classList.remove('highlight')
         m.classList.remove('dimmed')
       })
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  // Resolve region key for a given point using mapping or card dataset
+  const getRegionForPoint = (pointKey) => {
+    try {
+      if (!pointKey) return null
+      const viaMap = pointToRegionName.get(pointKey)
+      if (viaMap) return viaMap
+      const card = Array.from(scope.querySelectorAll('.project-item')).find(
+        (el) => String(el?.dataset?.point || '') === String(pointKey)
+      )
+      const rk = card?.dataset?.region
+        ? normalizeRegionKey(card.dataset.region)
+        : null
+      return rk || null
+    } catch (e) {
+      return null
+    }
+  }
+
+  // Highlight both marker and its corresponding region for an active point
+  const highlightPointAndRegion = (pointKey) => {
+    try {
+      if (!pointKey) {
+        resetMarkers()
+        resetRegions()
+        return
+      }
+      selectedPointKey = String(pointKey)
+      highlightMarkerWithoutDimming(pointKey)
+      const rk = getRegionForPoint(pointKey)
+      if (rk) highlightRegionByName(rk)
+      else resetRegions()
     } catch (e) {
       // ignore
     }
@@ -288,66 +253,44 @@ export function initMap(root = document) {
 
   // Removed resetAll: behavior now persists the active marker instead of resetting everything
 
-  // Initial state: first card active and its marker highlighted (others in base state)
+  // Initial state: highlight first card's marker only (no active classes on items)
   let initialActiveCard = projectItems.length ? projectItems[0] : null
   let initialPointKey = initialActiveCard?.dataset?.point
     ? String(initialActiveCard.dataset.point)
     : null
   let selectedPointKey = initialPointKey || null
   try {
-    // Ensure only the first card is active on load
-    projectItems.forEach((c) => c.classList.remove('is-active'))
-    if (initialActiveCard) initialActiveCard.classList.add('is-active')
-    if (initialPointKey) highlightMarkerWithoutDimming(initialPointKey)
-  } catch (e) {
-    // ignore
-  }
-  // Apply mobile rule: on phones, all project-items should be active
-  const applyActiveClassesByViewport = () => {
+    if (initialPointKey) highlightPointAndRegion(initialPointKey)
+    // Also sync to Swiper's initial active slide (Webflow can reorder DOM)
     try {
-      if (isMobileOnlyNow()) {
-        projectItems.forEach((c) => c.classList.add('is-active'))
-      } else {
-        // Keep only the selected (or first) active on non-mobile
-        let pk = selectedPointKey
-        if (!pk) {
-          const cards = Array.from(scope.querySelectorAll('.project-item'))
-          const active = cards.find(
-            (el) => el.classList && el.classList.contains('is-active')
-          )
-          pk = active?.dataset?.point ? String(active.dataset.point) : null
-        }
-        if (!pk && initialPointKey) pk = initialPointKey
-        projectItems.forEach((cardEl) => {
-          const p = cardEl?.dataset?.point ? String(cardEl.dataset.point) : null
-          if (pk && p && p === pk) cardEl.classList.add('is-active')
-          else cardEl.classList.remove('is-active')
-        })
+      const container =
+        scope.querySelector('.swiper.projects-wrapper') ||
+        scope.querySelector('.projects-wrapper.swiper')
+      const sw =
+        container && (container.__projectsSwiper || container.swiper)
+          ? container.__projectsSwiper || container.swiper
+          : null
+      if (sw && sw.slides && typeof sw.activeIndex === 'number') {
+        const s = sw.slides[sw.activeIndex]
+        const pk = s?.dataset?.point ? String(s.dataset.point) : null
+        if (pk) highlightPointAndRegion(pk)
       }
     } catch (e) {
       // ignore
     }
-  }
-  applyActiveClassesByViewport()
-  try {
-    window.addEventListener('resize', applyActiveClassesByViewport)
-    window.addEventListener('orientationchange', applyActiveClassesByViewport)
   } catch (e) {
     // ignore
   }
+  // We no longer toggle `is-active` on items per viewport
 
   const reapplyActiveMarker = () => {
     try {
-      let pk = selectedPointKey
-      if (!pk) {
-        const active = Array.from(scope.querySelectorAll('.project-item')).find(
-          (el) => el.classList && el.classList.contains('is-active')
-        )
-        pk = active?.dataset?.point ? String(active.dataset.point) : null
-        if (pk) selectedPointKey = pk
+      const pk = selectedPointKey
+      if (pk) highlightPointAndRegion(pk)
+      else {
+        resetMarkers()
+        resetRegions()
       }
-      if (pk) highlightMarkerWithoutDimming(pk)
-      else resetMarkers()
     } catch (e) {
       // ignore
     }
@@ -380,22 +323,7 @@ export function initMap(root = document) {
     }
   }
 
-  const highlightMarkerForPoint = (pointKey) => {
-    const markerEl = pointToMarker.get(pointKey)
-    if (!markerEl) {
-      resetMarkers()
-      return
-    }
-    markers.forEach((m) => {
-      if (m === markerEl) {
-        m.classList.add('highlight')
-        m.classList.remove('dimmed')
-      } else {
-        m.classList.add('dimmed')
-        m.classList.remove('highlight')
-      }
-    })
-  }
+  // Deprecated: highlightMarkerForPoint replaced by highlightPointAndRegion
 
   // Removed dimCardsExceptPoint: no longer used (we keep cards visible and just toggle is-active)
 
@@ -403,170 +331,149 @@ export function initMap(root = document) {
 
   // Interactions now handled by marker-hitbox buttons
 
-  // Enable drag-to-scroll on the projects list for tablet/mobile without breaking taps
+  // Initialize Swiper on the projects wrapper (no controls/pagination)
   try {
-    const projectsList = scope.querySelector('.projects-list')
-    const cardsWrapper = scope.querySelector('.cards-wrapper')
-    if (projectsList && cardsWrapper && !cardsWrapper.dataset.dragScrollBound) {
-      cardsWrapper.dataset.dragScrollBound = 'true'
+    const container =
+      scope.querySelector('.swiper.projects-wrapper') ||
+      scope.querySelector('.projects-wrapper.swiper')
+    if (container && !container.__swiperInitialized) {
+      container.__swiperInitialized = true
+      const instance = new Swiper(container, {
+        modules: [Mousewheel],
+        slidesPerView: 1.2,
+        speed: 600,
+        loop: false,
+        centeredSlides: false,
+        observer: true,
+        observeParents: true,
+        allowTouchMove: true,
+        simulateTouch: true,
+        grabCursor: true,
+        touchStartPreventDefault: false,
+        passiveListeners: false,
+        touchEventsTarget: 'container',
+        preventClicks: true,
+        preventClicksPropagation: true,
+        threshold: 0,
+        mousewheel: {
+          enabled: true,
+          forceToAxis: true,
+          sensitivity: 1,
+          releaseOnEdges: true,
+        },
+        // Desktop & tablet: exactly 1 card visible; keep mobile behavior unchanged
+        breakpoints: {
+          0: {
+            slidesPerView: 1.2,
+            centeredSlides: false,
+            speed: 600,
+          },
+          768: {
+            slidesPerView: 1,
+            spaceBetween: 0,
+            centeredSlides: false,
+            speed: 0,
+          },
+        },
+      })
+      container.__projectsSwiper = instance
+      // also align with Swiper's default el.swiper usage
       try {
-        // Do NOT create a vertical scroll container here; let page handle vertical
-        cardsWrapper.style.overflowY = ''
-        cardsWrapper.style.height = cardsWrapper.style.height || '100%'
-        cardsWrapper.style.overscrollBehavior = ''
-        cardsWrapper.style.webkitOverflowScrolling = ''
-        cardsWrapper.style.touchAction = ''
-        // Ensure Lenis does NOT block wheel/touch on this wrapper
-        cardsWrapper.removeAttribute('data-lenis-prevent')
-        cardsWrapper.removeAttribute('data-lenis-prevent-touch')
-        cardsWrapper.removeAttribute('data-lenis-prevent-wheel')
+        container.swiper = container.swiper || instance
       } catch (e) {
-        // ignore
-      }
-      // Ensure horizontal scrollability on the projects list itself
-      try {
-        projectsList.style.overflowX = 'auto'
-        projectsList.style.overflowY = 'hidden'
-        projectsList.style.webkitOverflowScrolling = 'touch'
-        // Allow vertical gestures to bubble to the page
-        projectsList.style.touchAction = 'auto'
-        // Make sure Lenis does NOT block wheel/touch on the list (let vertical pass through)
-        projectsList.removeAttribute('data-lenis-prevent')
-        projectsList.removeAttribute('data-lenis-prevent-touch')
-        projectsList.removeAttribute('data-lenis-prevent-wheel')
-      } catch (e) {
-        // ignore
+        /* ignore */
       }
 
-      let isPointerDown = false
-      let startY = 0
-      let startX = 0
-      let startScrollLeft = 0
-      let hasDragged = false
-      const DRAG_THRESHOLD = 5
-
-      const isTabletOrBelow = () => {
+      // When active slide changes, activate corresponding map marker/region
+      const syncFromActiveSlide = (sw) => {
         try {
-          if (typeof window === 'undefined' || !window.matchMedia) return false
-          const isCoarse = window.matchMedia('(pointer: coarse)').matches
-          const isNarrow = window.matchMedia('(max-width: 1200px)').matches
-          return isCoarse || isNarrow
-        } catch (e) {
-          return false
-        }
-      }
-
-      const onPointerDown = (e) => {
-        if (!isTabletOrBelow()) return
-        isPointerDown = true
-        hasDragged = false
-        startY = (e && e.touches ? e.touches[0].clientY : e.clientY) || 0
-        startX = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
-        projectsList.style.userSelect = 'none'
-        // Do not constrain to pan-x; let UA route vertical to page
-        projectsList.style.touchAction = 'auto'
-        cardsWrapper.style.userSelect = 'none'
-        // Allow vertical gestures to bubble to page
-        cardsWrapper.style.touchAction = 'auto'
-        try {
-          // Always track current horizontal scroll of the list
-          startScrollLeft =
-            typeof projectsList.scrollLeft === 'number'
-              ? projectsList.scrollLeft
-              : 0
-        } catch (err) {
-          startScrollLeft = 0
-        }
-        try {
-          if (
-            e &&
-            e.target &&
-            e.target.setPointerCapture &&
-            e.pointerId != null
-          ) {
-            e.target.setPointerCapture(e.pointerId)
-          }
-        } catch (err) {
-          // ignore
-        }
-      }
-
-      const onPointerMove = (e) => {
-        if (!isPointerDown || !isTabletOrBelow()) return
-        const y = (e && e.touches ? e.touches[0].clientY : e.clientY) || 0
-        const x = (e && e.touches ? e.touches[0].clientX : e.clientX) || 0
-        const dy = y - startY
-        const dx = x - startX
-        const isHorizontal =
-          Math.abs(dx) > DRAG_THRESHOLD && Math.abs(dx) > Math.abs(dy)
-        if (isHorizontal) hasDragged = true
-        try {
-          if (isHorizontal) {
-            // Only handle horizontal drag; leave vertical to the page
-            const targetLeft = startScrollLeft - dx
-            projectsList.scrollLeft = targetLeft
-          }
-        } catch (err) {
-          // ignore
-        }
-        if (isHorizontal && e && typeof e.preventDefault === 'function')
-          e.preventDefault()
-      }
-
-      const onPointerUp = () => {
-        if (!isPointerDown) return
-        isPointerDown = false
-        projectsList.style.userSelect = ''
-        projectsList.style.touchAction = ''
-        cardsWrapper.style.userSelect = ''
-        cardsWrapper.style.touchAction = ''
-        if (hasDragged) {
-          const until = String(Date.now() + 250)
-          projectsList.dataset.suppressClickUntilTs = until
-          cardsWrapper.dataset.suppressClickUntilTs = until
-        }
-        try {
-          if (
-            window &&
-            window.document &&
-            typeof window.getSelection === 'function'
-          ) {
-            const sel = window.getSelection()
-            if (sel && sel.empty) sel.empty()
-          }
-        } catch (err) {
-          // ignore
-        }
-      }
-
-      const suppressClick = (ev) => {
-        try {
-          const tsStr =
-            cardsWrapper.dataset.suppressClickUntilTs ||
-            projectsList.dataset.suppressClickUntilTs
-          const ts = tsStr ? Number(tsStr) : 0
-          if (ts && Date.now() < ts) {
-            ev.stopPropagation()
-            ev.preventDefault()
-          }
+          const activeIdx =
+            sw && typeof sw.activeIndex === 'number' ? sw.activeIndex : null
+          const activeSlide =
+            activeIdx != null && sw && sw.slides && sw.slides[activeIdx]
+              ? sw.slides[activeIdx]
+              : container.querySelector('.swiper-slide-active')
+          if (!activeSlide) return
+          const pointKey = activeSlide?.dataset?.point
+            ? String(activeSlide.dataset.point)
+            : null
+          if (!pointKey) return
+          highlightPointAndRegion(pointKey)
         } catch (e) {
           // ignore
         }
       }
-
-      projectsList.addEventListener('pointerdown', onPointerDown, true)
-      cardsWrapper.addEventListener('pointerdown', onPointerDown, true)
-      window.addEventListener('pointermove', onPointerMove)
-      window.addEventListener('pointerup', onPointerUp)
-      window.addEventListener('pointercancel', onPointerUp)
-      projectsList.addEventListener('touchstart', onPointerDown, true)
-      cardsWrapper.addEventListener('touchstart', onPointerDown, true)
-      window.addEventListener('touchmove', onPointerMove, { passive: false })
-      window.addEventListener('touchend', onPointerUp, { passive: true })
-      window.addEventListener('touchcancel', onPointerUp, { passive: true })
-      projectsList.addEventListener('click', suppressClick, true)
-      cardsWrapper.addEventListener('click', suppressClick, true)
+      try {
+        instance.on('slideChange', () => syncFromActiveSlide(instance))
+        instance.on('activeIndexChange', () => syncFromActiveSlide(instance))
+      } catch (e) {
+        // ignore
+      }
+      // Initial sync to currently active slide
+      syncFromActiveSlide(instance)
     }
+  } catch (e) {
+    // ignore
+  }
+
+  // Helper: slide Swiper to the card matching a given point
+  const slideToPoint = (pointKey) => {
+    try {
+      const container =
+        scope.querySelector('.swiper.projects-wrapper') ||
+        scope.querySelector('.projects-wrapper.swiper')
+      const sw =
+        container && (container.__projectsSwiper || container.swiper)
+          ? container.__projectsSwiper || container.swiper
+          : null
+      if (!sw) return false
+      const slides = sw.slides ? Array.from(sw.slides) : []
+      const idx = slides.findIndex((el) => {
+        const pk = el?.dataset?.point ? String(el.dataset.point) : null
+        return pk && pk === String(pointKey)
+      })
+      if (idx >= 0) {
+        // Instant on tablet/desktop, animated on mobile
+        let duration = 300
+        try {
+          if (
+            typeof window !== 'undefined' &&
+            window.matchMedia &&
+            window.matchMedia('(min-width: 768px)').matches
+          ) {
+            duration = 0
+          }
+        } catch (e) {
+          // ignore
+        }
+        sw.slideTo(idx, duration)
+        return true
+      }
+    } catch (e) {
+      // ignore
+    }
+    return false
+  }
+
+  // Also react to hovering actual marker SVGs (not only hitbox), desktop/tablet only
+  try {
+    const isDesktopOrTablet = () => {
+      try {
+        if (typeof window === 'undefined' || !window.matchMedia) return true
+        return !window.matchMedia('(max-width: 767px)').matches
+      } catch (e) {
+        return true
+      }
+    }
+    markers.forEach((markerEl) => {
+      markerEl.addEventListener('mouseenter', () => {
+        if (!isDesktopOrTablet()) return
+        const pointKey = markerToPoint.get(markerEl)
+        if (!pointKey) return
+        highlightPointAndRegion(pointKey)
+        slideToPoint(pointKey)
+      })
+    })
   } catch (e) {
     // ignore
   }
@@ -581,11 +488,7 @@ export function initMap(root = document) {
       else resetRegions()
     })
     regionEl.addEventListener('mouseleave', () => {
-      const currentOverlays = (scope || document).querySelector(
-        '.projects_overlays'
-      )
-      if (currentOverlays?.dataset?.open === 'true') return
-      resetRegions()
+      reapplyActiveMarker()
     })
   })
 
@@ -624,11 +527,8 @@ export function initMap(root = document) {
       const pointKey = cardEl?.dataset?.point
         ? String(cardEl.dataset.point)
         : null
-      const regionKey = cardEl?.dataset?.region
-        ? normalizeRegionKey(cardEl.dataset.region)
-        : null
-      if (pointKey) highlightMarkerForPoint(pointKey)
-      if (regionKey) highlightRegionByName(regionKey)
+      /* keep direct normalization for potential future use */
+      if (pointKey) highlightPointAndRegion(pointKey)
       // Also dim other points per spec
       if (!pointKey) return
       markers.forEach((m) => {
@@ -646,8 +546,8 @@ export function initMap(root = document) {
         '.projects_overlays'
       )
       if (currentOverlays?.dataset?.open === 'true') return
+      // Reapply active marker AND region; do not clear region after
       reapplyActiveMarker()
-      resetRegions()
     })
     cardEl.addEventListener('click', (ev) => {
       try {
@@ -657,73 +557,20 @@ export function initMap(root = document) {
         if (!pointKey) return
         ev.preventDefault()
         ev.stopPropagation()
-        // Persist selection to this card's point
+        // Persist selection & sync highlight; remove scroll/overlay
         selectedPointKey = String(pointKey)
-        // Mobile/mobile-landscape: only activate marker, no animations/overlays
-        if (isMobileOnlyNow()) {
-          highlightMarkerWithoutDimming(selectedPointKey)
-          return
+        highlightMarkerWithoutDimming(selectedPointKey)
+        try {
+          const regionKeyRaw = cardEl?.dataset?.region
+          const rk = regionKeyRaw
+            ? normalizeRegionKey(regionKeyRaw)
+            : pointToRegionName.get(selectedPointKey)
+          if (rk) highlightRegionByName(rk)
+          else resetRegions()
+        } catch (e) {
+          // ignore
         }
-        // Tablet/desktop: activate this card only
-        setActiveCardByPoint(pointKey)
-        // On tablet/mobile: scroll page so that .map-section top aligns to viewport top, then open
-        if (isTouchOrSmallNow()) {
-          try {
-            const mapSection = scope.querySelector('.map-section')
-            if (mapSection) {
-              const wrapper = (() => {
-                try {
-                  return window.__lenisWrapper || null
-                } catch (e) {
-                  return null
-                }
-              })()
-              const wrapperTop = wrapper
-                ? wrapper.getBoundingClientRect().top
-                : 0
-              const currentTop = wrapper
-                ? wrapper.scrollTop
-                : window.pageYOffset || document.documentElement.scrollTop || 0
-              const targetTopRel =
-                mapSection.getBoundingClientRect().top - wrapperTop
-              const desiredTop = currentTop + targetTopRel
-              // Prefer GSAP tween for reliable onComplete
-              if (wrapper) {
-                gsap.to(wrapper, {
-                  scrollTop: desiredTop,
-                  duration: 0.6,
-                  ease: CustomEase.create('custom', easeCurve),
-                  onComplete: () => mapOpen(pointKey, scope),
-                })
-                return
-              }
-              // Try Lenis if available
-              try {
-                if (
-                  window.lenis &&
-                  typeof window.lenis.scrollTo === 'function'
-                ) {
-                  window.lenis.scrollTo(desiredTop, {
-                    duration: 0.6,
-                    immediate: false,
-                  })
-                  setTimeout(() => mapOpen(pointKey, scope), 650)
-                  return
-                }
-              } catch (e) {
-                // ignore
-              }
-              // Fallback: native smooth scroll then open
-              window.scrollTo({ top: desiredTop, behavior: 'smooth' })
-              setTimeout(() => mapOpen(pointKey, scope), 650)
-              return
-            }
-          } catch (e) {
-            // ignore and fallback to open
-          }
-        }
-        // Desktop or fallback: open immediately
-        mapOpen(pointKey, scope)
+        slideToPoint(pointKey)
       } catch (e) {
         // ignore
       }
@@ -814,228 +661,10 @@ export function initMap(root = document) {
   }
 }
 
-export function mapOpen(pointKey, root = document) {
-  const scope = root || document
-  const cardsWrapper = scope.querySelector('.cards-wrapper')
-  const overlays = scope.querySelector('.projects_overlays')
-  const overlayItems = Array.from(
-    scope.querySelectorAll('.projects-overlay-item')
-  )
-
-  // Activate only the first overlay item matching the point
-  const targetItems = overlayItems.filter((el) => {
-    const pk = el?.dataset?.point ? String(el.dataset.point) : null
-    return pk && String(pk) === String(pointKey)
-  })
-  const first = targetItems.length ? targetItems[0] : null
-  overlayItems.forEach((el) => el.classList.remove('is-active'))
-  if (first) first.classList.add('is-active')
-
-  // Animate panels
-  if (cardsWrapper) {
-    const isTouchOrSmall = () => {
-      try {
-        if (typeof window === 'undefined' || !window.matchMedia) return false
-        return (
-          window.matchMedia('(pointer: coarse)').matches ||
-          window.matchMedia('(max-width: 991px)').matches
-        )
-      } catch (e) {
-        return false
-      }
-    }
-    if (isTouchOrSmall()) {
-      // Mobile/tablet: slide cards down
-      gsap.set(cardsWrapper, { x: 0, xPercent: 0, overwrite: 'auto' })
-      gsap.to(cardsWrapper, {
-        y: 0,
-        yPercent: 100,
-        duration: 1.2,
-        ease: CustomEase.create('custom', easeCurve),
-      })
-    } else {
-      // Desktop: slide cards right (existing behavior)
-      gsap.set(cardsWrapper, { y: 0, yPercent: 0, overwrite: 'auto' })
-      gsap.to(cardsWrapper, {
-        xPercent: 110,
-        duration: 1.2,
-        ease: CustomEase.create('custom', easeCurve),
-      })
-    }
-  }
-  if (overlays) {
-    gsap.set(overlays, { display: 'flex' })
-    // Start off-screen, clear any px translation, animate to 0 with custom ease
-    gsap.set(overlays, { x: 0, xPercent: 110, overwrite: 'auto' })
-    gsap.to(overlays, {
-      x: 0,
-      xPercent: 0,
-      duration: 1.2,
-      ease: CustomEase.create('custom', easeCurve),
-    })
-    try {
-      overlays.dataset.open = 'true'
-    } catch (e) {
-      // ignore
-    }
-    // Persist highlight for the selected point/region while open
-    try {
-      if (pointKey) {
-        const markers = Array.from(
-          scope.querySelectorAll('.marker[id^="marker-"]')
-        )
-        const selectedMarker = scope.getElementById(
-          `marker-${String(pointKey)}`
-        )
-        markers.forEach((m) => {
-          if (m === selectedMarker) {
-            m.classList.add('highlight')
-            m.classList.remove('dimmed')
-          } else {
-            m.classList.add('dimmed')
-            m.classList.remove('highlight')
-          }
-        })
-
-        // Find corresponding region via first matching project-item's data-region
-        const projectItems = Array.from(scope.querySelectorAll('.project-item'))
-        let regionKeyRaw = null
-        for (const el of projectItems) {
-          const pk = el?.dataset?.point ? String(el.dataset.point) : null
-          if (pk && pk === String(pointKey)) {
-            regionKeyRaw = el?.dataset?.region
-            break
-          }
-        }
-        const normalize = (raw) => {
-          if (!raw && raw !== 0) return null
-          let v = String(raw).trim().toLowerCase()
-          if (v.startsWith('#')) v = v.slice(1)
-          if (v.startsWith('region-')) v = v.slice(7)
-          return v || null
-        }
-        const regionKey = normalize(regionKeyRaw)
-        const regions = Array.from(
-          scope.querySelectorAll('.region[id^="region-"]')
-        )
-        const targetRegion = regionKey
-          ? scope.getElementById(`region-${regionKey}`)
-          : null
-        regions.forEach((r) => {
-          if (r === targetRegion) r.classList.add('highlight')
-          else r.classList.remove('highlight')
-        })
-        try {
-          if (targetRegion && targetRegion.parentNode) {
-            targetRegion.parentNode.appendChild(targetRegion)
-          }
-        } catch (e) {
-          // ignore
-        }
-      }
-    } catch (e) {
-      // ignore
-    }
-    // Disable scroll (Lenis wrapper)
-    try {
-      if (window.lenis && typeof window.lenis.stop === 'function') {
-        window.lenis.stop()
-      }
-    } catch (e) {
-      // ignore
-    }
-  }
+export function mapOpen() {
+  // Overlays disabled by spec: no animations/open
 }
 
-export function mapClose(root = document) {
-  const scope = root || document
-  const cardsWrapper = scope.querySelector('.cards-wrapper')
-  const overlays = scope.querySelector('.projects_overlays')
-  const overlayItems = Array.from(
-    scope.querySelectorAll('.projects-overlay-item')
-  )
-
-  // Ensure cards are not dimmed before content returns into view
-  try {
-    const cards = Array.from(scope.querySelectorAll('.project-item'))
-    cards.forEach((c) => c.classList.remove('is-dimmed'))
-  } catch (e) {
-    // ignore
-  }
-
-  if (cardsWrapper) {
-    const isTouchOrSmall = () => {
-      try {
-        if (typeof window === 'undefined' || !window.matchMedia) return false
-        return (
-          window.matchMedia('(pointer: coarse)').matches ||
-          window.matchMedia('(max-width: 991px)').matches
-        )
-      } catch (e) {
-        return false
-      }
-    }
-    if (isTouchOrSmall()) {
-      // Mobile/tablet: reset vertical slide
-      gsap.set(cardsWrapper, { x: 0, xPercent: 0, overwrite: 'auto' })
-      gsap.to(cardsWrapper, {
-        y: 0,
-        yPercent: 0,
-        duration: 1.2,
-        ease: CustomEase.create('custom', easeCurve),
-      })
-    } else {
-      // Desktop: reset horizontal slide (existing behavior)
-      gsap.set(cardsWrapper, { y: 0, yPercent: 0, overwrite: 'auto' })
-      gsap.to(cardsWrapper, {
-        xPercent: 0,
-        duration: 1.2,
-        ease: CustomEase.create('custom', easeCurve),
-      })
-    }
-  }
-  if (overlays) {
-    // Reset any px translation so percent-based move is accurate
-    gsap.set(overlays, { x: 0, overwrite: 'auto' })
-    gsap.to(overlays, {
-      x: 0,
-      xPercent: 110,
-      duration: 1.2,
-      ease: CustomEase.create('custom', easeCurve),
-      onComplete: () => {
-        try {
-          // Deactivate overlays after the slide-out finishes
-          overlayItems.forEach((el) => el.classList.remove('is-active'))
-          overlays.style.display = 'none'
-          delete overlays.dataset.open
-        } catch (e) {
-          // ignore
-        }
-        // Re-enable scroll (Lenis wrapper)
-        try {
-          if (window.lenis && typeof window.lenis.start === 'function') {
-            window.lenis.start()
-          }
-        } catch (e) {
-          // ignore
-        }
-        // Clear any persistent highlights
-        try {
-          const markers = Array.from(
-            scope.querySelectorAll('.marker[id^="marker-"]')
-          )
-          markers.forEach((m) => {
-            m.classList.remove('highlight')
-            m.classList.remove('dimmed')
-          })
-          const regions = Array.from(
-            scope.querySelectorAll('.region[id^="region-"]')
-          )
-          regions.forEach((r) => r.classList.remove('highlight'))
-        } catch (e) {
-          // ignore
-        }
-      },
-    })
-  }
+export function mapClose() {
+  // Overlays disabled by spec; no-op
 }

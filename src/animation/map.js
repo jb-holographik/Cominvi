@@ -342,15 +342,54 @@ export function initMap(root = document) {
         }
       }
 
-      markers.forEach((m) => {
-        if (m === markerEl) {
-          m.classList.add('highlight')
-          applyFilterToMarker(m, true)
-        } else {
-          m.classList.remove('highlight')
-          applyFilterToMarker(m, false)
+      // Fallback glow for Safari/iOS that ignores filters: inject circle shadows
+      const ensureGlowForMarker = (el, active) => {
+        try {
+          const svg = el && el.closest ? el.closest('svg') : null
+          if (!svg) return
+          const dot = el.querySelector ? el.querySelector('circle') : null
+          if (!dot) return
+          const cx = dot.getAttribute('cx') || '0'
+          const cy = dot.getAttribute('cy') || '0'
+          const rStr = dot.getAttribute('r') || '0'
+          const r = Number(rStr) || 0
+          // Remove previous glows
+          const oldGlows = el.querySelectorAll('.marker-glow, .marker-glow-2')
+          oldGlows.forEach((n) => n.parentNode && n.parentNode.removeChild(n))
+          if (!active) return
+          const makeCircle = (cls, radius, fill, opacity) => {
+            const c = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'circle'
+            )
+            c.setAttribute('class', cls)
+            c.setAttribute('cx', cx)
+            c.setAttribute('cy', cy)
+            c.setAttribute('r', String(radius))
+            c.setAttribute('fill', fill)
+            c.setAttribute('opacity', String(opacity))
+            return c
+          }
+          // Two-layer glow approximating CSS drop-shadows
+          const glowOuter = makeCircle('marker-glow', r + 10, '#ff8832', 0.35)
+          const glowInner = makeCircle('marker-glow-2', r + 5, '#ff8832', 0.6)
+          // Insert behind the dot inside this marker group
+          if (dot.parentNode) {
+            dot.parentNode.insertBefore(glowOuter, dot)
+            dot.parentNode.insertBefore(glowInner, dot)
+          }
+        } catch (e) {
+          // ignore
         }
+      }
+
+      markers.forEach((m) => {
+        const isActive = m === markerEl
+        if (isActive) m.classList.add('highlight')
+        else m.classList.remove('highlight')
         m.classList.remove('dimmed')
+        if (isSafariLike()) ensureGlowForMarker(m, isActive)
+        else applyFilterToMarker(m, isActive)
       })
     } catch (e) {
       // ignore
@@ -409,6 +448,9 @@ export function initMap(root = document) {
         const circle = m.querySelector ? m.querySelector('circle') : null
         const targetEl = circle || m
         if (isSafariLike()) targetEl.removeAttribute('filter')
+        // Remove injected fallback glows if any
+        const oldGlows = m.querySelectorAll('.marker-glow, .marker-glow-2')
+        oldGlows.forEach((n) => n.parentNode && n.parentNode.removeChild(n))
       } catch (e) {
         // ignore
       }

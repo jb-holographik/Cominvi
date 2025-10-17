@@ -450,6 +450,39 @@ h1 > .is-h1-span-wrap:last-child > span {
   display: block;
 }
 
+/* Swiper: ensure horizontal layout and draggable behavior across breakpoints */
+
+.swiper.projects-wrapper {
+  padding-left: 0;
+  padding-right: 0;
+  overflow: hidden;
+}
+
+.projects-list.swiper-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start !important;
+}
+.projects-list.swiper-wrapper .swiper-slide {
+  flex: 0 0 auto;
+}
+.swiper.projects-wrapper,
+.projects-list.swiper-wrapper {
+  touch-action: pan-x !important;
+}
+.swiper.projects-wrapper .swiper-wrapper {
+  cursor: grab;
+}
+.swiper.projects-wrapper .swiper-wrapper:active {
+  cursor: grabbing;
+}
+.swiper.projects-wrapper .project-card,
+.swiper.projects-wrapper .project-item {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 @media (min-width: 991px) {
   .processes .process:first-child .process-infos {
     padding-top: 0;
@@ -547,32 +580,6 @@ h1 > .is-h1-span-wrap:last-child > span {
   }
 }
 
-/* Swiper: ensure horizontal layout and draggable behavior across breakpoints */
-.projects-list.swiper-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: flex-start !important;
-}
-.projects-list.swiper-wrapper .swiper-slide {
-  flex: 0 0 auto;
-}
-.swiper.projects-wrapper,
-.projects-list.swiper-wrapper {
-  touch-action: pan-x !important;
-}
-.swiper.projects-wrapper .swiper-wrapper {
-  cursor: grab;
-}
-.swiper.projects-wrapper .swiper-wrapper:active {
-  cursor: grabbing;
-}
-.swiper.projects-wrapper .project-card,
-.swiper.projects-wrapper .project-item {
-  -webkit-user-drag: none;
-  user-select: none;
-}
-
 /* Desktop & tablet: hide non-active slides visually (Swiper still manages them) */
 @media (min-width: 768px) {
   .swiper.projects-wrapper .swiper-slide {
@@ -601,12 +608,6 @@ h1 > .is-h1-span-wrap:last-child > span {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-}
-
-.swiper.projects-wrapper {
-  padding-left: 0;
-  padding-right: 0;
-  overflow: hidden;
 }
 
 @media screen and (min-width: 991px) {

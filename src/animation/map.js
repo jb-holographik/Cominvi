@@ -340,7 +340,7 @@ export function initMap(root = document) {
       container.__swiperInitialized = true
       const instance = new Swiper(container, {
         modules: [Mousewheel],
-        slidesPerView: 1.2,
+        slidesPerView: 1.1,
         speed: 600,
         loop: false,
         centeredSlides: false,

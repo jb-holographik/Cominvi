@@ -541,6 +541,10 @@ h1 > .is-h1-span-wrap:last-child > span {
   .projects-list.swiper-wrapper {
     padding-left: 1em;
   }
+
+  .swiper.projects-wrapper {
+    padding-right: 1em;
+  }
 }
 
 /* Swiper: ensure horizontal layout and draggable behavior across breakpoints */

@@ -207,6 +207,8 @@ export function initMap(root = document) {
             filterEl.setAttribute('y', '-50%')
             filterEl.setAttribute('width', '200%')
             filterEl.setAttribute('height', '200%')
+            filterEl.setAttribute('filterUnits', 'userSpaceOnUse')
+            filterEl.setAttribute('color-interpolation-filters', 'sRGB')
             // Approximate previous CSS drop-shadows with stacked feDropShadow
             const makeShadow = (dx, dy, stdDeviation, color) => {
               const fe = document.createElementNS(
@@ -216,13 +218,79 @@ export function initMap(root = document) {
               fe.setAttribute('dx', String(dx))
               fe.setAttribute('dy', String(dy))
               fe.setAttribute('stdDeviation', String(stdDeviation))
-              fe.setAttribute('flood-color', String(color))
+              // Split opacity for Safari compatibility
+              if (typeof color === 'object' && color) {
+                const { hex, opacity } = color
+                fe.setAttribute('flood-color', hex)
+                fe.setAttribute('flood-opacity', String(opacity))
+              } else {
+                fe.setAttribute('flood-color', String(color))
+              }
               return fe
             }
             // Layered shadows: subtle white halo + two orange glows
-            filterEl.appendChild(makeShadow(0, 0, 2, 'rgba(255,255,255,0.5)'))
-            filterEl.appendChild(makeShadow(0, 0, 5, '#ff8832'))
-            filterEl.appendChild(makeShadow(0, 0, 12, '#ff8832'))
+            filterEl.appendChild(
+              makeShadow(0, 0, 2, { hex: '#ffffff', opacity: 0.5 })
+            )
+            filterEl.appendChild(
+              makeShadow(0, 0, 5, { hex: '#ff8832', opacity: 1 })
+            )
+            filterEl.appendChild(
+              makeShadow(0, 0, 12, { hex: '#ff8832', opacity: 1 })
+            )
+
+            // Fallback chain for older Safari: Gaussian blur + flood + merge
+            const feGB = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'feGaussianBlur'
+            )
+            feGB.setAttribute('in', 'SourceAlpha')
+            feGB.setAttribute('stdDeviation', '4')
+            feGB.setAttribute('result', 'blur')
+            const feOf = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'feOffset'
+            )
+            feOf.setAttribute('dx', '0')
+            feOf.setAttribute('dy', '0')
+            feOf.setAttribute('result', 'offsetBlur')
+            const feFl = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'feFlood'
+            )
+            feFl.setAttribute('flood-color', '#ff8832')
+            feFl.setAttribute('flood-opacity', '0.8')
+            feFl.setAttribute('result', 'color')
+            const feCp = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'feComposite'
+            )
+            feCp.setAttribute('in', 'color')
+            feCp.setAttribute('in2', 'offsetBlur')
+            feCp.setAttribute('operator', 'in')
+            feCp.setAttribute('result', 'shadow')
+            const feMg = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'feMerge'
+            )
+            const feMn1 = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'feMergeNode'
+            )
+            feMn1.setAttribute('in', 'shadow')
+            const feMn2 = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'feMergeNode'
+            )
+            feMn2.setAttribute('in', 'SourceGraphic')
+            feMg.appendChild(feMn1)
+            feMg.appendChild(feMn2)
+
+            filterEl.appendChild(feGB)
+            filterEl.appendChild(feOf)
+            filterEl.appendChild(feFl)
+            filterEl.appendChild(feCp)
+            filterEl.appendChild(feMg)
             defs.appendChild(filterEl)
           }
           return FILTER_ID

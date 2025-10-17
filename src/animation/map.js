@@ -182,9 +182,80 @@ export function initMap(root = document) {
   const highlightMarkerWithoutDimming = (pointKey) => {
     try {
       const markerEl = pointToMarker.get(pointKey)
+      // Ensure SVG filter exists in the nearest SVG for Safari/iOS support
+      const ensureMarkerShadowFilter = (svgEl) => {
+        try {
+          if (!svgEl) return null
+          const FILTER_ID = 'marker-shadow'
+          // Try to find existing filter within this SVG
+          let filterEl = svgEl.querySelector(`#${FILTER_ID}`)
+          if (!filterEl) {
+            let defs = svgEl.querySelector('defs')
+            if (!defs) {
+              defs = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'defs'
+              )
+              svgEl.insertBefore(defs, svgEl.firstChild)
+            }
+            filterEl = document.createElementNS(
+              'http://www.w3.org/2000/svg',
+              'filter'
+            )
+            filterEl.setAttribute('id', FILTER_ID)
+            filterEl.setAttribute('x', '-50%')
+            filterEl.setAttribute('y', '-50%')
+            filterEl.setAttribute('width', '200%')
+            filterEl.setAttribute('height', '200%')
+            // Approximate previous CSS drop-shadows with stacked feDropShadow
+            const makeShadow = (dx, dy, stdDeviation, color) => {
+              const fe = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'feDropShadow'
+              )
+              fe.setAttribute('dx', String(dx))
+              fe.setAttribute('dy', String(dy))
+              fe.setAttribute('stdDeviation', String(stdDeviation))
+              fe.setAttribute('flood-color', String(color))
+              return fe
+            }
+            // Layered shadows: subtle white halo + two orange glows
+            filterEl.appendChild(makeShadow(0, 0, 2, 'rgba(255,255,255,0.5)'))
+            filterEl.appendChild(makeShadow(0, 0, 5, '#ff8832'))
+            filterEl.appendChild(makeShadow(0, 0, 12, '#ff8832'))
+            defs.appendChild(filterEl)
+          }
+          return FILTER_ID
+        } catch (e) {
+          return null
+        }
+      }
+
+      const applyFilterToMarker = (el, active) => {
+        try {
+          const svg = el && el.closest ? el.closest('svg') : null
+          if (!svg) return
+          const filterId = ensureMarkerShadowFilter(svg)
+          const targetCircle = el.querySelector
+            ? el.querySelector('circle')
+            : null
+          const targetEl = targetCircle || el
+          if (active && filterId)
+            targetEl.setAttribute('filter', `url(#${filterId})`)
+          else targetEl.removeAttribute('filter')
+        } catch (e) {
+          // ignore
+        }
+      }
+
       markers.forEach((m) => {
-        if (m === markerEl) m.classList.add('highlight')
-        else m.classList.remove('highlight')
+        if (m === markerEl) {
+          m.classList.add('highlight')
+          applyFilterToMarker(m, true)
+        } else {
+          m.classList.remove('highlight')
+          applyFilterToMarker(m, false)
+        }
         m.classList.remove('dimmed')
       })
     } catch (e) {
@@ -240,6 +311,13 @@ export function initMap(root = document) {
     markers.forEach((m) => {
       m.classList.remove('highlight')
       m.classList.remove('dimmed')
+      try {
+        const circle = m.querySelector ? m.querySelector('circle') : null
+        const targetEl = circle || m
+        targetEl.removeAttribute('filter')
+      } catch (e) {
+        // ignore
+      }
     })
   }
 

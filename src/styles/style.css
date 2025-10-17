@@ -537,6 +537,10 @@ h1 > .is-h1-span-wrap:last-child > span {
     height: 100% !important;
     border-radius: 0;
   }
+
+  .projects-list.swiper-wrapper {
+    padding-top: 1em;
+  }
 }
 
 /* Swiper: ensure horizontal layout and draggable behavior across breakpoints */

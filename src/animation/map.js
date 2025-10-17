@@ -364,7 +364,7 @@ export function initMap(root = document) {
         // Desktop & tablet: exactly 1 card visible; keep mobile behavior unchanged
         breakpoints: {
           0: {
-            slidesPerView: 1.2,
+            slidesPerView: 1.1,
             centeredSlides: false,
             speed: 600,
           },

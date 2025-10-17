@@ -489,6 +489,19 @@ export function initMap(root = document) {
         const pk = s?.dataset?.point ? String(s.dataset.point) : null
         if (pk) highlightPointAndRegion(pk)
       }
+      // Post-render fallback: ensure glow visible after initial paint
+      try {
+        if (
+          typeof window !== 'undefined' &&
+          typeof window.requestAnimationFrame === 'function'
+        ) {
+          window.requestAnimationFrame(() => {
+            if (selectedPointKey) highlightPointAndRegion(selectedPointKey)
+          })
+        }
+      } catch (e) {
+        // ignore
+      }
     } catch (e) {
       // ignore
     }
@@ -661,6 +674,12 @@ export function initMap(root = document) {
           // ignore
         }
         sw.slideTo(idx, duration)
+        // Apply glow immediately as well (in case event timing differs)
+        try {
+          highlightPointAndRegion(pointKey)
+        } catch (e) {
+          // ignore
+        }
         return true
       }
     } catch (e) {

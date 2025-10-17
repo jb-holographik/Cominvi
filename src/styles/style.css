@@ -539,7 +539,7 @@ h1 > .is-h1-span-wrap:last-child > span {
   }
 
   .projects-list.swiper-wrapper {
-    padding-top: 1em;
+    padding-left: 1em;
   }
 }
 

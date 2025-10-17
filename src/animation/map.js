@@ -179,6 +179,19 @@ export function initMap(root = document) {
 
   // Helpers
 
+  const isSafariLike = () => {
+    try {
+      if (typeof navigator === 'undefined') return false
+      const ua = navigator.userAgent || ''
+      const isIOS = /iP(ad|hone|od)/.test(ua)
+      const isSafari =
+        /Safari\//.test(ua) && !/Chrome\//.test(ua) && !/CriOS\//.test(ua)
+      return isIOS || isSafari
+    } catch (e) {
+      return false
+    }
+  }
+
   const highlightMarkerWithoutDimming = (pointKey) => {
     try {
       const markerEl = pointToMarker.get(pointKey)
@@ -203,12 +216,12 @@ export function initMap(root = document) {
               'filter'
             )
             filterEl.setAttribute('id', FILTER_ID)
-            // objectBoundingBox with numeric extents is safer on iOS Safari
-            filterEl.setAttribute('x', '-0.5')
-            filterEl.setAttribute('y', '-0.5')
-            filterEl.setAttribute('width', '2')
-            filterEl.setAttribute('height', '2')
-            filterEl.setAttribute('filterUnits', 'objectBoundingBox')
+            // Use userSpaceOnUse to ensure visible shadow around small circles
+            filterEl.setAttribute('x', '-50%')
+            filterEl.setAttribute('y', '-50%')
+            filterEl.setAttribute('width', '200%')
+            filterEl.setAttribute('height', '200%')
+            filterEl.setAttribute('filterUnits', 'userSpaceOnUse')
             filterEl.setAttribute('color-interpolation-filters', 'sRGB')
             // Approximate previous CSS drop-shadows with stacked feDropShadow
             const makeShadow = (dx, dy, stdDeviation, color) => {
@@ -310,25 +323,18 @@ export function initMap(root = document) {
             : null
           const targetEl = targetCircle || el
           if (active && filterId) {
-            // Apply both attribute and CSS filter for WebKit quirks
-            targetEl.setAttribute('filter', `url(#${filterId})`)
-            try {
-              targetEl.style.filter = `url(#${filterId})`
-            } catch (err) {
-              // ignore
-            }
-            // Force reflow to ensure filter is committed
-            try {
-              if (typeof targetEl.getBBox === 'function') targetEl.getBBox()
-            } catch (err) {
-              // ignore
+            if (isSafariLike()) {
+              targetEl.setAttribute('filter', `url(#${filterId})`)
+              // Force reflow to ensure filter is committed
+              try {
+                if (typeof targetEl.getBBox === 'function') targetEl.getBBox()
+              } catch (err) {
+                // ignore
+              }
             }
           } else {
-            targetEl.removeAttribute('filter')
-            try {
-              targetEl.style.filter = ''
-            } catch (err) {
-              // ignore
+            if (isSafariLike()) {
+              targetEl.removeAttribute('filter')
             }
           }
         } catch (e) {
@@ -402,7 +408,7 @@ export function initMap(root = document) {
       try {
         const circle = m.querySelector ? m.querySelector('circle') : null
         const targetEl = circle || m
-        targetEl.removeAttribute('filter')
+        if (isSafariLike()) targetEl.removeAttribute('filter')
       } catch (e) {
         // ignore
       }

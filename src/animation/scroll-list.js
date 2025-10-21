@@ -86,7 +86,13 @@ function initScrollItems(section) {
           span.classList.add('is-active')
           currentActive = span
         } else {
-          // No-op on deactivate; active state is managed centrally by showDescForIndex
+          // Deactivate immediately when leaving the center zone
+          if (currentActive === span) {
+            span.classList.remove('is-active')
+            const dim = span.dataset.dimClass || 'is-o-20'
+            if (!span.classList.contains(dim)) span.classList.add(dim)
+            currentActive = null
+          }
         }
       },
     })

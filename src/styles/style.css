@@ -483,6 +483,14 @@ h1 > .is-h1-span-wrap:last-child > span {
   user-select: none;
 }
 
+.section_partners .content.is-12-col {
+  margin-top: -10em;
+}
+
+.cylindar__text__item .body-xl {
+  transition: all 0.15s ease-in-out;
+}
+
 @media (min-width: 991px) {
   .processes .process:first-child .process-infos {
     padding-top: 0;
@@ -577,6 +585,16 @@ h1 > .is-h1-span-wrap:last-child > span {
 
   .swiper.projects-wrapper {
     padding-right: 1em;
+  }
+
+  .section_partners .content.is-12-col {
+    margin-top: -25em;
+    padding-bottom: 8em;
+  }
+
+  .cylindar__text__item .body-xl.is-o-20,
+  .cylindar__text__item .body-xl.is-active {
+    font-size: 1em;
   }
 }
 

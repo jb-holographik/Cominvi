@@ -167,7 +167,8 @@ export function initLoader() {
       (window.matchMedia && window.matchMedia('(max-width: 991px)').matches) ||
       window.innerWidth <= 991
 
-    // Detect Safari on macOS using feature detection and platform check
+    // Detect Safari on macOS using feature detection first (requested method),
+    // with a UA/vendor fallback for cases where the property isn't reported on macOS
     const hasCssSupports = !!(window.CSS && CSS.supports)
     const supportsTouchCallout =
       hasCssSupports && CSS.supports('-webkit-touch-callout', 'none')
@@ -175,7 +176,24 @@ export function initLoader() {
       typeof navigator !== 'undefined' &&
       typeof navigator.platform === 'string' &&
       navigator.platform.startsWith('Mac')
-    const isSafariMac = !!supportsTouchCallout && !!isMacPlatform
+
+    // Fallback heuristics (still require macOS platform)
+    const hasNavigator = typeof navigator !== 'undefined'
+    const ua =
+      hasNavigator && typeof navigator.userAgent === 'string'
+        ? navigator.userAgent
+        : ''
+    const vendor =
+      hasNavigator && typeof navigator.vendor === 'string'
+        ? navigator.vendor
+        : ''
+    const isSafariUA =
+      /Safari/i.test(ua) && !/Chrome|Chromium|Edg|OPR|Brave/i.test(ua)
+    const isSafariVendor = /Apple/i.test(vendor)
+
+    const isSafariMac =
+      (!!supportsTouchCallout && !!isMacPlatform) ||
+      (isMacPlatform && (isSafariUA || isSafariVendor))
 
     if (isSafariMac) {
       try {

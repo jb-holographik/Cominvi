@@ -1,4 +1,5 @@
 import barba from '@barba/core'
+import { gsap } from 'gsap'
 
 import { reinitializeWebflowAnimations, initSticky50 } from '../utils/base.js'
 import { initAboutValuesScroll } from './about-scroll.js'
@@ -542,6 +543,12 @@ export function initializePageTransitionNav() {
           } catch (e) {
             /* ignore */
           }
+          // Ensure body background resets to primary after transition animation
+          try {
+            gsap.set(document.body, { backgroundColor: 'var(--primary)' })
+          } catch (e) {
+            /* ignore */
+          }
         },
       },
       {
@@ -731,6 +738,12 @@ export function initializePageTransitionNav() {
           } catch (e) {
             /* ignore */
           }
+          // Ensure body background resets to primary after transition animation
+          try {
+            gsap.set(document.body, { backgroundColor: 'var(--primary)' })
+          } catch (e) {
+            /* ignore */
+          }
         },
       },
       {
@@ -893,6 +906,12 @@ export function initializePageTransitionNav() {
           }
           try {
             initContact(next && next.container)
+          } catch (e) {
+            /* ignore */
+          }
+          // Ensure body background resets to primary after transition animation
+          try {
+            gsap.set(document.body, { backgroundColor: 'var(--primary)' })
           } catch (e) {
             /* ignore */
           }
@@ -1062,6 +1081,12 @@ export function initializePageTransitionNav() {
       } catch (e) {
         /* ignore */
       }
+      // Ensure body background resets to primary after handled transition
+      try {
+        gsap.set(document.body, { backgroundColor: 'var(--primary)' })
+      } catch (e) {
+        /* ignore */
+      }
       return
     }
     // Global fallback: ensure Finsweet Attributes are reinitialized
@@ -1147,6 +1172,12 @@ export function initializePageTransitionNav() {
     }
     try {
       initContact(next && next.container)
+    } catch (e) {
+      /* ignore */
+    }
+    // Ensure body background resets to primary after fallback transition
+    try {
+      gsap.set(document.body, { backgroundColor: 'var(--primary)' })
     } catch (e) {
       /* ignore */
     }

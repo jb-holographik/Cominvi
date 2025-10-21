@@ -213,6 +213,18 @@ export function slideScaleLeave({ current }) {
   const tl = gsap.timeline()
   const preDur = 0.75
   const slideDur = 1.0
+  // Ensure body background switches to accent at the very start of the transition
+  try {
+    tl.set(
+      document.body,
+      {
+        backgroundColor: 'var(--accent)',
+      },
+      0
+    )
+  } catch (e) {
+    // ignore
+  }
   // Sync menu theme to the same as when opening the menu ("menu") at leave start
   tl.call(
     () => {
@@ -558,6 +570,14 @@ export function slideScaleEnter({ next }) {
                   gsap.set('#page-to', { y: 0 })
                   // 3) Restore base offset of page-info_inner
                   gsap.set('.page-info_inner', { y: '7.5em' })
+                  // 4) Restore body background to primary after transition completes
+                  try {
+                    gsap.set(document.body, {
+                      backgroundColor: 'var(--primary)',
+                    })
+                  } catch (e2) {
+                    // ignore
+                  }
                 } catch (e) {
                   // ignore
                 }

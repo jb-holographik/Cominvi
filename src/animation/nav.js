@@ -563,6 +563,12 @@ export function initializeMenuClick(options = {}, root = document) {
         }
         // Recalc and resize only when closing (avoid jump at end of opening)
         if (!isOpen) {
+          // Restore body background after close animation completes
+          try {
+            gsap.set(document.body, { backgroundColor: 'var(--primary)' })
+          } catch (e) {
+            // ignore
+          }
           // Clean any residual transforms/inline states on the page wrapper to avoid breaking sticky/ScrollTrigger
           try {
             if (pageWrapElement && pageWrapElement.style) {
@@ -775,6 +781,8 @@ export function initializeMenuClick(options = {}, root = document) {
     // Link animations already added above via animateMenuLinks
     tl.set(pageWrapElement, { overflow: targetOverflow }, 0)
     tl.set(document.body, { overflow: targetBodyOverflow }, 0)
+    // Switch body background to accent at menu open start
+    tl.set(document.body, { backgroundColor: 'var(--accent)' }, 0)
     tl.set(pageWrapElement, { transformOrigin: '50% 0%' }, 0)
     tl.to(pageWrapElement, { top: targetTop, overwrite: 'auto' }, 0)
     tl.to(pageWrapElement, { scale: targetScale, overwrite: 'auto' }, 0)

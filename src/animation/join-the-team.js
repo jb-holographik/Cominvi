@@ -298,27 +298,36 @@ function initWorkTeamSection(section) {
       })
     })
 
-    // Initial: first item active on page load/entering from above
-    if (spans[0]) activateSpan(spans[0])
+    // Center-based active selection to avoid keeping the first item active while scrolling down
+    const updateActiveToCenter = () => {
+      const winH = typeof window !== 'undefined' ? window.innerHeight : 0
+      if (!winH) return
+      const viewportCenter = winH / 2
+      let closest = null
+      let closestDist = Infinity
+      spans.forEach((span) => {
+        const r = span.getBoundingClientRect()
+        const center = r.top + r.height / 2
+        const d = Math.abs(center - viewportCenter)
+        if (d < closestDist) {
+          closestDist = d
+          closest = span
+        }
+      })
+      if (closest) activateSpan(closest)
+    }
 
-    // Section-level guard: maintain boundary actives
     ScrollTrigger.create({
       trigger: section,
       start: 'top bottom',
       end: 'bottom top',
-      onEnter: () => {
-        if (spans[0]) activateSpan(spans[0])
-      },
-      onEnterBack: () => {
-        if (spans[spans.length - 1]) activateSpan(spans[spans.length - 1])
-      },
-      onLeave: () => {
-        if (spans[spans.length - 1]) activateSpan(spans[spans.length - 1])
-      },
-      onLeaveBack: () => {
-        if (spans[0]) activateSpan(spans[0])
-      },
+      onUpdate: updateActiveToCenter,
+      onEnter: updateActiveToCenter,
+      onEnterBack: updateActiveToCenter,
     })
+
+    // Initial center-based selection
+    updateActiveToCenter()
   }
 
   // Be flexible: some exports may wrap indicators differently on mobile

@@ -179,7 +179,7 @@ export function initLoader() {
 
     if (isSafariMac) {
       try {
-        console.log('Safari macOS détecté par features !')
+        console.log('safari detected')
       } catch (e) {
         // ignore
       }

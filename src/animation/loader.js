@@ -162,11 +162,30 @@ export function initLoader() {
     tl.set(logoWrap, { justifyContent: 'flex-end' })
     tl.to(logoWrap, { width: widthAfterPx, duration: 0.3, ease: loaderEase })
 
-    // Fallback on tablet/mobile: replace mask reveal with a simple loader fade-out
+    // Fallback on tablet/mobile and Safari macOS: replace mask reveal with a simple loader fade-out
     const isTabletOrMobile =
       (window.matchMedia && window.matchMedia('(max-width: 991px)').matches) ||
       window.innerWidth <= 991
-    if (isTabletOrMobile) {
+
+    // Detect Safari on macOS using feature detection and platform check
+    const hasCssSupports = !!(window.CSS && CSS.supports)
+    const supportsTouchCallout =
+      hasCssSupports && CSS.supports('-webkit-touch-callout', 'none')
+    const isMacPlatform =
+      typeof navigator !== 'undefined' &&
+      typeof navigator.platform === 'string' &&
+      navigator.platform.startsWith('Mac')
+    const isSafariMac = !!supportsTouchCallout && !!isMacPlatform
+
+    if (isSafariMac) {
+      try {
+        console.log('Safari macOS détecté par features !')
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    if (isTabletOrMobile || isSafariMac) {
       // Cleanup any overlay resources
       tl.add(() => {
         try {

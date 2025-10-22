@@ -1,4 +1,4 @@
-<!DOCTYPE html><!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Tue Oct 14 2025 12:08:54 GMT+0000 (Coordinated Universal Time)  -->
+<!DOCTYPE html><!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Wed Oct 22 2025 14:54:08 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="6899a2f3f7995d5e3e31b7cd" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 <head>
   <meta charset="utf-8">
@@ -122,6 +122,8 @@ html {scrollbar-width: none;}
 box-sizing: border-box;}
 html {
 scroll-behavior: initial;
+height: 100vh;
+background-color: var(--primary);
 }
 svg {
 max-width: none; height: auto; box-sizing: border-box; vertical-align: middle;
@@ -353,14 +355,16 @@ html.wf-design-mode > body > .loader {
   .minerals-list .eyebrow-wrapper{
   	padding-left: 1em
   }
-  .section_projects .content,
-  .section_projects .content .map-section,
-  .section_projects .content .map-section .is-grid-12{
-  	min-height: 100svh;
-  }
   .content.is-base .content_column{
   	display:none;
   }
+  .section_partners .body-xl{
+  	font-size: 1.5em;
+  }
+  /*
+  .projects-list .project-item.swiper-slide:last-child{
+  	padding-right: 0;
+  }*/
 }
 /* end max landscape mobile */
 @media (max-width: 767px) and (min-width: 479px){
@@ -641,7 +645,7 @@ html.wf-design-mode > body > .loader {
         </div>
         <div class="content">
           <div class="content_column">
-            <div class="image-wrapper"><img src="images/image-about-section_1.avif" loading="lazy" sizes="(max-width: 1360px) 100vw, 1360px" srcset="images/image-about-section_1image-about-section.avif 500w, images/image-about-section_1image-about-section.avif 800w, images/image-about-section_1image-about-section.avif 1080w, images/image-about-section_1.avif 1360w" alt="" class="image-p"></div>
+            <div class="image-wrapper"><img src="images/home_01.avif" loading="lazy" sizes="(max-width: 1000px) 100vw, 1000px" srcset="images/home_01-p-500.avif 500w, images/home_01.avif 1000w" alt="" class="image-p"></div>
           </div>
           <div class="content_column align-r">
             <div class="stats">
@@ -778,7 +782,7 @@ html.wf-design-mode > body > .loader {
                       <path d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z" fill="#151515"></path>
                     </svg></div>
                 </div>
-              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt="" class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt="" class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt="" class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt="" class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt="" class="service-image is-5">
+              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt="" class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt="" class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt="" class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt="" class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt="" class="service-image is-5">
             </div>
           </div>
         </div>
@@ -1219,7 +1223,7 @@ html.wf-design-mode > body > .loader {
         </div>
         <div class="content">
           <div class="content_column">
-            <div class="image-wrapper"><img src="images/safety-sm_1.avif" loading="lazy" alt="" class="image-p is-square"></div>
+            <div class="image-wrapper"><img src="images/home_02.avif" loading="lazy" sizes="(max-width: 1000px) 100vw, 1000px" srcset="images/home_02-p-500.avif 500w, images/home_02.avif 1000w" alt="" class="image-p is-square"></div>
           </div>
           <div class="content_column align-r">
             <div class="text-cta h100">
@@ -1350,7 +1354,7 @@ html.wf-design-mode > body > .loader {
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Front loaders</span>
+                  <div class="w-layout-hflex machines_label"><span class="body-m">Motor Grader</span>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1386,7 +1390,7 @@ html.wf-design-mode > body > .loader {
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Front loaders</span>
+                  <div class="w-layout-hflex machines_label"><span class="body-m">Air Compressor</span>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1422,7 +1426,7 @@ html.wf-design-mode > body > .loader {
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Front loaders</span>
+                  <div class="w-layout-hflex machines_label"><span class="body-m">Telehandler</span>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1458,7 +1462,7 @@ html.wf-design-mode > body > .loader {
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Front loaders</span>
+                  <div class="w-layout-hflex machines_label"><span class="body-m">Compactor</span>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1494,7 +1498,7 @@ html.wf-design-mode > body > .loader {
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Front loaders</span>
+                  <div class="w-layout-hflex machines_label"><span class="body-m">Backhoe Loader with Basket</span>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1530,7 +1534,7 @@ html.wf-design-mode > body > .loader {
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Front loaders</span>
+                  <div class="w-layout-hflex machines_label"><span class="body-m">Scissors Lift</span>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1642,7 +1646,7 @@ html.wf-design-mode > body > .loader {
                     </svg></div>
                 </div>
               </a>
-              <link rel="prefetch" href="/our-services"><img src="images/service-card-1_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt="" class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt="" class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt="" class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt="" class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="100vw" srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt="" class="service-image is-5">
+              <link rel="prefetch" href="/our-services"><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt="" class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt="" class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt="" class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt="" class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt="" class="service-image is-5">
             </div>
           </div>
         </div>
@@ -1777,7 +1781,7 @@ html.wf-design-mode > body > .loader {
           <link rel="prefetch" href="/our-services">
         </div>
         <div class="next_background-wrap">
-          <div class="next_background"><img src="images/our-services_1.avif" loading="lazy" sizes="(max-width: 2880px) 100vw, 2880px" srcset="images/our-services_1our-services.avif 500w, images/our-services_1our-services.avif 800w, images/our-services_1our-services.avif 1080w, images/our-services_1.avif 2880w" alt="" class="background"></div>
+          <div class="next_background"><img src="images/services-hero.avif" loading="lazy" sizes="(max-width: 1760px) 100vw, 1760px" srcset="images/services-hero.avif 500w, images/services-hero.avif 800w, images/services-hero.avif 1760w" alt="" class="background"></div>
         </div>
       </div>
       <div class="footer">

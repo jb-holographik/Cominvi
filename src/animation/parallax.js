@@ -402,7 +402,24 @@ export function initNextBackgroundParallax(root = document) {
     return []
   }
 
+  // Ensure Lenis is initialized before creating ScrollTriggers to avoid
+  // incorrect start/end calculations on hard loads.
   const scroller = window.__lenisWrapper || undefined
+  if (!scroller) {
+    // Defer once to the next frame so initLenis can set defaults/scrollerProxy
+    if (!window.__deferNextBgOnce) {
+      window.__deferNextBgOnce = true
+      requestAnimationFrame(() => {
+        try {
+          window.__deferNextBgOnce = false
+          initNextBackgroundParallax(root)
+        } catch (e) {
+          // ignore
+        }
+      })
+    }
+    return []
+  }
   const tweens = []
 
   const layoutWrapper = (bg) => {
@@ -429,28 +446,33 @@ export function initNextBackgroundParallax(root = document) {
   wrappers.forEach((bg) => {
     try {
       const triggerEl = ensureLaidOut(bg) || bg
-      const tween = gsap.fromTo(
-        bg,
-        { y: 0 },
-        {
-          y: 40,
-          ease: 'none',
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: triggerEl,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-            scroller,
-            invalidateOnRefresh: true,
-            onRefresh: () => {
-              // Reset baseline to avoid accumulating translate after resize
-              gsap.set(bg, { y: 0 })
-            },
-          },
+      const amplitudePx = 40
+      const setY = gsap.quickSetter(bg, 'y', 'px')
+      const updateY = () => {
+        try {
+          const rect = bg.getBoundingClientRect()
+          const centerY = rect.top + rect.height / 2
+          const viewportCenterY = window.innerHeight / 2
+          const denom = Math.max(1, rect.height / 2 + window.innerHeight / 2)
+          const t = (centerY - viewportCenterY) / denom // -1 .. 1
+          const clamped = Math.max(-1, Math.min(1, t))
+          setY(clamped * amplitudePx)
+        } catch (e) {
+          // ignore
         }
-      )
-      tweens.push(tween)
+      }
+      const st = ScrollTrigger.create({
+        trigger: triggerEl,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true,
+        scroller,
+        invalidateOnRefresh: true,
+        onInit: updateY,
+        onRefresh: updateY,
+        onUpdate: updateY,
+      })
+      tweens.push(st)
     } catch (err) {
       // ignore per-image failure
     }

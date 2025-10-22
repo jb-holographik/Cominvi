@@ -491,6 +491,10 @@ h1 > .is-h1-span-wrap:last-child > span {
   transition: all 0.15s ease-in-out;
 }
 
+.section_next {
+  height: calc(100svh + 1px);
+}
+
 @media (min-width: 991px) {
   .processes .process:first-child .process-infos {
     padding-top: 0;

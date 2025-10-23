@@ -384,7 +384,14 @@ export function initializeMenuClick(options = {}, root = document) {
   // Removed cylinder CSS freeze; we rely on ScrollTrigger pinReparent/anticipatePin
 
   const handleMenuClick = () => {
-    const wasOpen = isOpen
+    // Use DOM flag as source of truth (more reliable under rapid taps)
+    let wasOpen = false
+    try {
+      wasOpen =
+        document.documentElement.getAttribute('data-menu-open') === 'true'
+    } catch (e) {
+      wasOpen = !!isOpen
+    }
     // Any trigger click should instantly reset label to rest
     try {
       if (menuLabelInner) {
@@ -417,13 +424,15 @@ export function initializeMenuClick(options = {}, root = document) {
       // ignore
     }
 
-    // Determine intended target state and set DOM flag early for consistency
+    // Determine intended target state. Only set DOM flag early on opening.
     const intendedOpen = !wasOpen
     try {
-      document.documentElement.setAttribute(
-        'data-menu-open',
-        intendedOpen ? 'true' : 'false'
-      )
+      if (intendedOpen) {
+        document.documentElement.setAttribute('data-menu-open', 'true')
+      }
+      // Do not set to 'false' early; keep 'true' during close animation to
+      // suppress theme recompute mid-close and avoid flickers. It will be set
+      // to 'false' on timeline completion.
     } catch (e) {
       // ignore
     }
@@ -442,6 +451,15 @@ export function initializeMenuClick(options = {}, root = document) {
       }
     } catch (e) {
       // ignore
+    }
+    // If closing, immediately unlock icon bg lock to let theme apply
+    if (!intendedOpen) {
+      try {
+        if (menuIconElement && menuIconElement.dataset)
+          delete menuIconElement.dataset.bgLocked
+      } catch (e) {
+        // ignore
+      }
     }
     // Toggle pt-inner on the brand link depending on intended state
     if (!wasOpen) {

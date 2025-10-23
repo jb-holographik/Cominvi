@@ -310,6 +310,7 @@ export function initializeMenuClick(options = {}, root = document) {
   const easeCurve = CustomEase.create('custom', 'M0,0 C0.6,0 0,1 1,1 ')
   const animationDuration = 1.2
   let onResizeWhileOpen = null
+  let currentMenuTl = null
 
   const ensureLinkBaseMargins = () => {
     linkAnchors.forEach((anchor, index) => {
@@ -397,6 +398,51 @@ export function initializeMenuClick(options = {}, root = document) {
     } catch (err) {
       // ignore
     }
+    // Kill any ongoing timeline/tweens to make animation re-entrant
+    try {
+      if (currentMenuTl) {
+        currentMenuTl.kill()
+        currentMenuTl = null
+      }
+      gsap.killTweensOf([
+        pageWrapElement,
+        menuIconElement,
+        menuIconBar1,
+        menuIconBar2,
+        menuIconBars,
+        menuLabelInner,
+        linkAnchors,
+      ])
+    } catch (e) {
+      // ignore
+    }
+
+    // Determine intended target state and set DOM flag early for consistency
+    const intendedOpen = !wasOpen
+    try {
+      document.documentElement.setAttribute(
+        'data-menu-open',
+        intendedOpen ? 'true' : 'false'
+      )
+    } catch (e) {
+      // ignore
+    }
+
+    // Apply theme instantly based on intended state to avoid flickers
+    try {
+      if (intendedOpen) {
+        if (window.__theme && typeof window.__theme.menuOpen === 'function') {
+          window.__theme.menuOpen()
+        }
+      } else if (
+        window.__theme &&
+        typeof window.__theme.menuCloseSamePage === 'function'
+      ) {
+        window.__theme.menuCloseSamePage()
+      }
+    } catch (e) {
+      // ignore
+    }
     // Toggle pt-inner on the brand link depending on intended state
     if (!wasOpen) {
       // opening → disable inner transition on brand link
@@ -439,7 +485,6 @@ export function initializeMenuClick(options = {}, root = document) {
     const targetIconRotation = isOpen ? 0 : 45
 
     if (!wasOpen) {
-      document.documentElement.setAttribute('data-menu-open', 'true')
       // Notify listeners (e.g., minerals) that menu is starting to open
       try {
         document.dispatchEvent(new CustomEvent('menu:open-start'))
@@ -478,9 +523,6 @@ export function initializeMenuClick(options = {}, root = document) {
       } catch (e) {
         // ignore
       }
-      if (window.__theme && typeof window.__theme.menuOpen === 'function') {
-        window.__theme.menuOpen()
-      }
       lastScrollPosition = getCurrentScrollPosition(contentWrapElement)
       if (window.lenis && typeof window.lenis.stop === 'function') {
         window.lenis.stop()
@@ -498,12 +540,13 @@ export function initializeMenuClick(options = {}, root = document) {
       }
     }
 
-    if (
-      wasOpen &&
-      window.__theme &&
-      typeof window.__theme.menuCloseSamePage === 'function'
-    ) {
-      window.__theme.menuCloseSamePage()
+    // Ensure scrolling isn't left disabled if we are closing quickly
+    if (wasOpen && window.lenis && typeof window.lenis.start === 'function') {
+      try {
+        window.lenis.start()
+      } catch (e) {
+        // ignore
+      }
     }
 
     const tl = gsap.timeline({
@@ -627,8 +670,18 @@ export function initializeMenuClick(options = {}, root = document) {
             // ignore
           }
         }
+        currentMenuTl = null
       },
     })
+    // Also handle interruption (e.g., rapid re-click) cleanly
+    try {
+      tl.eventCallback('onInterrupt', () => {
+        currentMenuTl = null
+      })
+    } catch (e) {
+      // ignore
+    }
+    currentMenuTl = tl
 
     // Cache margins and animate menu links
     animateMenuLinks(tl, wasOpen)
@@ -782,7 +835,7 @@ export function initializeMenuClick(options = {}, root = document) {
     tl.set(pageWrapElement, { overflow: targetOverflow }, 0)
     tl.set(document.body, { overflow: targetBodyOverflow }, 0)
     // Switch body background to accent at menu open start
-    tl.set(document.body, { backgroundColor: 'var(--accent)' }, 0)
+    if (!wasOpen) tl.set(document.body, { backgroundColor: 'var(--accent)' }, 0)
     tl.set(pageWrapElement, { transformOrigin: '50% 0%' }, 0)
     tl.to(pageWrapElement, { top: targetTop, overwrite: 'auto' }, 0)
     tl.to(pageWrapElement, { scale: targetScale, overwrite: 'auto' }, 0)

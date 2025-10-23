@@ -3,6 +3,7 @@ import { CustomEase } from 'gsap/CustomEase'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import { animateNavbarSpreadForGrid } from './nav'
+import { initParallax, initNextBackgroundParallax } from './parallax.js'
 import { initWorkshopsStickyImages } from './workshops'
 
 gsap.registerPlugin(ScrollTrigger, CustomEase)
@@ -447,6 +448,27 @@ export function initTechnology(root = document) {
           } catch (e) {
             // ignore
           }
+          // Ensure scroll-based animations are in sync after initial layout flip
+          try {
+            if (
+              window.ScrollTrigger &&
+              typeof window.ScrollTrigger.refresh === 'function'
+            ) {
+              window.ScrollTrigger.refresh()
+            }
+          } catch (e0) {
+            // ignore
+          }
+          try {
+            initNextBackgroundParallax(root)
+          } catch (e1) {
+            // ignore
+          }
+          try {
+            initParallax(root)
+          } catch (e2) {
+            // ignore
+          }
           currentMode = mode
           return
         }
@@ -533,6 +555,25 @@ export function initTechnology(root = document) {
                 // ignore
               }
             })
+            .add(() => {
+              // Always refresh ScrollTrigger after view switch (grid or list)
+              try {
+                if (
+                  window.ScrollTrigger &&
+                  typeof window.ScrollTrigger.refresh === 'function'
+                ) {
+                  window.ScrollTrigger.refresh()
+                }
+              } catch (e) {
+                // ignore
+              }
+              // Re-init generic parallax too, in case .image-p or others are present on this page
+              try {
+                initParallax(root)
+              } catch (e2) {
+                // ignore
+              }
+            })
           tl.eventCallback('onComplete', () => {
             modeTl = null
           })
@@ -542,6 +583,22 @@ export function initTechnology(root = document) {
           machinesWrapper.style.display = isGrid ? 'none' : 'block'
           machinesGridWrapper.style.display = isGrid ? 'block' : 'none'
           currentMode = mode
+          try {
+            if (
+              window.ScrollTrigger &&
+              typeof window.ScrollTrigger.refresh === 'function'
+            ) {
+              window.ScrollTrigger.refresh()
+            }
+          } catch (__) {
+            // ignore
+          }
+        }
+        // Re-init next section background parallax after switching views
+        try {
+          initNextBackgroundParallax(root)
+        } catch (re) {
+          // ignore
         }
       }
       if (optGrid)
@@ -1618,6 +1675,27 @@ export function initTechnology(root = document) {
               // ignore
             }
             unlockScroll()
+            // Re-init parallax and refresh triggers after closing overlay
+            try {
+              initNextBackgroundParallax(root)
+            } catch (e0) {
+              // ignore
+            }
+            try {
+              initParallax(root)
+            } catch (e1) {
+              // ignore
+            }
+            try {
+              if (
+                window.ScrollTrigger &&
+                typeof window.ScrollTrigger.refresh === 'function'
+              ) {
+                window.ScrollTrigger.refresh()
+              }
+            } catch (e2) {
+              // ignore
+            }
           },
           onInterrupt: () => {
             // If timeline is interrupted, ensure clone and overlays are removed soon after
@@ -1642,6 +1720,26 @@ export function initTechnology(root = document) {
                 }
               }, 0)
             } catch (e) {
+              // ignore
+            }
+            try {
+              initNextBackgroundParallax(root)
+            } catch (e0) {
+              // ignore
+            }
+            try {
+              initParallax(root)
+            } catch (e1) {
+              // ignore
+            }
+            try {
+              if (
+                window.ScrollTrigger &&
+                typeof window.ScrollTrigger.refresh === 'function'
+              ) {
+                window.ScrollTrigger.refresh()
+              }
+            } catch (e2) {
               // ignore
             }
           },

@@ -391,6 +391,16 @@ export function initNextBackgroundParallax(root = document) {
     if (window.__nextBgParallaxResizeHandler) {
       window.removeEventListener('resize', window.__nextBgParallaxResizeHandler)
     }
+    // Cancel any previous rAF loop used as a fallback updater
+    if (window.__nextBgParallaxRafId) {
+      try {
+        cancelAnimationFrame(window.__nextBgParallaxRafId)
+      } catch (e) {
+        // ignore
+      }
+      window.__nextBgParallaxRafId = null
+    }
+    window.__nextBgParallaxCallbacks = []
   } catch (e) {
     // ignore
   }
@@ -421,6 +431,7 @@ export function initNextBackgroundParallax(root = document) {
     return []
   }
   const tweens = []
+  const callbacks = []
 
   const layoutWrapper = (bg) => {
     try {
@@ -473,6 +484,7 @@ export function initNextBackgroundParallax(root = document) {
         onUpdate: updateY,
       })
       tweens.push(st)
+      callbacks.push(updateY)
     } catch (err) {
       // ignore per-image failure
     }
@@ -490,6 +502,29 @@ export function initNextBackgroundParallax(root = document) {
   window.addEventListener('resize', window.__nextBgParallaxResizeHandler)
 
   window.__nextBgParallaxTweens = tweens
+  // Start a lightweight rAF fallback to keep Y in sync even if ST ticks stall
+  try {
+    if (callbacks.length) {
+      const tick = () => {
+        try {
+          callbacks.forEach((cb) => {
+            try {
+              cb && cb()
+            } catch (e) {
+              // ignore per-callback error
+            }
+          })
+        } catch (e) {
+          // ignore
+        }
+        window.__nextBgParallaxRafId = requestAnimationFrame(tick)
+      }
+      window.__nextBgParallaxCallbacks = callbacks
+      window.__nextBgParallaxRafId = requestAnimationFrame(tick)
+    }
+  } catch (e) {
+    // ignore
+  }
   ScrollTrigger.refresh()
   return tweens
 }

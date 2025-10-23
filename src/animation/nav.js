@@ -460,6 +460,62 @@ export function initializeMenuClick(options = {}, root = document) {
       } catch (e) {
         // ignore
       }
+      // Snap all animated elements to the "open" baseline so the close
+      // animation always returns cleanly to start even if interrupted mid-open
+      try {
+        const viewportWidth = window.innerWidth
+        const isTablet = viewportWidth >= 768 && viewportWidth <= 991
+        const isMobile = viewportWidth < 768
+        const borderGapPx = isMobile ? 32 : 64
+        const desiredWidth = Math.max(0, viewportWidth - borderGapPx)
+        const openScale = viewportWidth > 0 ? desiredWidth / viewportWidth : 1
+        const openTop = isMobile ? '32em' : isTablet ? '15em' : '24em'
+        if (linkAnchors && linkAnchors.length) {
+          gsap.set(linkAnchors, { marginTop: 0, overwrite: 'auto' })
+        }
+        if (menuIconElement) {
+          gsap.set(menuIconElement, {
+            gap: '0px',
+            rotation: 45,
+            transformOrigin: '50% 50%',
+            overwrite: 'auto',
+          })
+        }
+        if (menuIconBar1) {
+          gsap.set(menuIconBar1, {
+            top: '49%',
+            rotation: 0,
+            transformOrigin: '50% 50%',
+            overwrite: 'auto',
+          })
+        }
+        if (menuIconBar2) {
+          gsap.set(menuIconBar2, {
+            bottom: '49%',
+            rotation: 90,
+            transformOrigin: '50% 50%',
+            overwrite: 'auto',
+          })
+        }
+        if (menuIconBars && menuIconBars.length) {
+          gsap.set(menuIconBars, {
+            backgroundColor: 'var(--accent)',
+            overwrite: 'auto',
+          })
+        }
+        if (pageWrapElement) {
+          gsap.set(pageWrapElement, {
+            transformOrigin: '50% 0%',
+            top: openTop,
+            scale: openScale,
+            borderRadius: '1rem',
+            overwrite: 'auto',
+          })
+        }
+        gsap.set(document.body, { backgroundColor: 'var(--accent)' })
+      } catch (e) {
+        // ignore
+      }
     }
     // Toggle pt-inner on the brand link depending on intended state
     if (!wasOpen) {

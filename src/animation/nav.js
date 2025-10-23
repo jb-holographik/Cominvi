@@ -1193,6 +1193,7 @@ export function initializeThemeController() {
 
   const navbarElement = document.querySelector('.navbar')
   const logoBgElement = document.querySelector('.logo-bg')
+  const isoLogoBgElements = document.querySelectorAll('.is-logo-bg')
   const logoPathElements = document.querySelectorAll('.logo-path')
   const menuIconElement = document.querySelector('.menu-icon')
   const menuIconBars = document.querySelectorAll('.menu-icon_bar')
@@ -1200,10 +1201,21 @@ export function initializeThemeController() {
   const applyTheme = (key, instant = false) => {
     const t = themes[key] || themes.white || {}
     const to = { ...tr, overwrite: 'auto' }
+    const isoSpecByKey = {
+      white: { fill: 'var(--white)', opacity: 1 },
+      hero: { fill: 'transparent', opacity: 0 },
+      menu: { fill: 'transparent', opacity: 0 },
+    }
+    const isoTarget = isoSpecByKey[key]
     const isLocked = !!menuIconElement?.dataset?.bgLocked
     if (instant) {
       if (navbarElement) gsap.set(navbarElement, { color: t.navbarColor })
       if (logoBgElement) gsap.set(logoBgElement, { fill: t.logoBgFill })
+      if (isoLogoBgElements.length && isoTarget)
+        gsap.set(isoLogoBgElements, {
+          fill: isoTarget.fill,
+          opacity: isoTarget.opacity,
+        })
       if (logoPathElements.length)
         gsap.set(logoPathElements, { fill: t.logoPathFill })
       if (!suppressMenuIconTheme) {
@@ -1227,6 +1239,12 @@ export function initializeThemeController() {
     } else {
       if (navbarElement) gsap.to(navbarElement, { color: t.navbarColor, ...to })
       if (logoBgElement) gsap.to(logoBgElement, { fill: t.logoBgFill, ...to })
+      if (isoLogoBgElements.length && isoTarget)
+        gsap.to(isoLogoBgElements, {
+          fill: isoTarget.fill,
+          opacity: isoTarget.opacity,
+          ...to,
+        })
       if (logoPathElements.length)
         gsap.to(logoPathElements, { fill: t.logoPathFill, ...to })
       if (!suppressMenuIconTheme) {

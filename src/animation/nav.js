@@ -311,6 +311,188 @@ export function initializeMenuClick(options = {}, root = document) {
   const animationDuration = 1.2
   let onResizeWhileOpen = null
   let currentMenuTl = null
+  // Snap everything back to a clean "closed" baseline immediately
+  const snapMenuToClosedBaseline = () => {
+    try {
+      // Remove any running tweens
+      if (currentMenuTl) {
+        try {
+          currentMenuTl.kill()
+        } catch (e) {
+          // ignore
+        }
+        currentMenuTl = null
+      }
+      gsap.killTweensOf([
+        pageWrapElement,
+        menuIconElement,
+        menuIconBar1,
+        menuIconBar2,
+        menuIconBars,
+        menuLabelInner,
+        linkAnchors,
+        document.body,
+      ])
+    } catch (e) {
+      // ignore
+    }
+
+    // Restore page wrapper
+    try {
+      if (pageWrapElement && pageWrapElement.style) {
+        pageWrapElement.style.removeProperty('transform')
+        pageWrapElement.style.removeProperty('scale')
+        pageWrapElement.style.removeProperty('top')
+        pageWrapElement.style.removeProperty('border-radius')
+        pageWrapElement.style.removeProperty('transform-origin')
+        gsap.set(pageWrapElement, { top: originalTop, overwrite: 'auto' })
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Restore links margins
+    try {
+      ensureLinkBaseMargins()
+      if (linkAnchors && linkAnchors.length) {
+        gsap.set(linkAnchors, {
+          marginTop: (index, element) =>
+            element.dataset.originalMarginTop || '0px',
+          overwrite: 'auto',
+        })
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Restore icon visuals
+    try {
+      const key = (window.__theme && window.__theme.storedKey) || 'white'
+      const theme =
+        window.__theme && window.__theme.getThemeFor
+          ? window.__theme.getThemeFor(key)
+          : {}
+      if (menuIconElement) {
+        if (menuIconElement.dataset) delete menuIconElement.dataset.bgLocked
+        gsap.set(menuIconElement, {
+          gap: '5px',
+          rotation: 0,
+          transformOrigin: '50% 50%',
+          backgroundColor: theme.menuIconBg,
+          borderColor: theme.menuIconBorder,
+          overwrite: 'auto',
+        })
+        try {
+          menuIconElement.style.removeProperty('transition')
+        } catch (e) {
+          // ignore
+        }
+      }
+      if (menuIconBar1) {
+        gsap.set(menuIconBar1, {
+          top: '42%',
+          rotation: 0,
+          transformOrigin: '50% 50%',
+          overwrite: 'auto',
+        })
+      }
+      if (menuIconBar2) {
+        gsap.set(menuIconBar2, {
+          bottom: '42%',
+          rotation: 0,
+          transformOrigin: '50% 50%',
+          overwrite: 'auto',
+        })
+      }
+      if (menuIconBars && menuIconBars.length) {
+        gsap.set(menuIconBars, {
+          backgroundColor: theme.menuIconBarsBg,
+          overwrite: 'auto',
+        })
+        menuIconBars.forEach((el) => {
+          try {
+            el.style.removeProperty('transition')
+          } catch (e) {
+            // ignore
+          }
+        })
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Restore theme/body and flags
+    try {
+      gsap.set(document.body, { backgroundColor: 'var(--primary)' })
+      if (window.__theme) {
+        try {
+          window.__theme.setIconThemeSuppressed(false)
+        } catch (e) {
+          // ignore
+        }
+        try {
+          window.__theme.menuCloseSamePage()
+        } catch (e) {
+          // ignore
+        }
+      }
+      document.documentElement.setAttribute('data-menu-open', 'false')
+    } catch (e) {
+      // ignore
+    }
+
+    // Re-enable scrolling
+    try {
+      if (window.lenis && typeof window.lenis.start === 'function') {
+        window.lenis.start()
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Cleanup resize handler if any
+    try {
+      if (onResizeWhileOpen) {
+        window.removeEventListener('resize', onResizeWhileOpen)
+        onResizeWhileOpen = null
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Notify and normalize layout
+    try {
+      document.dispatchEvent(new CustomEvent('menu:close-end'))
+    } catch (e) {
+      // ignore
+    }
+    try {
+      if (
+        typeof ScrollTrigger !== 'undefined' &&
+        ScrollTrigger &&
+        typeof ScrollTrigger.refresh === 'function'
+      ) {
+        ScrollTrigger.refresh()
+        requestAnimationFrame(() => {
+          try {
+            ScrollTrigger.refresh()
+          } catch (e) {
+            // ignore
+          }
+        })
+      }
+    } catch (e) {
+      // ignore
+    }
+    try {
+      window.dispatchEvent(new Event('resize'))
+    } catch (e) {
+      // ignore
+    }
+
+    isOpen = false
+    if (brandLink) brandLink.setAttribute('pt-inner', '')
+  }
 
   const ensureLinkBaseMargins = () => {
     linkAnchors.forEach((anchor, index) => {
@@ -452,67 +634,17 @@ export function initializeMenuClick(options = {}, root = document) {
     } catch (e) {
       // ignore
     }
-    // If closing, immediately unlock icon bg lock to let theme apply
+    // If closing during an opening sequence, interrupt and snap to closed state
     if (!intendedOpen) {
+      // If DOM says open but internal toggle not yet applied, we are mid-open
+      if (wasOpen && !isOpen) {
+        snapMenuToClosedBaseline()
+        return
+      }
+      // If fully open, proceed with normal close timeline below
       try {
         if (menuIconElement && menuIconElement.dataset)
           delete menuIconElement.dataset.bgLocked
-      } catch (e) {
-        // ignore
-      }
-      // Snap all animated elements to the "open" baseline so the close
-      // animation always returns cleanly to start even if interrupted mid-open
-      try {
-        const viewportWidth = window.innerWidth
-        const isTablet = viewportWidth >= 768 && viewportWidth <= 991
-        const isMobile = viewportWidth < 768
-        const borderGapPx = isMobile ? 32 : 64
-        const desiredWidth = Math.max(0, viewportWidth - borderGapPx)
-        const openScale = viewportWidth > 0 ? desiredWidth / viewportWidth : 1
-        const openTop = isMobile ? '32em' : isTablet ? '15em' : '24em'
-        if (linkAnchors && linkAnchors.length) {
-          gsap.set(linkAnchors, { marginTop: 0, overwrite: 'auto' })
-        }
-        if (menuIconElement) {
-          gsap.set(menuIconElement, {
-            gap: '0px',
-            rotation: 45,
-            transformOrigin: '50% 50%',
-            overwrite: 'auto',
-          })
-        }
-        if (menuIconBar1) {
-          gsap.set(menuIconBar1, {
-            top: '49%',
-            rotation: 0,
-            transformOrigin: '50% 50%',
-            overwrite: 'auto',
-          })
-        }
-        if (menuIconBar2) {
-          gsap.set(menuIconBar2, {
-            bottom: '49%',
-            rotation: 90,
-            transformOrigin: '50% 50%',
-            overwrite: 'auto',
-          })
-        }
-        if (menuIconBars && menuIconBars.length) {
-          gsap.set(menuIconBars, {
-            backgroundColor: 'var(--accent)',
-            overwrite: 'auto',
-          })
-        }
-        if (pageWrapElement) {
-          gsap.set(pageWrapElement, {
-            transformOrigin: '50% 0%',
-            top: openTop,
-            scale: openScale,
-            borderRadius: '1rem',
-            overwrite: 'auto',
-          })
-        }
-        gsap.set(document.body, { backgroundColor: 'var(--accent)' })
       } catch (e) {
         // ignore
       }

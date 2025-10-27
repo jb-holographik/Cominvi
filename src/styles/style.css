@@ -496,6 +496,14 @@ h1 > .is-h1-span-wrap:last-child > span {
   height: calc(100svh + 1px);
 }
 
+.maplibregl-ctrl-bottom-right {
+  display: none !important;
+}
+
+.maplibregl-map {
+  font: unset !important;
+}
+
 @media (min-width: 991px) {
   .processes .process:first-child .process-infos {
     padding-top: 0;

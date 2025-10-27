@@ -59,8 +59,10 @@
       "type": "background",
       "layout": {"visibility": "visible"},
       "paint": {
-        "background-color": "red"
-
+        "background-color": 
+        {
+          "stops": [[6, "rgb(12,12,12)"], [10, "rgb(12,12,12)"]]
+        }
       }
     },
     {

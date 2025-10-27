@@ -439,7 +439,7 @@ export function initTechnology(root = document) {
         }
         // Initial setup (no animation on first call)
         if (currentMode == null) {
-          machinesWrapper.style.display = isGrid ? 'none' : 'block'
+          machinesWrapper.style.display = 'block'
           machinesGridWrapper.style.display = isGrid ? 'block' : 'none'
           try {
             gsap.set([machinesWrapper, machinesGridWrapper], {
@@ -473,125 +473,120 @@ export function initTechnology(root = document) {
           return
         }
         if (currentMode === mode) return
-        const fromEl =
-          currentMode === 'grid' ? machinesGridWrapper : machinesWrapper
-        const toEl = isGrid ? machinesGridWrapper : machinesWrapper
-        try {
-          if (modeTl) {
-            modeTl.kill()
-            modeTl = null
-          }
-          gsap.killTweensOf([fromEl, toEl])
-          const ease = gsap.parseEase('machinesStep') || ((t) => t)
-          const total = 1.2
-          const outDur = 0.3
-          const inDur = Math.max(0, total - outDur)
-          // Prepare incoming lazily after fade-out to avoid layout jump/covering
-          const tl = gsap.timeline()
-          modeTl = tl
-          tl.to(fromEl, { opacity: 0, duration: outDur, ease }, 0)
-            .add(() => {
-              try {
-                fromEl.style.display = 'none'
-                gsap.set(fromEl, { clearProps: 'opacity,transform' })
-              } catch (e) {
-                // ignore
-              }
-            })
-            .add(() => {
-              try {
-                gsap.set(toEl, { display: 'block', opacity: 0, y: '8em' })
-              } catch (e) {
-                // ignore
-              }
-            })
-            .to(toEl, { opacity: 1, y: '0em', duration: inDur, ease })
-            .add(() => {
-              try {
-                gsap.set(toEl, { clearProps: 'opacity,transform' })
-              } catch (e) {
-                // ignore
-              }
-            })
-            .add(() => {
-              // After showing list view, force a sync of measurements and ScrollTrigger
-              try {
-                if (!isGrid) {
-                  try {
-                    setItemHeightFromName()
-                  } catch (_) {
-                    // ignore
-                  }
-                  try {
-                    measureSteps()
-                    updateWrapperHeight()
-                  } catch (_) {
-                    // ignore
-                  }
-                  try {
-                    st.refresh()
-                  } catch (_) {
-                    try {
-                      ScrollTrigger.refresh()
-                    } catch (__) {
-                      // ignore
-                    }
-                  }
-                  try {
-                    imagesStepPx = getImagesBasePx()
-                    const dist = getCurrentDistance()
-                    setImagesByDistance(dist)
-                    try {
-                      const idx = getNearestStepForScroll(dist)
-                      markActiveImage(idx)
-                    } catch (___) {
-                      // ignore
-                    }
-                  } catch (____) {
-                    // ignore
-                  }
-                }
-              } catch (syncErr) {
-                // ignore
-              }
-            })
-            .add(() => {
-              // Always refresh ScrollTrigger after view switch (grid or list)
-              try {
-                if (
-                  window.ScrollTrigger &&
-                  typeof window.ScrollTrigger.refresh === 'function'
-                ) {
-                  window.ScrollTrigger.refresh()
-                }
-              } catch (e) {
-                // ignore
-              }
-              // Re-init generic parallax too, in case .image-p or others are present on this page
-              try {
-                initParallax(root)
-              } catch (e2) {
-                // ignore
-              }
-            })
-          tl.eventCallback('onComplete', () => {
-            modeTl = null
-          })
-          currentMode = mode
-        } catch (e) {
-          // Fallback without animation
-          machinesWrapper.style.display = isGrid ? 'none' : 'block'
-          machinesGridWrapper.style.display = isGrid ? 'block' : 'none'
-          currentMode = mode
+        // New logic: list->grid shows grid over list, grid->list just hides grid
+        const ease = gsap.parseEase('machinesStep') || ((t) => t)
+        if (currentMode === 'list' && isGrid) {
+          // List to Grid: show grid over list without modifying list
           try {
-            if (
-              window.ScrollTrigger &&
-              typeof window.ScrollTrigger.refresh === 'function'
-            ) {
-              window.ScrollTrigger.refresh()
+            if (modeTl) {
+              modeTl.kill()
+              modeTl = null
             }
-          } catch (__) {
-            // ignore
+            gsap.killTweensOf(machinesGridWrapper)
+            const tl = gsap.timeline()
+            modeTl = tl
+            tl.add(() => {
+              try {
+                gsap.set(machinesGridWrapper, {
+                  display: 'block',
+                  opacity: 0,
+                  y: '8em',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  zIndex: 2,
+                })
+              } catch (e) {
+                // ignore
+              }
+            })
+              .to(machinesGridWrapper, {
+                opacity: 1,
+                y: '0em',
+                duration: 1.2,
+                ease,
+              })
+              .add(() => {
+                try {
+                  // Increase wrapper height to show full grid
+                  const gridHeight =
+                    machinesGridWrapper.getBoundingClientRect().height
+                  if (gridHeight > 0) {
+                    machinesWrapper.style.minHeight = gridHeight + 'px'
+                  }
+                } catch (e) {
+                  // ignore
+                }
+              })
+              .add(() => {
+                try {
+                  gsap.set(machinesGridWrapper, {
+                    clearProps: 'opacity,transform',
+                  })
+                } catch (e) {
+                  // ignore
+                }
+              })
+              .add(() => {
+                try {
+                  if (
+                    window.ScrollTrigger &&
+                    typeof window.ScrollTrigger.refresh === 'function'
+                  ) {
+                    window.ScrollTrigger.refresh()
+                  }
+                } catch (e) {
+                  // ignore
+                }
+                try {
+                  initNextBackgroundParallax(root)
+                } catch (e) {
+                  // ignore
+                }
+                try {
+                  initParallax(root)
+                } catch (e) {
+                  // ignore
+                }
+              })
+            tl.eventCallback('onComplete', () => {
+              modeTl = null
+            })
+            currentMode = mode
+          } catch (e) {
+            machinesGridWrapper.style.display = 'block'
+            currentMode = mode
+            try {
+              if (
+                window.ScrollTrigger &&
+                typeof window.ScrollTrigger.refresh === 'function'
+              ) {
+                window.ScrollTrigger.refresh()
+              }
+            } catch (__) {
+              // ignore
+            }
+          }
+        } else if (currentMode === 'grid' && !isGrid) {
+          // Grid to List: simply hide grid and reset height
+          try {
+            if (modeTl) {
+              modeTl.kill()
+              modeTl = null
+            }
+            gsap.killTweensOf(machinesGridWrapper)
+            machinesGridWrapper.style.display = 'none'
+            gsap.set(machinesGridWrapper, {
+              clearProps: 'opacity,transform',
+            })
+            // Reset wrapper height back to auto
+            machinesWrapper.style.minHeight = ''
+            currentMode = mode
+          } catch (e) {
+            machinesGridWrapper.style.display = 'none'
+            machinesWrapper.style.minHeight = ''
+            currentMode = mode
           }
         }
         // Re-init next section background parallax after switching views

@@ -1462,6 +1462,7 @@ export function initializeThemeController() {
     const to = { ...tr, overwrite: 'auto' }
     const isoSpecByKey = {
       white: { fill: 'var(--white)', opacity: 1 },
+      black: { fill: 'var(--primary)', opacity: 1 },
       hero: { fill: 'transparent', opacity: 0 },
       menu: { fill: 'transparent', opacity: 0 },
     }

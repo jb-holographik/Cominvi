@@ -494,7 +494,6 @@ h1 > .is-h1-span-wrap:last-child > span {
 .section_next {
   position: relative;
   height: calc(100svh + 1px);
-  overflow: hidden;
 }
 
 @media (min-width: 991px) {

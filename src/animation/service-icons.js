@@ -30,11 +30,9 @@ export function initIcons(root = document) {
       /* ignore */
     }
     try {
-      const ns =
-        scope && scope.getAttribute
-          ? scope.getAttribute('data-barba-namespace')
-          : null
-      console.log('[icons] init start', { ns })
+      scope && scope.getAttribute
+        ? scope.getAttribute('data-barba-namespace')
+        : null
     } catch (e) {
       /* ignore */
     }
@@ -45,11 +43,6 @@ export function initIcons(root = document) {
         '.service-card .service-icon_icon, .team-card .service-icon_icon, .stats-card .service-icon_icon, .service-card [data-lottie], .team-card [data-lottie], .stats-card [data-lottie]'
       )
     )
-    try {
-      console.log('[icons] found containers', { count: icons.length })
-    } catch (e) {
-      /* ignore */
-    }
 
     // If none found yet (e.g., DOM not fully attached by Barba), watch container and retry once
     if (!icons.length && scope && scope.nodeType === 1) {
@@ -66,7 +59,6 @@ export function initIcons(root = document) {
               if (found) {
                 waitObs.disconnect()
                 scope.__svcIconWaitObs = null
-                console.log('[icons] observer: icons appeared → init')
                 // Re-enter init to bind icons now present
                 initIcons(scope)
               }
@@ -237,11 +229,6 @@ export function initIcons(root = document) {
         } catch (e) {
           /* ignore */
         }
-        try {
-          console.log('[icons] recreate Lottie', { path })
-        } catch (e) {
-          /* ignore */
-        }
         return a
       } catch (e) {
         return null
@@ -256,13 +243,6 @@ export function initIcons(root = document) {
       //   icon.getAttribute('data-w-id') || icon.getAttribute('data-src') || ''
 
       const onReadyWrap = (anim, pendingRef) => {
-        try {
-          console.log('[icons] onReady bind', {
-            frames: anim && Math.floor(anim.totalFrames || 0),
-          })
-        } catch (e) {
-          /* ignore */
-        }
         try {
           anim.goToAndStop(0, true)
         } catch (e) {
@@ -314,11 +294,6 @@ export function initIcons(root = document) {
         }
         const playFirst = () => {
           try {
-            console.log('[icons] play first')
-          } catch (e) {
-            /* ignore */
-          }
-          try {
             if (anim.__svcTOFirst) clearTimeout(anim.__svcTOFirst)
             if (anim.__svcTOReset) clearTimeout(anim.__svcTOReset)
           } catch (e) {
@@ -339,11 +314,6 @@ export function initIcons(root = document) {
         }
 
         const playSecond = () => {
-          try {
-            console.log('[icons] play second')
-          } catch (e) {
-            /* ignore */
-          }
           try {
             if (anim.__svcTOFirst) clearTimeout(anim.__svcTOFirst)
             if (anim.__svcTOReset) clearTimeout(anim.__svcTOReset)
@@ -386,7 +356,6 @@ export function initIcons(root = document) {
               try {
                 const a2 = getAnim(icon)
                 if (a2 && a2 !== icon.__svcAnim) {
-                  console.log('[icons] swap detected → rebind')
                   icon.__svcAnim = a2
                   // Rebind: remove old listeners then bind new closures targeting a2
                   try {
@@ -505,7 +474,6 @@ export function initIcons(root = document) {
                         bound.bind(a, pending)
                         try {
                           icon.__svcIconBound = true
-                          console.log('[icons] bound via observer')
                         } catch (e) {
                           /* ignore */
                         }
@@ -519,9 +487,6 @@ export function initIcons(root = document) {
                     const frames = Math.floor(a.totalFrames || 0)
                     if (frames > 0) doBind()
                     else {
-                      console.log(
-                        '[icons] observer: frames=0 → wait data_ready'
-                      )
                       a.addEventListener &&
                         a.addEventListener('data_ready', () => doBind())
                       let tries = 200
@@ -556,7 +521,6 @@ export function initIcons(root = document) {
                         bound.bind(a, pending)
                         try {
                           icon.__svcIconBound = true
-                          console.log('[icons] bound via timeout')
                         } catch (e) {
                           /* ignore */
                         }
@@ -570,7 +534,6 @@ export function initIcons(root = document) {
                     const frames = Math.floor(a.totalFrames || 0)
                     if (frames > 0) doBind()
                     else {
-                      console.log('[icons] timeout: frames=0 → wait data_ready')
                       a.addEventListener &&
                         a.addEventListener('data_ready', () => doBind())
                       let tries = 200
@@ -622,7 +585,6 @@ export function initIcons(root = document) {
                             bound.bind(a, pending)
                             try {
                               icon.__svcIconBound = true
-                              console.log('[icons] bound via lib retry')
                             } catch (e) {
                               /* ignore */
                             }
@@ -683,7 +645,6 @@ export function initIcons(root = document) {
               bound.bind(anim, pending)
               try {
                 icon.__svcIconBound = true
-                console.log('[icons] bound onReady')
               } catch (e) {
                 /* ignore */
               }
@@ -695,7 +656,6 @@ export function initIcons(root = document) {
           try {
             const frames = Math.floor(anim.totalFrames || 0)
             if (frames > 0) return void doBind()
-            console.log('[icons] onReady: frames=0 → wait data_ready')
             anim.addEventListener &&
               anim.addEventListener('data_ready', () => doBind())
             let tries = 200

@@ -1,5 +1,6 @@
 import gsap from 'gsap'
-// Contact page initializer: Google Maps SDK only (API key required)
+import maplibregl from 'maplibre-gl'
+// Contact page initializer: MapLibre GL (no API key required)
 
 export function initContact(root = document) {
   const scope = root && root.querySelector ? root : document
@@ -13,8 +14,6 @@ export function initContact(root = document) {
   const isContact =
     containerIsContact ||
     !!scope.querySelector('[data-barba-namespace="Contact"]')
-  // eslint-disable-next-line no-console
-  console.debug('[contact] initContact called', { isContact })
   if (!isContact) return
 
   // Iframe support removed per request; SDK only
@@ -25,51 +24,14 @@ export function initContact(root = document) {
         (root &&
           root.querySelector &&
           root.querySelector(
-            '.is-g-map.w-widget-map, .w-widget-map.is-g-map, .is-g-map'
+            '.is-c-map.w-widget-map, .w-widget-map.is-c-map, .is-c-map'
           )) ||
         scope.querySelector(
-          '.is-g-map.w-widget-map, .w-widget-map.is-g-map, .is-g-map'
+          '.is-c-map.w-widget-map, .w-widget-map.is-c-map, .is-c-map'
         )
       )
     } catch (e) {
       return null
-    }
-  }
-
-  // Pause Lenis scrolling when hovering over the map container
-  const bindMapScrollPause = () => {
-    try {
-      const el = getMapContainer()
-      if (!el) return
-      if (el.__hoverScrollBound) return
-      el.__hoverScrollBound = true
-      const onEnter = () => {
-        try {
-          if (window.lenis && typeof window.lenis.stop === 'function') {
-            window.lenis.stop()
-          }
-        } catch (err) {
-          /* ignore */
-        }
-      }
-      const onLeave = () => {
-        try {
-          if (window.lenis && typeof window.lenis.start === 'function') {
-            window.lenis.start()
-          }
-        } catch (err) {
-          /* ignore */
-        }
-      }
-      el.addEventListener('pointerenter', onEnter, { passive: true })
-      el.addEventListener('pointerleave', onLeave, { passive: true })
-      el.addEventListener('mouseenter', onEnter, { passive: true })
-      el.addEventListener('mouseleave', onLeave, { passive: true })
-      el.addEventListener('touchstart', onEnter, { passive: true })
-      el.addEventListener('touchend', onLeave, { passive: true })
-      el.addEventListener('touchcancel', onLeave, { passive: true })
-    } catch (e) {
-      // ignore
     }
   }
 
@@ -88,42 +50,6 @@ export function initContact(root = document) {
     }
   }
 
-  const loadGoogleMaps = (apiKey) => {
-    try {
-      if (window.google && window.google.maps)
-        return Promise.resolve(window.google.maps)
-    } catch (e) {
-      // ignore
-    }
-    if (window.__gmapsLoadingPromise) return window.__gmapsLoadingPromise
-    const params = new URLSearchParams()
-    if (apiKey && String(apiKey).trim().length)
-      params.set('key', String(apiKey).trim())
-    params.set('v', 'weekly')
-    const src = `https://maps.googleapis.com/maps/api/js?${params.toString()}`
-    window.__gmapsLoadingPromise = new Promise((resolve, reject) => {
-      try {
-        const s = document.createElement('script')
-        s.src = src
-        s.async = true
-        s.defer = true
-        s.onload = () => {
-          try {
-            if (window.google && window.google.maps) resolve(window.google.maps)
-            else reject(new Error('google.maps not available after load'))
-          } catch (e) {
-            reject(e)
-          }
-        }
-        s.onerror = () => reject(new Error('Failed to load Google Maps JS'))
-        document.head.appendChild(s)
-      } catch (e) {
-        reject(e)
-      }
-    })
-    return window.__gmapsLoadingPromise
-  }
-
   const ensureJsMap = async () => {
     try {
       const container = getMapContainer()
@@ -131,7 +57,8 @@ export function initContact(root = document) {
       // Avoid re-creating the map if it already exists (prevents flash at end of transitions)
       try {
         if (
-          (container.classList && container.classList.contains('is-gmap-js')) ||
+          (container.classList &&
+            container.classList.contains('is-c-map-js')) ||
           container.__jsMapCreated
         ) {
           return true
@@ -139,61 +66,346 @@ export function initContact(root = document) {
       } catch (e) {
         // ignore
       }
+
       const latlng = parseLatLng(
         container.getAttribute('data-widget-latlng')
       ) || {
-        lat: 21.1715948,
-        lng: -101.7326746,
+        lat: 21.1716,
+        lng: -101.7327,
       }
+
       const zoomAttr = container.getAttribute('data-widget-zoom')
       const zoom =
-        zoomAttr != null && zoomAttr !== '' ? parseInt(zoomAttr, 10) : 12
-      const style = (
-        container.getAttribute('data-widget-style') || 'roadmap'
-      ).toLowerCase()
-      const apiKey =
-        container.getAttribute('data-google-api-key') ||
-        (window && window.__GOOGLE_MAPS_API_KEY) ||
-        ''
+        zoomAttr != null && zoomAttr !== '' ? parseInt(zoomAttr, 10) : 14
 
-      // If no key and no maps present, skip
-      if (!(window.google && window.google.maps) && !String(apiKey).trim()) {
-        return false
-      }
-      const gmaps = await loadGoogleMaps(apiKey)
       // Prepare container for JS map
       try {
         container.innerHTML = ''
       } catch (e) {
         // ignore
       }
+
       try {
-        container.classList.add('is-gmap-js')
+        container.classList.add('is-c-map-js')
       } catch (e) {
         // ignore
       }
-      const opts = {
-        center: latlng,
-        zoom: Number.isNaN(zoom) ? 12 : zoom,
-        mapTypeId: style === 'satellite' ? 'satellite' : 'roadmap',
-        disableDefaultUI: true,
-        gestureHandling: 'greedy',
-      }
-      // eslint-disable-next-line no-new
-      const map = new gmaps.Map(container, opts)
-      // eslint-disable-next-line no-new
-      new gmaps.Marker({ position: latlng, map })
+
+      // Create MapLibre GL map
       try {
-        container.__jsMapCreated = true
+        const map = new maplibregl.Map({
+          container,
+          style: 'https://tiles.openfreemap.org/styles/dark',
+          center: [latlng.lng, latlng.lat],
+          zoom: Number.isNaN(zoom) ? 14 : zoom,
+          // scrollZoom: false,
+        })
+
+        // Disable scroll wheel zoom but enable pinch-to-zoom on touch devices
+        map.scrollZoom.disable()
+        map.touchZoomRotate.enable()
+
+        // Add zoom controls
+        map.addControl(new maplibregl.NavigationControl())
+
+        // Customize road and building colors on style load
+        const applyMapColors = () => {
+          try {
+            // Get CSS variable colors
+            const rootStyles = getComputedStyle(document.documentElement)
+            const buildingColor =
+              rootStyles.getPropertyValue('--building-color').trim() ||
+              '#E5E5E5'
+            const buildingBorderColor =
+              rootStyles.getPropertyValue('--building-border-color').trim() ||
+              '#D1D1D1'
+            const roadColor =
+              rootStyles.getPropertyValue('--road-color').trim() || '#E5E5E5'
+            const roadBorderColor =
+              rootStyles.getPropertyValue('--road-border-color').trim() ||
+              '#D1D1D1'
+            const backgroundColor =
+              rootStyles.getPropertyValue('--map-background-color').trim() ||
+              '#F3F3F3'
+            const textColor =
+              rootStyles.getPropertyValue('--map-text-color').trim() ||
+              '#B2B2B2'
+            const textHaloColor =
+              rootStyles.getPropertyValue('--map-text-halo-color').trim() ||
+              '#F3F3F3'
+            const waterColor =
+              rootStyles.getPropertyValue('--map-water-color').trim() ||
+              '#E5E5E5'
+            const waterwayColor =
+              rootStyles.getPropertyValue('--map-waterway-color').trim() ||
+              '#E5E5E5'
+
+            // Get all layers
+            const allLayers = map.getStyle().layers || []
+
+            // Modify background color
+            try {
+              if (map.getLayer('background')) {
+                map.setPaintProperty(
+                  'background',
+                  'background-color',
+                  backgroundColor
+                )
+              }
+            } catch (e) {
+              // ignore
+            }
+
+            // Hide arrow layers and modify road/building colors
+            allLayers.forEach((layer) => {
+              if (layer.type === 'line') {
+                // Modify main road colors (inner roads)
+                if (
+                  layer.id.includes('highway_') ||
+                  layer.id.includes('road_') ||
+                  layer.id.includes('railway_')
+                ) {
+                  if (
+                    layer.id.includes('_inner') ||
+                    !layer.id.includes('_casing')
+                  ) {
+                    try {
+                      map.setPaintProperty(layer.id, 'line-color', roadColor)
+                    } catch (e) {
+                      // ignore
+                    }
+                  }
+                }
+                // Modify road borders/outlines (casing layers)
+                if (layer.id.includes('_casing')) {
+                  try {
+                    map.setPaintProperty(
+                      layer.id,
+                      'line-color',
+                      roadBorderColor
+                    )
+                  } catch (e) {
+                    // ignore
+                  }
+                }
+              }
+              // Hide arrow layers
+              if (
+                layer.id.includes('road_oneway') ||
+                layer.id.includes('arrow') ||
+                layer.id.includes('direction')
+              ) {
+                try {
+                  map.setLayoutProperty(layer.id, 'visibility', 'none')
+                } catch (e) {
+                  // ignore
+                }
+              }
+            })
+
+            // Modify building colors
+            try {
+              if (map.getLayer('building')) {
+                map.setPaintProperty('building', 'fill-color', buildingColor)
+                map.setPaintProperty(
+                  'building',
+                  'fill-outline-color',
+                  buildingBorderColor
+                )
+              }
+            } catch (e) {
+              // ignore
+            }
+
+            // Modify water colors
+            try {
+              if (map.getLayer('water')) {
+                map.setPaintProperty('water', 'fill-color', waterColor)
+              }
+            } catch (e) {
+              // ignore
+            }
+
+            // Modify waterway colors
+            try {
+              if (map.getLayer('waterway')) {
+                map.setPaintProperty('waterway', 'line-color', waterwayColor)
+              }
+            } catch (e) {
+              // ignore
+            }
+
+            // Modify text colors (symbol layers)
+            allLayers.forEach((layer) => {
+              if (layer.type === 'symbol') {
+                try {
+                  if (map.getLayer(layer.id)) {
+                    map.setPaintProperty(layer.id, 'text-color', textColor)
+                    map.setPaintProperty(
+                      layer.id,
+                      'text-halo-color',
+                      textHaloColor
+                    )
+                  }
+                } catch (e) {
+                  // ignore
+                }
+              }
+            })
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        map.on('style.load', () => {
+          applyMapColors()
+        })
+
+        map.on('styleimagemissing', (e) => {
+          const canvas = document.createElement('canvas')
+          canvas.width = 1
+          canvas.height = 1
+          const ctx = canvas.getContext('2d')
+          ctx.fillStyle = 'rgba(0,0,0,0)'
+          ctx.fillRect(0, 0, 1, 1)
+          map.addImage(e.id, {
+            width: 1,
+            height: 1,
+            data: ctx.getImageData(0, 0, 1, 1).data,
+          })
+        })
+
+        // Add marker with accent color
+        new maplibregl.Marker({ color: 'var(--accent)' })
+          .setLngLat([latlng.lng, latlng.lat])
+          .addTo(map)
+
+        // Add theme switch button
+        try {
+          const themeButton = document.createElement('button')
+          themeButton.className = 'is-c-map-theme-switch'
+          themeButton.setAttribute('aria-label', 'Toggle map theme')
+          themeButton.setAttribute('type', 'button')
+
+          let isDarkMode = localStorage.getItem('mapTheme') === 'dark'
+
+          const applyLightTheme = () => {
+            document.documentElement.style.setProperty(
+              '--map-background-color',
+              '#F3F3F3'
+            )
+            document.documentElement.style.setProperty(
+              '--building-color',
+              '#E5E5E5'
+            )
+            document.documentElement.style.setProperty(
+              '--building-border-color',
+              '#D1D1D1'
+            )
+            document.documentElement.style.setProperty(
+              '--road-color',
+              '#E5E5E5'
+            )
+            document.documentElement.style.setProperty(
+              '--road-border-color',
+              '#D1D1D1'
+            )
+            document.documentElement.style.setProperty(
+              '--map-water-color',
+              '#E5E5E5'
+            )
+            document.documentElement.style.setProperty(
+              '--map-waterway-color',
+              '#E5E5E5'
+            )
+            document.documentElement.style.setProperty(
+              '--map-text-color',
+              '#B2B2B2'
+            )
+            document.documentElement.style.setProperty(
+              '--map-text-halo-color',
+              '#F3F3F3'
+            )
+            localStorage.setItem('mapTheme', 'light')
+            isDarkMode = false
+            themeButton.innerHTML = ''
+            applyMapColors()
+          }
+
+          const applyDarkTheme = () => {
+            document.documentElement.style.setProperty(
+              '--map-background-color',
+              '#000000'
+            )
+            document.documentElement.style.setProperty(
+              '--building-color',
+              '#161616'
+            )
+            document.documentElement.style.setProperty(
+              '--building-border-color',
+              '#323232'
+            )
+            document.documentElement.style.setProperty(
+              '--road-color',
+              '#1a1a1a'
+            )
+            document.documentElement.style.setProperty(
+              '--road-border-color',
+              '#323232'
+            )
+            document.documentElement.style.setProperty(
+              '--map-water-color',
+              '#0a0a0a'
+            )
+            document.documentElement.style.setProperty(
+              '--map-waterway-color',
+              '#1a1a1a'
+            )
+            document.documentElement.style.setProperty(
+              '--map-text-color',
+              '#444444'
+            )
+            document.documentElement.style.setProperty(
+              '--map-text-halo-color',
+              '#1a1a1a'
+            )
+            localStorage.setItem('mapTheme', 'dark')
+            isDarkMode = true
+            themeButton.innerHTML = ''
+            applyMapColors()
+          }
+
+          themeButton.addEventListener('click', () => {
+            if (isDarkMode) {
+              applyLightTheme()
+            } else {
+              applyDarkTheme()
+            }
+          })
+
+          // Apply saved theme or default to dark
+          if (isDarkMode) {
+            applyDarkTheme()
+          } else {
+            applyLightTheme()
+          }
+
+          container.appendChild(themeButton)
+        } catch (e) {
+          // ignore
+        }
+
+        try {
+          container.__jsMapCreated = true
+        } catch (e) {
+          // ignore
+        }
+
+        return true
       } catch (e) {
-        // ignore
+        return false
       }
-      // eslint-disable-next-line no-console
-      console.debug('[contact] JS map created')
-      return true
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.debug('[contact] JS map error', e)
       return false
     }
   }
@@ -201,7 +413,6 @@ export function initContact(root = document) {
   // Fallback iframe removed
 
   // Initialize the JS Map immediately (SDK only)
-  bindMapScrollPause()
   ensureJsMap()
 
   // On mobile, move left content inside right content after contact infos

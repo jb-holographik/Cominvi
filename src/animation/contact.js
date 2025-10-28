@@ -246,6 +246,16 @@ export function initContact(root = document) {
                       'text-halo-color',
                       textHaloColor
                     )
+                    // Hide arrows but show all other text/symbol layers
+                    if (
+                      layer.id.includes('road_oneway') ||
+                      layer.id.includes('arrow') ||
+                      layer.id.includes('direction')
+                    ) {
+                      map.setLayoutProperty(layer.id, 'visibility', 'none')
+                    } else {
+                      map.setLayoutProperty(layer.id, 'visibility', 'visible')
+                    }
                   }
                 } catch (e) {
                   // ignore
@@ -259,6 +269,20 @@ export function initContact(root = document) {
 
         map.on('style.load', () => {
           applyMapColors()
+
+          // Reduce minzoom for text layers to show names at lower zoom levels
+          try {
+            const style = map.getStyle()
+            const modifiedLayers = style.layers.map((layer) => {
+              if (layer.type === 'symbol' && layer.minzoom !== undefined) {
+                return { ...layer, minzoom: Math.max(0, layer.minzoom - 4) }
+              }
+              return layer
+            })
+            map.setStyle({ ...style, layers: modifiedLayers })
+          } catch (e) {
+            // ignore
+          }
         })
 
         map.on('styleimagemissing', (e) => {
@@ -279,121 +303,6 @@ export function initContact(root = document) {
         new maplibregl.Marker({ color: 'var(--accent)' })
           .setLngLat([latlng.lng, latlng.lat])
           .addTo(map)
-
-        // Add theme switch button
-        try {
-          const themeButton = document.createElement('button')
-          themeButton.className = 'is-c-map-theme-switch'
-          themeButton.setAttribute('aria-label', 'Toggle map theme')
-          themeButton.setAttribute('type', 'button')
-
-          let isDarkMode = localStorage.getItem('mapTheme') === 'dark'
-
-          const applyLightTheme = () => {
-            document.documentElement.style.setProperty(
-              '--map-background-color',
-              '#F3F3F3'
-            )
-            document.documentElement.style.setProperty(
-              '--building-color',
-              '#E5E5E5'
-            )
-            document.documentElement.style.setProperty(
-              '--building-border-color',
-              '#D1D1D1'
-            )
-            document.documentElement.style.setProperty(
-              '--road-color',
-              '#E5E5E5'
-            )
-            document.documentElement.style.setProperty(
-              '--road-border-color',
-              '#D1D1D1'
-            )
-            document.documentElement.style.setProperty(
-              '--map-water-color',
-              '#E5E5E5'
-            )
-            document.documentElement.style.setProperty(
-              '--map-waterway-color',
-              '#E5E5E5'
-            )
-            document.documentElement.style.setProperty(
-              '--map-text-color',
-              '#B2B2B2'
-            )
-            document.documentElement.style.setProperty(
-              '--map-text-halo-color',
-              '#F3F3F3'
-            )
-            localStorage.setItem('mapTheme', 'light')
-            isDarkMode = false
-            themeButton.innerHTML = ''
-            applyMapColors()
-          }
-
-          const applyDarkTheme = () => {
-            document.documentElement.style.setProperty(
-              '--map-background-color',
-              '#000000'
-            )
-            document.documentElement.style.setProperty(
-              '--building-color',
-              '#161616'
-            )
-            document.documentElement.style.setProperty(
-              '--building-border-color',
-              '#323232'
-            )
-            document.documentElement.style.setProperty(
-              '--road-color',
-              '#1a1a1a'
-            )
-            document.documentElement.style.setProperty(
-              '--road-border-color',
-              '#323232'
-            )
-            document.documentElement.style.setProperty(
-              '--map-water-color',
-              '#0a0a0a'
-            )
-            document.documentElement.style.setProperty(
-              '--map-waterway-color',
-              '#1a1a1a'
-            )
-            document.documentElement.style.setProperty(
-              '--map-text-color',
-              '#444444'
-            )
-            document.documentElement.style.setProperty(
-              '--map-text-halo-color',
-              '#1a1a1a'
-            )
-            localStorage.setItem('mapTheme', 'dark')
-            isDarkMode = true
-            themeButton.innerHTML = ''
-            applyMapColors()
-          }
-
-          themeButton.addEventListener('click', () => {
-            if (isDarkMode) {
-              applyLightTheme()
-            } else {
-              applyDarkTheme()
-            }
-          })
-
-          // Apply saved theme or default to dark
-          if (isDarkMode) {
-            applyDarkTheme()
-          } else {
-            applyLightTheme()
-          }
-
-          container.appendChild(themeButton)
-        } catch (e) {
-          // ignore
-        }
 
         try {
           container.__jsMapCreated = true

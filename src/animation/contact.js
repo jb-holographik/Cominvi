@@ -120,10 +120,10 @@ export function initContact(root = document) {
               rootStyles.getPropertyValue('--building-border-color').trim() ||
               '#D1D1D1'
             const roadColor =
-              rootStyles.getPropertyValue('--road-color').trim() || '#E5E5E5'
+              rootStyles.getPropertyValue('--road-color').trim() || '#FFFFFF'
             const roadBorderColor =
               rootStyles.getPropertyValue('--road-border-color').trim() ||
-              '#D1D1D1'
+              '#FFFFFF'
             const backgroundColor =
               rootStyles.getPropertyValue('--map-background-color').trim() ||
               '#F3F3F3'
@@ -280,6 +280,62 @@ export function initContact(root = document) {
               return layer
             })
             map.setStyle({ ...style, layers: modifiedLayers })
+          } catch (e) {
+            // ignore
+          }
+
+          // Increase text size for labels (streets, places, etc.)
+          try {
+            const layers = map.getStyle().layers || []
+            layers.forEach((layer) => {
+              if (
+                layer.type === 'symbol' &&
+                (layer.id.includes('label') ||
+                  layer.id.includes('street') ||
+                  layer.id.includes('road_label') ||
+                  layer.id.includes('place') ||
+                  layer.id.includes('name'))
+              ) {
+                try {
+                  const currentTextSize = map.getLayoutProperty(
+                    layer.id,
+                    'text-size'
+                  )
+                  if (currentTextSize) {
+                    // If it's a number, multiply by 1.3
+                    if (typeof currentTextSize === 'number') {
+                      map.setLayoutProperty(
+                        layer.id,
+                        'text-size',
+                        currentTextSize * 1.2
+                      )
+                    }
+                    // If it's an expression, we need to scale the values
+                    else if (
+                      Array.isArray(currentTextSize) &&
+                      currentTextSize[0] === 'interpolate'
+                    ) {
+                      const scaledExpression = currentTextSize.map(
+                        (item, idx) => {
+                          // Scale numeric values (sizes)
+                          if (typeof item === 'number' && idx > 2) {
+                            return item * 1.2
+                          }
+                          return item
+                        }
+                      )
+                      map.setLayoutProperty(
+                        layer.id,
+                        'text-size',
+                        scaledExpression
+                      )
+                    }
+                  }
+                } catch (err) {
+                  // ignore
+                }
+              }
+            })
           } catch (e) {
             // ignore
           }

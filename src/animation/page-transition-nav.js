@@ -1041,7 +1041,6 @@ export function initializePageTransitionNav() {
   // Ensure icon teardown on every transition
   barba.hooks.beforeLeave(({ current }) => {
     try {
-      console.log('[icons] beforeLeave destroy')
       destroyIcons(current && current.container)
     } catch (e) {
       /* ignore */
@@ -1054,13 +1053,11 @@ export function initializePageTransitionNav() {
     if (window.__barbaAfterHandled) {
       window.__barbaAfterHandled = false
       try {
-        console.log('[icons] global after reset')
         resetServiceCardIcons(next && next.container)
       } catch (e) {
         /* ignore */
       }
       try {
-        console.log('[icons] global after init')
         initIcons(next && next.container)
       } catch (e) {
         /* ignore */
@@ -1100,7 +1097,6 @@ export function initializePageTransitionNav() {
     // Reinitialize Webflow IX2/attributes before any custom init
     reinitializeWebflowAnimations()
     try {
-      console.log('[icons] global after reset (fallback)')
       resetServiceCardIcons(next && next.container)
     } catch (e) {
       /* ignore */
@@ -1111,7 +1107,6 @@ export function initializePageTransitionNav() {
     initServiceCards(next && next.container)
     // Ensure icons are constructed after service cards/DOM structure exists
     try {
-      console.log('[icons] global after init (fallback)')
       initIcons(next && next.container)
     } catch (e) {
       /* ignore */
@@ -1185,11 +1180,6 @@ export function initializePageTransitionNav() {
 
   // Ensure immediate init after the new container is attached
   barba.hooks.afterEnter(({ next }) => {
-    try {
-      console.log('[icons] afterEnter start')
-    } catch (e) {
-      /* ignore */
-    }
     // Ensure Webflow's Lottie registry is ready before binding icons
     try {
       const wf = typeof window !== 'undefined' ? window.Webflow : null

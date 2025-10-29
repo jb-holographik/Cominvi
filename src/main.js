@@ -1,3 +1,4 @@
+import 'maplibre-gl/dist/maplibre-gl.css'
 import './styles/style.css'
 import { initAboutValuesScroll } from './animation/about-scroll.js'
 import { initAbout } from './animation/about-us.js'

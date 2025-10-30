@@ -24,12 +24,8 @@ export function heroAnimation(root = document, opts = {}) {
   // Start hero background video immediately
   try {
     const videoEl =
-      scope.querySelector(
-        '.section_hero .background_video video, .section_hero .w-background-video video, .hero-background video'
-      ) ||
-      document.querySelector(
-        '.section_hero .background_video video, .section_hero .w-background-video video, .hero-background video'
-      )
+      scope.querySelector('.hero-background .background_video video') ||
+      document.querySelector('.hero-background .background_video video')
     if (videoEl) {
       // Ensure autoplay-eligible state and restart from beginning
       videoEl.muted = true

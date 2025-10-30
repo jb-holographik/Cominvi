@@ -2045,14 +2045,6 @@ export function initTechnology(root = document) {
             const inner =
               cursor.querySelector('.cursor-pointer_inner') ||
               cursor.firstElementChild
-            try {
-              const w = cursor.dataset.__cursorInnerW
-              const h = cursor.dataset.__cursorInnerH
-              if (w) cursor.style.width = w + 'px'
-              if (h) cursor.style.height = h + 'px'
-            } catch (e) {
-              // ignore
-            }
             cursor.style.display = 'flex'
             if (inner) {
               if (endHandler) {

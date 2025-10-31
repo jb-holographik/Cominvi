@@ -66,7 +66,6 @@ if (!window.__ptInnerClickListenerAttached) {
         const match = target.closest('.pt-inner')
         if (match) {
           window.__clickedPtInner = true
-          console.debug('[mask-overlay] pointer/click on .pt-inner')
           // Reset geometry before making overlay active to ensure correct start state
           try {
             resetOverlayClipBaseState()
@@ -83,16 +82,6 @@ if (!window.__ptInnerClickListenerAttached) {
             } catch (e) {
               // ignore
             }
-            console.debug('[mask-overlay] immediate show on pointer', {
-              display:
-                (window.getComputedStyle &&
-                  window.getComputedStyle(container).display) ||
-                (container && container.style.display),
-              zIndex:
-                (window.getComputedStyle &&
-                  window.getComputedStyle(container).zIndex) ||
-                (container && container.style.zIndex),
-            })
           } catch (e) {
             // ignore
           }
@@ -393,13 +382,6 @@ export function slideScaleEnter({ next }) {
             try {
               const rect = host.getBoundingClientRect()
               const ready = rect && rect.width > 1 && rect.height > 1
-              // eslint-disable-next-line no-console
-              console.debug('[host-clip] layout check', {
-                w: rect && rect.width,
-                h: rect && rect.height,
-                tries,
-                ready,
-              })
               if (!ready && tries < maxTries) {
                 tries += 1
                 return window.requestAnimationFrame(attemptInit)
@@ -428,10 +410,6 @@ export function slideScaleEnter({ next }) {
                 } catch (e) {
                   // ignore
                 }
-                // eslint-disable-next-line no-console
-                console.debug('[host-clip] init@enter ready', {
-                  tries,
-                })
               }
             } catch (e) {
               // ignore

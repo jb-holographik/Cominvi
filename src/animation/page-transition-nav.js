@@ -322,18 +322,6 @@ export function initializePageTransitionNav() {
             } catch (e) {
               // ignore
             }
-            // Debug
-            try {
-              const cs = getComputedStyle(overlay)
-              // eslint-disable-next-line no-console
-              console.debug('[mask-overlay] activate@nav click', {
-                display: cs.display,
-                zIndex: cs.zIndex,
-                left: overlay.style.left,
-              })
-            } catch (e) {
-              // ignore
-            }
           }
         } catch (e) {
           // ignore

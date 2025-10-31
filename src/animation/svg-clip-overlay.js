@@ -49,12 +49,6 @@ export function createViewportClipOverlay(options = {}) {
     if (existing && existing.__overlay) {
       try {
         // Debug: existing overlay present
-        console.debug('[mask-overlay] reuse existing', {
-          left: existing.style.left,
-          display: existing.style.display,
-          zIndex: existing.style.zIndex,
-          rect: existing.getBoundingClientRect(),
-        })
       } catch (e) {
         // ignore
       }
@@ -157,17 +151,6 @@ export function createViewportClipOverlay(options = {}) {
     // ignore
   }
   document.body.appendChild(container)
-  try {
-    // Debug: created overlay
-    console.debug('[mask-overlay] created', {
-      left: container.style.left,
-      display: container.style.display,
-      zIndex: container.style.zIndex,
-      rect: container.getBoundingClientRect(),
-    })
-  } catch (e) {
-    // ignore
-  }
 
   // Create a fixed, horizontally centered page-info inside the overlay
   // Positioned 4.5em from the top of the viewport
@@ -759,20 +742,6 @@ export function createClipForHost(hostEl, options = {}) {
       'd',
       buildInsidePath(xFrac, 1 - startH, widthFrac, startH)
     )
-    try {
-      // eslint-disable-next-line no-console
-      console.debug('[host-clip] created', {
-        hostW,
-        hostH,
-        xFrac,
-        widthFrac,
-        startH,
-        rX: rxFracX,
-        rY: rxFracY,
-      })
-    } catch (e) {
-      // ignore
-    }
 
     const tl = gsap.timeline({ repeat, yoyo })
     const animState = {
@@ -806,15 +775,6 @@ export function createClipForHost(hostEl, options = {}) {
               animState.rY
             )
           )
-          // eslint-disable-next-line no-console
-          console.debug('[host-clip] update', {
-            x: animState.x,
-            y: derivedY,
-            w: animState.w,
-            h: animState.h,
-            rX: animState.rX,
-            rY: animState.rY,
-          })
         } catch (e) {
           // ignore
         }
@@ -955,8 +915,6 @@ export function tweenHostClipSlideX(
               )
             )
           }
-          // eslint-disable-next-line no-console
-          console.debug('[host-clip] slideX', { x: animState.x })
         } catch (e) {
           // ignore
         }

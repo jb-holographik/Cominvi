@@ -143,6 +143,12 @@
   overflow: hidden;
 }
 
+/* Each image wrap should fit its content height */
+.machines_images-wrap {
+  height: auto;
+  overflow: hidden;
+}
+
 /* Keep the button wrap anchored at 1em from the top of .machines */
 .machines_button-wrap {
   position: absolute;

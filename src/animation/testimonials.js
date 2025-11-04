@@ -22,31 +22,60 @@ function getTestimonialTextElements(testimonialEl) {
 }
 
 function ensureWordSpans(rootEl) {
+  // Cache original text content using innerText which preserves all spacing
+  if (!rootEl.dataset.origText) {
+    rootEl.dataset.origText = rootEl.innerText || rootEl.textContent || ''
+  }
+
   if (rootEl.dataset.wordsSplitted === 'true') return
-  const text = rootEl.textContent || ''
-  const parts = text.split(/(\s+)/)
-  rootEl.textContent = ''
-  const frag = document.createDocumentFragment()
-  parts.forEach((part) => {
-    if (part.trim().length === 0) {
-      frag.appendChild(document.createTextNode(part))
-    } else {
-      const span = document.createElement('span')
-      span.className = 'testimonial-word'
-      span.textContent = part
-      span.style.display = 'inline-block'
-      frag.appendChild(span)
+
+  // Clear and rebuild from scratch each time
+  rootEl.textContent = rootEl.dataset.origText
+
+  // Now split all text nodes by whitespace
+  const walker = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT, null)
+  const textNodes = []
+  let tnode
+  while ((tnode = walker.nextNode())) {
+    if (tnode.nodeValue && tnode.nodeValue.trim().length > 0) {
+      textNodes.push(tnode)
     }
+  }
+
+  if (!textNodes.length) {
+    rootEl.dataset.wordsSplitted = 'true'
+    return
+  }
+
+  // Process each text node
+  textNodes.forEach((textNode) => {
+    const parent = textNode.parentNode
+    const text = textNode.nodeValue
+    const parts = text.split(/(\s+)/)
+    const frag = document.createDocumentFragment()
+
+    parts.forEach((part) => {
+      if (part.trim().length === 0) {
+        frag.appendChild(document.createTextNode(part))
+      } else {
+        const span = document.createElement('span')
+        span.className = 'testimonial-word'
+        span.textContent = part
+        span.style.display = 'inline-block'
+        frag.appendChild(span)
+      }
+    })
+
+    parent.replaceChild(frag, textNode)
   })
-  rootEl.appendChild(frag)
+
   rootEl.dataset.wordsSplitted = 'true'
 }
 
 function splitIntoVisualLines(rootEl) {
-  // If already split, return existing inners
-  if (rootEl.dataset.linesSplitted === 'true') {
-    return Array.from(rootEl.querySelectorAll('.testimonial-line-inner'))
-  }
+  // Reset temporary flags to ensure fresh split on each call
+  delete rootEl.dataset.wordsSplitted
+  delete rootEl.dataset.linesSplitted
 
   ensureWordSpans(rootEl)
   const words = Array.from(rootEl.querySelectorAll('.testimonial-word'))
@@ -81,6 +110,19 @@ function splitIntoVisualLines(rootEl) {
     inner.className = 'testimonial-line-inner'
     inner.style.display = 'inline-block'
 
+    // Capture leading whitespace before first word
+    const firstWord = line[0]
+    if (firstWord) {
+      const prevNode = firstWord.previousSibling
+      if (
+        prevNode &&
+        prevNode.nodeType === Node.TEXT_NODE &&
+        (prevNode.textContent || '').trim().length === 0
+      ) {
+        inner.appendChild(prevNode)
+      }
+    }
+
     line.forEach((w) => {
       // Capture the following whitespace BEFORE moving the word node
       const nextNode = w.nextSibling
@@ -97,11 +139,27 @@ function splitIntoVisualLines(rootEl) {
         inner.appendChild(nextNode)
       }
     })
+
+    // Capture trailing whitespace after the last word (only immediate next sibling)
+    const lastWord = line[line.length - 1]
+    if (lastWord) {
+      const nextNode = lastWord.nextSibling
+      if (
+        nextNode &&
+        nextNode.nodeType === Node.TEXT_NODE &&
+        (nextNode.textContent || '').trim().length === 0
+      ) {
+        inner.appendChild(nextNode)
+      }
+    }
     outer.appendChild(inner)
     frag.appendChild(outer)
   })
 
-  rootEl.textContent = ''
+  // Replace all children with the new line wrappers
+  while (rootEl.firstChild) {
+    rootEl.removeChild(rootEl.firstChild)
+  }
   rootEl.appendChild(frag)
   rootEl.dataset.linesSplitted = 'true'
   return Array.from(rootEl.querySelectorAll('.testimonial-line-inner'))

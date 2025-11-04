@@ -1,4 +1,4 @@
-<!DOCTYPE html><!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Thu Oct 30 2025 16:25:08 GMT+0000 (Coordinated Universal Time)  -->
+<!DOCTYPE html><!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Fri Oct 31 2025 13:12:42 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="6899a2f3f7995d5e3e31b7cd" data-wf-site="6899a2f3f7995d5e3e31b7c6" lang="en">
 <head>
   <meta charset="utf-8">
@@ -169,6 +169,17 @@ textarea{
 }
 .section_values > .intro.p-top{
 	border: none;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>
     </div>
@@ -438,8 +449,8 @@ html.wf-design-mode > body > .loader {
 </style>
     </div>
   </div>
-  <div class="navbar">
-    <a aria-label="home" href="index.html" aria-current="page" class="is-link w-inline-block w--current"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 100 27" fill="none" clip-path="url(#clip0_5395_856)" class="is-logo_main">
+  <nav class="navbar">
+    <a aria-label="home" href="index.html" aria-current="page" class="is-link w-inline-block w--current"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 100 27" fill="none" clip-path="url(#clip0_5395_856)" aria-label="Cominvi Logo" class="is-logo_main">
         <rect x="3" y="2" width="95" height="23" rx="2" class="is-logo-bg"></rect>
         <path fill-rule="evenodd" clip-rule="evenodd" d="M94.7386 0.5H4.95724C2.02789 0.646536 0.0571829 2.09683 0.00103358 5.259V21.467C-0.0468988 24.6524 1.57185 26.5177 4.95587 26.4999H94.74C98.1295 26.5177 99.7291 24.2881 99.6948 21.4656V5.45757C99.8044 2.6282 97.6666 0.538346 94.7386 0.5ZM11.4144 3.80459C12.5415 3.13628 13.1249 4.07027 13.2591 4.09219C16.1693 4.62355 16.0337 7.08043 16.0337 7.08043C16.5651 7.36528 16.865 8.11303 17.0184 8.68137C16.0597 9.36201 14.1438 9.6359 12.017 9.29216C9.48342 8.88268 7.45931 7.73641 7.06352 6.57508C8.1016 5.27132 9.80799 3.77857 11.4144 3.80322V3.80459ZM6.51846 6.75722C6.53353 6.74627 6.54859 6.73942 6.56639 6.7312C6.6513 8.07742 8.95206 9.49895 11.9006 9.9728C14.3698 10.3713 16.5719 9.98786 17.4744 9.11276C17.584 9.35927 17.6292 9.60851 17.5977 9.85228C17.4005 11.3204 14.5328 12.0859 11.2117 11.5642C8.10023 11.0725 5.66527 9.62084 5.5338 8.23354L6.51983 6.75722H6.51846ZM15.0833 15.2577C15.0833 15.2577 14.8833 15.5549 14.5916 15.7754H14.263L13.7576 15.6836L13.7343 15.6809L13.3002 15.5918L12.9044 15.5001L12.5648 15.4056L12.2772 15.3152L12.0362 15.2276L11.8403 15.144L11.6856 15.066L11.5678 14.9975L11.4829 14.9386L11.424 14.892L11.3911 14.8564L11.3788 14.8386L11.2145 14.3853L11.0392 14.0388C10.6858 13.5664 10.2106 13.4869 9.67104 13.3294L9.37386 13.2623L9.05751 13.2089L8.7302 13.1665L8.40015 13.1322L8.0701 13.1048L7.75238 13.0843L7.45383 13.072L7.17719 13.0596H7.09091L6.93479 13.0555H6.7636C6.72937 12.3763 6.68006 10.9041 6.86768 10.5617C6.86768 10.5617 9.7628 12.3092 12.4319 12.2872C14.8368 12.2667 15.4311 11.8737 15.4955 11.7942C15.4777 11.9175 15.5804 12.8392 15.653 13.261C15.653 13.261 15.4503 13.5842 15.0134 13.7375C15.0134 13.7375 15.1271 14.6017 15.0833 15.2591V15.2577ZM14.4561 17.3078C13.2797 17.7337 11.5966 17.8816 10.8543 17.5872C10.112 17.2928 9.65735 16.7162 9.44508 16.4505L9.4396 16.3971L9.42316 16.3437L9.39851 16.2711L9.3588 16.1629L9.30128 16.026L9.22733 15.8657L9.1342 15.6877L9.0219 15.4987L8.88906 15.3056L8.73431 15.1139L8.5549 14.9317L8.35085 14.7647L8.11803 14.6236L7.8592 14.5154L7.57297 14.4497L7.26347 14.4346L6.94027 14.4757L6.62939 14.551L6.34454 14.6387L6.07885 14.7373L5.81865 14.8729L5.80633 14.8551C6.15281 14.6085 6.51025 14.4291 6.71156 14.1785C6.95122 13.88 7.00463 13.6513 6.99779 13.4965H7.09365L7.32784 13.502L7.59215 13.5116L7.88111 13.5253L8.18651 13.5444L8.49875 13.5705L8.81237 13.6033L9.11777 13.643L9.40673 13.6937L9.67104 13.7526L9.90112 13.8197C10.5653 14.0854 10.7297 14.1977 10.9816 14.9002L10.9871 14.9167L11.009 14.9674L11.0474 15.029L11.1022 15.0975L11.1761 15.1714L11.272 15.2495L11.3925 15.3316L11.5418 15.4179L11.7239 15.5069L11.943 15.6001L12.2032 15.6946L12.5073 15.7904L12.862 15.8877L13.2687 15.9835L13.733 16.0794L14.1452 16.152C14.226 16.5669 14.3684 17.0038 14.4588 17.3064L14.4561 17.3078ZM4.73949 16.5861L4.75181 16.5573L4.82851 16.43L4.92163 16.2889L5.02708 16.1369L5.15171 15.9794L5.29139 15.8151L5.45026 15.648L5.62555 15.4823L5.82002 15.3152L6.03503 15.1536L6.26374 15.0016L6.48833 14.8852L6.69924 14.8181L6.89918 14.7948L7.09365 14.8044L7.28401 14.8441L7.46615 14.9098L7.64419 14.9961L7.81264 15.1002L7.96876 15.2152L8.10708 15.3316L8.23307 15.4494L8.33578 15.5576L8.41932 15.6521L8.47958 15.7288L8.51245 15.7712L8.66446 16.0972L8.83428 16.4218L9.00821 16.7148L9.18624 16.9791L9.37523 17.2147L9.57107 17.4242L9.77512 17.6077L9.98877 17.768L10.212 17.9022L10.4448 18.0172L10.6845 18.1103L10.9351 18.1884L11.1967 18.25L11.4637 18.298L11.7445 18.3336L12.0416 18.3664L12.3676 18.376L12.7127 18.3514L13.0674 18.3021L13.4248 18.2309L15.2243 17.7447C15.8406 18.8458 16.5076 19.9961 16.3473 21.3766C11.0118 26.2794 5.37219 22.9351 4.74223 16.5847L4.73949 16.5861ZM16.8445 22.6132C16.5541 22.4968 16.2706 22.3188 16.0009 22.0079L16.6705 21.3999C16.7993 21.886 16.8801 22.3955 16.8445 22.6132ZM22.8031 20.029L22.6936 20.2344L22.0896 20.4166L21.8774 20.229L21.7541 20.0085L18.922 20.3755L16.9841 22.6749C17.3977 21.0726 16.4158 19.106 15.4572 17.1394L17.9661 16.4519L18.0674 16.4313L18.0866 16.4272L18.1277 16.4218L18.9302 16.0314L19.6013 15.3549L20.3257 15.2673L20.1805 14.5209L21.12 14.2169L21.4268 14.9756L21.9883 14.7496L22.3046 15.6685L21.624 16.2287L22.4813 15.7973L22.7292 16.6231L21.939 17.4023L22.799 16.9093L22.9702 17.7995L22.1211 18.565L22.9483 18.1364L23.0291 18.9813L22.6799 19.2662L22.8045 20.0317L22.8031 20.029ZM23.8207 11.9901C22.9209 12.2804 21.5665 12.8186 21.1502 13.1541L21.2529 13.5444L21.1666 14.0046L20.0368 14.3524L19.6793 13.8403L19.6067 13.5321C18.959 13.4938 17.7853 13.9731 17.3553 14.2936L17.2019 14.0512C18.2838 13.1185 19.252 12.6474 19.3999 12.5036L19.5725 12.1517L20.4353 11.8887L20.853 12.1284C21.2214 12.0695 22.2416 11.7805 23.7138 11.7668C24.022 11.7888 24.0412 11.9189 23.8193 11.9914L23.8207 11.9901ZM97.92 21.7012C97.92 23.0364 96.9942 24.4621 95.5548 24.4621H30.0368C28.5988 24.4621 27.6717 23.0364 27.6717 21.7012V5.2138C27.6717 3.87718 28.5975 2.4529 30.0368 2.4529H95.5535C96.9928 2.4529 97.9186 3.87855 97.9186 5.2138V21.7012H97.92Z" fill="currentColor" class="logo-path"></path>
         <g clip-path="url(#clip0_5395_856)" class="g is-t-1">
@@ -484,7 +495,7 @@ html.wf-design-mode > body > .loader {
         <div class="menu-icon_bar is-2"></div>
       </div>
     </button>
-  </div>
+  </nav>
   <div id="nav-inner" class="nav-inner">
     <ul role="list" class="links">
       <li class="link-item">
@@ -539,7 +550,7 @@ html.wf-design-mode > body > .loader {
         <a href="#" class="navlink-locale is-active w-inline-block"><span class="navlink_label">EN</span></a>
       </li>
       <li class="link-item">
-        <a href="#" class="navlink-social w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 40 41" fill="none" class="social-logo">
+        <a aria-label="Follow us on linkedin" href="#" class="navlink-social w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 40 41" fill="none" class="social-logo">
             <g clip-path="url(#clip0_4279_2158)">
               <rect y="0.5" width="40" height="40" rx="10" fill="#F47920"></rect>
               <path d="M31.6667 0.5H8.33333C3.73167 0.5 0 4.23167 0 8.83333V32.1667C0 36.7683 3.73167 40.5 8.33333 40.5H31.6667C36.27 40.5 40 36.7683 40 32.1667V8.83333C40 4.23167 36.27 0.5 31.6667 0.5ZM13.3333 32.1667H8.33333V13.8333H13.3333V32.1667ZM10.8333 11.72C9.22333 11.72 7.91667 10.4033 7.91667 8.78C7.91667 7.15667 9.22333 5.84 10.8333 5.84C12.4433 5.84 13.75 7.15667 13.75 8.78C13.75 10.4033 12.445 11.72 10.8333 11.72ZM33.3333 32.1667H28.3333V22.8267C28.3333 17.2133 21.6667 17.6383 21.6667 22.8267V32.1667H16.6667V13.8333H21.6667V16.775C23.9933 12.465 33.3333 12.1467 33.3333 20.9017V32.1667Z" fill="#151515"></path>
@@ -550,11 +561,11 @@ html.wf-design-mode > body > .loader {
               </clippath>
             </defs>
           </svg></a>
-        <a href="#" class="navlink-social w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 41 41" fill="none" class="social-logo">
+        <a aria-label="Follow us on Instagram" href="#" class="navlink-social w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 41 41" fill="none" class="social-logo">
             <rect x="0.335938" y="0.5" width="40" height="40" rx="10" fill="#151515"></rect>
             <path d="M20.3672 11.2778C23.3709 11.2778 23.7272 11.2891 24.9141 11.3434C27.9628 11.4822 29.3869 12.9288 29.5256 15.955C29.58 17.1409 29.5903 17.4972 29.5903 20.5009C29.5903 23.5056 29.5791 23.8609 29.5256 25.0469C29.3859 28.0703 27.9656 29.5197 24.9141 29.6584C23.7272 29.7128 23.3728 29.7241 20.3672 29.7241C17.3634 29.7241 17.0072 29.7128 15.8212 29.6584C12.765 29.5187 11.3484 28.0656 11.2097 25.0459C11.1553 23.86 11.1441 23.5047 11.1441 20.5C11.1441 17.4963 11.1562 17.1409 11.2097 15.9541C11.3494 12.9288 12.7697 11.4813 15.8212 11.3425C17.0081 11.2891 17.3634 11.2778 20.3672 11.2778ZM20.3672 9.25C17.3119 9.25 16.9294 9.26312 15.7294 9.3175C11.6438 9.505 9.37313 11.7719 9.18563 15.8612C9.13031 17.0622 9.11719 17.4447 9.11719 20.5C9.11719 23.5553 9.13031 23.9388 9.18469 25.1388C9.37219 29.2244 11.6391 31.495 15.7284 31.6825C16.9294 31.7369 17.3119 31.75 20.3672 31.75C23.4225 31.75 23.8059 31.7369 25.0059 31.6825C29.0878 31.495 31.3641 29.2281 31.5487 25.1388C31.6041 23.9388 31.6172 23.5553 31.6172 20.5C31.6172 17.4447 31.6041 17.0622 31.5497 15.8622C31.3659 11.7803 29.0962 9.50594 25.0069 9.31844C23.8059 9.26312 23.4225 9.25 20.3672 9.25ZM20.3672 14.7231C17.1769 14.7231 14.5903 17.3097 14.5903 20.5C14.5903 23.6903 17.1769 26.2778 20.3672 26.2778C23.5575 26.2778 26.1441 23.6912 26.1441 20.5C26.1441 17.3097 23.5575 14.7231 20.3672 14.7231ZM20.3672 24.25C18.2963 24.25 16.6172 22.5719 16.6172 20.5C16.6172 18.4291 18.2963 16.75 20.3672 16.75C22.4381 16.75 24.1172 18.4291 24.1172 20.5C24.1172 22.5719 22.4381 24.25 20.3672 24.25ZM26.3728 13.1453C25.6266 13.1453 25.0219 13.75 25.0219 14.4953C25.0219 15.2406 25.6266 15.8453 26.3728 15.8453C27.1181 15.8453 27.7219 15.2406 27.7219 14.4953C27.7219 13.75 27.1181 13.1453 26.3728 13.1453Z" fill="#F47920"></path>
           </svg></a>
-        <a href="#" class="navlink-social w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 41 41" fill="none" class="social-logo">
+        <a aria-label="Follow us on Facebook" href="#" class="navlink-social w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 41 41" fill="none" class="social-logo">
             <rect x="0.664062" y="0.5" width="40" height="40" rx="10" fill="#151515"></rect>
             <path d="M27.735 22.4662L28.6532 17.4663H23.3088V15.698C23.3088 13.0557 24.3454 12.0395 27.0283 12.0395C27.8616 12.0395 28.5323 12.0598 28.9185 12.1004V7.56802C28.1868 7.36474 26.3982 7.16146 25.3617 7.16146C19.8943 7.16146 17.3739 9.74277 17.3739 15.3118V17.4663H14V22.4662H17.3739V33.3463C18.6399 33.6603 19.9636 33.8281 21.3266 33.8281C21.9977 33.8281 22.659 33.7868 23.3088 33.7083V22.4662H27.735Z" fill="#F47920"></path>
           </svg></a>
@@ -570,7 +581,7 @@ html.wf-design-mode > body > .loader {
     </div>
   </div>
   <div data-barba-namespace="home" data-barba="container" class="page-wrap">
-    <div class="content-wrap">
+    <main class="content-wrap">
       <div bg="hero" class="section_hero">
         <div class="hero-content">
           <div id="w-node-_33e34690-9048-f1cc-5996-0de4203dfa95-3e31b7cd" class="hero-content_left">
@@ -592,7 +603,7 @@ html.wf-design-mode > body > .loader {
         <div class="hero-bottom">
           <div id="w-node-_42ea3a62-822e-6ecd-fc2c-be4898e5c13b-3e31b7cd" class="w-layout-hflex hero-bottom_cards">
             <div id="w-node-_42ea3a62-822e-6ecd-fc2c-be4898e5c13c-3e31b7cd" class="w-layout-hflex hero-bottom_cards-wrapper">
-              <a pt-inner="" href="our-services.html" class="card w-inline-block"><img src="images/our-services-sm_1.avif" loading="lazy" alt="" class="card_bg">
+              <a pt-inner="" href="our-services.html" class="card w-inline-block"><img src="images/our-services-sm_1.avif" loading="lazy" alt="Two miners wearing helmets with lights and protective masks inside a dark mine tunnel, one holding a device." class="card_bg">
                 <div class="button-sm">
                   <div class="button-sm_inner">
                     <div class="w-layout-hflex button-sm_inner-left"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 6 11" fill="none" class="is-arrow is-right">
@@ -604,7 +615,7 @@ html.wf-design-mode > body > .loader {
                 </div>
               </a>
               <link rel="prefetch" href="/our-services">
-              <a pt-inner="" href="technology.html" class="card w-inline-block"><img src="images/technology-sm_1.avif" loading="lazy" alt="" class="card_bg">
+              <a pt-inner="" href="technology.html" class="card w-inline-block"><img src="images/technology-sm_1.avif" loading="lazy" alt="Worker wearing safety helmet, protective mask, and ear protection operating equipment in a dimly lit industrial environment." class="card_bg">
                 <div class="button-sm">
                   <div class="button-sm_inner">
                     <div class="w-layout-hflex button-sm_inner-left"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 6 11" fill="none" class="is-arrow is-right">
@@ -620,11 +631,9 @@ html.wf-design-mode > body > .loader {
         </div>
         <div class="hero-background">
           <div class="background-inner">
-
             <div class="is-video w-embed">
               <div data-poster-url="https://cdn.prod.website-files.com/6899a2f3f7995d5e3e31b7c6/68a6e470ea5e4568bd5d69c6_UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif" data-video-urls="https://precious-hotteok-8da21f.netlify.app/home-background.mp4" data-autoplay="false" data-loop="false" data-wf-ignore="true" class="background_video w-background-video w-background-video-atom">
-                <video id="hero-bg-video" 
-                style="background-image:url('https://cdn.prod.website-files.com/6899a2f3f7995d5e3e31b7c6/68a6e470ea5e4568bd5d69c6_UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif');" muted="" playsinline="" data-wf-ignore="true" data-object-fit="cover">
+                <video id="hero-bg-video" style="background-image:url('https://cdn.prod.website-files.com/6899a2f3f7995d5e3e31b7c6/68a6e470ea5e4568bd5d69c6_UniversalUpscaler_898a1499-447c-4db7-ac06-dadcc3072099.avif;')" muted="" playsinline="" data-wf-ignore="true" data-object-fit="cover">
                   <source src="https://precious-hotteok-8da21f.netlify.app/home-background.mp4" data-wf-ignore="true">
                   <source src="videos/hero-transcode.webm" data-wf-ignore="true">
                 </video>
@@ -659,56 +668,58 @@ html.wf-design-mode > body > .loader {
         <div class="intro">
           <div class="eyebrows">
             <div class="is-eyebrow"><span class="eyebrow-s">S.01</span></div>
-            <div class="is-eyebrow is-black"><span class="eyebrow-s">About us</span></div>
+            <div class="is-eyebrow is-black">
+              <h2 class="eyebrow-s">About us</h2>
+            </div>
           </div>
           <p tr="1" class="body-xl is-black">CoMinVi is a leading underground mining contractor with our Corporate Office and Central Workshop based in Guanajuato, Mexico. With over 20 years of experience, we specialize in tunnel development for national and international mining companies, primarily focused on the extraction of gold and silver.</p>
         </div>
         <div class="content">
           <div class="content_column">
-            <div class="image-wrapper"><img src="images/home_01.avif" loading="lazy" sizes="(max-width: 1000px) 100vw, 1000px" srcset="images/home_01-p-500.avif 500w, images/home_01.avif 1000w" alt="" class="image-p"></div>
+            <div class="image-wrapper"><img src="images/home_01.avif" loading="lazy" sizes="(max-width: 1000px) 100vw, 1000px" srcset="images/home_01-p-500.avif 500w, images/home_01.avif 1000w" alt="Two miners wearing helmets with headlamps and holding flashlights inside a dark underground mine." class="image-p"></div>
           </div>
           <div class="content_column align-r">
             <div class="stats">
               <div class="stats-card">
                 <div class="icon-wrap">
-                  <div class="service-icon_icon is-2" data-w-id="aaa6ac64-14bb-9f94-4168-c8329a61c1f6" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-11.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                  <div aria-hidden="true" class="service-icon_icon is-2" data-w-id="aaa6ac64-14bb-9f94-4168-c8329a61c1f6" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-11.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
                 </div>
                 <div class="is-stat"><span class="stat_number">837,650</span><span class="eyebrow-m is-o-60">Linear Meters</span></div>
               </div>
               <div class="stats-card">
                 <div class="icon-wrap">
-                  <div class="service-icon_icon is-2" data-w-id="47058706-dfb3-89b6-ba4c-cafd4cdd4108" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-12.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                  <div aria-hidden="true" class="service-icon_icon is-2" data-w-id="47058706-dfb3-89b6-ba4c-cafd4cdd4108" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-12.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
                 </div>
                 <div class="is-stat"><span class="stat_number">15,400,169</span><span class="eyebrow-m o-60">Tons of mineral</span></div>
               </div>
               <div class="stats-card">
                 <div class="icon-wrap">
-                  <div class="service-icon_icon is-2" data-w-id="b2669b7f-38e4-5a41-d2cf-011bd7a50368" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-13.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                  <div aria-hidden="true" class="service-icon_icon is-2" data-w-id="b2669b7f-38e4-5a41-d2cf-011bd7a50368" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-13.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
                 </div>
                 <div class="is-stat"><span class="stat_number">500</span><span class="eyebrow-m o-60">Indirect jobs</span></div>
               </div>
               <div class="stats-card">
                 <div class="icon-wrap">
-                  <div class="service-icon_icon is-2" data-w-id="21bcfb41-e125-6e80-241b-cd6689f270e6" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-14.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                  <div aria-hidden="true" class="service-icon_icon is-2" data-w-id="21bcfb41-e125-6e80-241b-cd6689f270e6" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-14.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
                 </div>
                 <div class="is-stat"><span class="stat_number">1,741</span><span class="eyebrow-m o-60">Current direct jobs</span></div>
               </div>
               <div class="stats-card">
                 <div class="icon-wrap">
-                  <div class="service-icon_icon is-2" data-w-id="a860ac35-4ca6-d345-d1a2-420a2d31fe44" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-15.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                  <div aria-hidden="true" class="service-icon_icon is-2" data-w-id="a860ac35-4ca6-d345-d1a2-420a2d31fe44" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-15.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
                 </div>
                 <div class="is-stat"><span class="stat_number">7</span><span class="eyebrow-m o-60">Active projects</span></div>
               </div>
               <div class="stats-card">
                 <div class="icon-wrap">
-                  <div class="service-icon_icon is-2" data-w-id="7bd5a10c-172f-0d13-5ef7-25af19953a32" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-16.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                  <div aria-hidden="true" class="service-icon_icon is-2" data-w-id="7bd5a10c-172f-0d13-5ef7-25af19953a32" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-16.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
                 </div>
                 <div class="is-stat"><span class="stat_number">36</span><span class="eyebrow-m o-60">Projects delivered</span></div>
               </div>
             </div>
             <div class="text-cta">
               <p class="body-m">We combine a strong safety culture, advanced technology, and a deep commitment to quality to deliver consistent, high-performance results.</p>
-              <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
+              <a aria-label="See more about our servies" pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
                 <div class="button_inner">
                   <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
                       <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
@@ -728,59 +739,66 @@ html.wf-design-mode > body > .loader {
         <div class="intro">
           <div class="eyebrows">
             <div class="is-eyebrow"><span class="eyebrow-s">S.02</span></div>
-            <div class="is-eyebrow is-black"><span class="eyebrow-s">Our services</span></div>
+            <div class="is-eyebrow is-black">
+              <h2 class="eyebrow-s">Our services</h2>
+            </div>
           </div>
           <p tr="1" class="body-xl is-black">Leveraging our deep geological insight and engineering prowess, we partner with clients to transform raw opportunity into operational excellence.</p>
         </div>
         <div class="content">
           <div class="is-grid-3"><button data-lottie="1" class="service-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="4f71b7c3-5684-fecc-19c9-b2d7eefb1523" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-06.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="4f71b7c3-5684-fecc-19c9-b2d7eefb1523" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-06.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Engineering</span>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Engineering</h3>
                 <div class="desc">
                   <p class="body-s">We design and plan safe, efficient, and sustainable underground mining infrastructure tailored to each project&#x27;s geological and operational conditions.</p>
                 </div>
               </div>
             </button><button data-lottie="2" class="service-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="57feaf23-e23c-1bc4-ef39-4b5be16e7e4d" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-07_1.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="57feaf23-e23c-1bc4-ef39-4b5be16e7e4d" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-07_1.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Ground Support &amp; Fortification</span>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Ground Support &amp; Fortification</h3>
                 <div class="desc">
                   <p class="body-s">We stabilize underground workings using anchors, mesh, shotcrete, and steel frames to secure fractured or high-risk ground.</p>
                 </div>
               </div>
             </button><button data-lottie="3" class="service-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="7173b5e4-072f-766d-902b-c5775d060e8f" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-08.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.0166666666666666"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="7173b5e4-072f-766d-902b-c5775d060e8f" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-08.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.0166666666666666"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Development</span>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Development</h3>
                 <div class="desc">
                   <p class="body-s">We execute precise tunnel development for ramps and access points using drilling, blasting, and excavation techniques.</p>
                 </div>
               </div>
             </button><button data-lottie="4" class="service-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="09a76385-4f13-6690-136f-1bb6584a00a5" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-09.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="09a76385-4f13-6690-136f-1bb6584a00a5" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-09.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Production</span>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Production</h3>
                 <div class="desc">
                   <p class="body-s">We extract mineralized material through controlled stoping methods optimized for productivity, dilution control, and safety.</p>
                 </div>
               </div>
             </button><button id="w-node-_720ec395-9ded-3626-bd95-202de911efba-3e31b7cd" data-lottie="5" class="service-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="ac49e6e9-83e9-5d2b-01f0-e718bbb8d0ec" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-10.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="ac49e6e9-83e9-5d2b-01f0-e718bbb8d0ec" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-10.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Hauling</span>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Hauling</h3>
                 <div class="desc">
                   <p class="body-s">We transport blasted ore and waste using scooptrams, low-profile trucks, and efficient underground logistics systems.</p>
                 </div>
               </div>
             </button>
             <div class="services-viewer">
-              <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
+              <a aria-label="See more about our servies" pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
                 <div class="button_inner">
                   <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
                       <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
@@ -802,7 +820,7 @@ html.wf-design-mode > body > .loader {
                       <path d="M14.0295 9.26572C14.0295 8.67179 14.7476 8.37434 15.1676 8.79432L22.8718 16.4986C23.1322 16.7589 23.1322 17.181 22.8718 17.4414L15.1676 25.1456C14.7476 25.5656 14.0295 25.2681 14.0295 24.6742V9.26572Z" fill="#151515"></path>
                     </svg></div>
                 </div>
-              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt="" class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt="" class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt="" class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt="" class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt="" class="service-image is-5">
+              </div><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt="Two industrial workers wearing orange safety helmets and ear protection working on orange machinery inside a large factory." class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt="Interior of a large industrial warehouse with machinery, shelves, and crates under a high ceiling with skylights." class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt="Silhouette of a person wearing reflective gear and a headlamp standing in front of bright car headlights at night." class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt="Welder wearing protective gear and helmet welding a metal sheet with sparks flying." class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt="Two explorers in orange suits inside a cave filled with large, translucent crystals." class="service-image is-5">
             </div>
           </div>
         </div>
@@ -810,6 +828,12 @@ html.wf-design-mode > body > .loader {
       <div bg="white" class="section_minerals">
         <div class="minerals-stage">
           <div class="minerals-inner">
+            <h3 class="sr-only">Minerals we extract</h3>
+            <p class="sr-only">Gold : 600 Tonnes mined in 2025</p>
+            <p class="sr-only">Silver : 588 Tonnes mined in 2024</p>
+            <p class="sr-only">Lead : 731 Tonnes mined in 2025</p>
+            <p class="sr-only">Copper : 854 Tonnes mined in 2023</p>
+            <p class="sr-only">Zinc : 312 Tonnes mined in 2022</p>
             <div class="eyebrows is-top is-mobile">
               <div class="is-eyebrow"><span class="eyebrow-s">S.03</span></div>
               <div class="is-eyebrow is-black"><span class="eyebrow-s">Minerals</span></div>
@@ -818,16 +842,18 @@ html.wf-design-mode > body > .loader {
               <div class="minerals_left">
                 <div class="eyebrows is-top is-d">
                   <div class="is-eyebrow"><span class="eyebrow-s">S.03</span></div>
-                  <div class="is-eyebrow is-black"><span class="eyebrow-s">Minerals</span></div>
+                  <div class="is-eyebrow is-black">
+                    <h2 class="eyebrow-s">Minerals</h2>
+                  </div>
                 </div>
                 <div class="minerals-list">
-                  <div class="eyebrow-wrapper"><span class="eyebrow-m o-60">Minerals We Extract</span></div>
-                  <div class="minerals-names"><span class="body-xl is-active">Gold</span><span class="body-xl is-o-15">Silver</span><span class="body-xl is-o-15">Lead</span><span class="body-xl is-o-15">Copper</span><span class="body-xl is-o-15">Zinc</span></div>
+                  <div class="eyebrow-wrapper"><span aria-hidden="true" class="eyebrow-m o-60">Minerals We Extract</span></div>
+                  <div class="minerals-names"><span aria-hidden="true" class="body-xl is-active">Gold</span><span aria-hidden="true" class="body-xl is-o-15">Silver</span><span aria-hidden="true" class="body-xl is-o-15">Lead</span><span aria-hidden="true" class="body-xl is-o-15">Copper</span><span aria-hidden="true" class="body-xl is-o-15">Zinc</span></div>
                 </div>
               </div>
             </div>
             <div id="w-node-_0717a256-7463-77c0-e26d-39c854e08d29-3e31b7cd" class="col-6">
-              <div class="minerals_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 616 616" fill="none" class="circle is-1">
+              <div class="minerals_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 616 616" fill="none" aria-hidden="true" class="circle is-1">
                   <g opacity="0.3">
                     <line x1="2.18557e-08" y1="307.5" x2="12" y2="307.5" stroke="#151515"></line>
                     <line x1="0.20495" y1="296.75" x2="12.1976" y2="297.169" stroke="#151515"></line>
@@ -1010,7 +1036,7 @@ html.wf-design-mode > body > .loader {
                     <line x1="0.715122" y1="328.993" x2="12.6859" y2="328.156" stroke="#151515"></line>
                     <line x1="0.17005" y1="318.25" x2="12.1627" y2="317.832" stroke="#151515"></line>
                   </g>
-                </svg><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 616 616" fill="none" class="circle is-2">
+                </svg><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 616 616" fill="none" aria-hidden="true" class="circle is-2">
                   <g opacity="0.3">
                     <line x1="2.18557e-08" y1="307.5" x2="12" y2="307.5" stroke="#151515"></line>
                     <line x1="0.20495" y1="296.75" x2="12.1976" y2="297.169" stroke="#151515"></line>
@@ -1196,19 +1222,19 @@ html.wf-design-mode > body > .loader {
                 </svg>
                 <div class="minerals-slider">
                   <div class="minerals-slider_inner">
-                    <div class="minerals-slider_slide"><img src="images/gold.avif" loading="lazy" alt="" class="minerals-slider_img is-active"></div>
-                    <div class="minerals-slider_slide"><img src="images/silver.avif" loading="lazy" alt="" class="minerals-slider_img"></div>
-                    <div class="minerals-slider_slide"><img src="images/lead_1.avif" loading="lazy" alt="" class="minerals-slider_img"></div>
-                    <div class="minerals-slider_slide"><img src="images/gold.avif" loading="lazy" alt="" class="minerals-slider_img"></div>
-                    <div class="minerals-slider_slide"><img src="images/gold.avif" loading="lazy" alt="" class="minerals-slider_img"></div>
+                    <div class="minerals-slider_slide"><img src="images/gold.avif" loading="lazy" alt="Irregularly shaped natural gold nugget with a textured surface and small embedded dark spots." class="minerals-slider_img is-active"></div>
+                    <div class="minerals-slider_slide"><img src="images/silver.avif" loading="lazy" alt="Shiny black crystal mineral with a columnar, striated structure." class="minerals-slider_img"></div>
+                    <div class="minerals-slider_slide"><img src="images/lead_1.avif" loading="lazy" alt="Close-up of a metallic mineral rock with a mix of silver-gray and copper-brown surfaces." class="minerals-slider_img"></div>
+                    <div class="minerals-slider_slide"><img src="images/gold.avif" loading="lazy" alt="Irregularly shaped natural gold nugget with a textured surface and small embedded dark spots." class="minerals-slider_img"></div>
+                    <div class="minerals-slider_slide"><img src="images/gold.avif" loading="lazy" alt="Irregularly shaped natural gold nugget with a textured surface and small embedded dark spots." class="minerals-slider_img"></div>
                   </div>
                 </div>
-                <div class="minerals-slider_overlay"></div>
+                <div aria-hidden="true" class="minerals-slider_overlay"></div>
               </div>
             </div>
             <div id="w-node-_0717a256-7463-77c0-e26d-39c854e08d2c-3e31b7cd" class="col-3">
               <div class="minerals_right">
-                <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
+                <a aria-label="See more about our services" pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
                   <div class="button_inner">
                     <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
                         <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
@@ -1222,10 +1248,10 @@ html.wf-design-mode > body > .loader {
                 <link rel="prefetch" href="/our-services">
                 <div class="eyebrow-wrapper is-a">
                   <div class="eyebrow-line">
-                    <div class="eyebrow-slider"><span class="eyebrow-m o-60">600</span><span class="eyebrow-m o-60">588</span><span class="eyebrow-m o-60">731</span><span class="eyebrow-m o-60">854</span><span class="eyebrow-m o-60">312</span></div><span class="eyebrow-m o-60"> Tonnes mined</span>
+                    <div class="eyebrow-slider"><span aria-hidden="true" class="eyebrow-m o-60">600</span><span aria-hidden="true" class="eyebrow-m o-60">588</span><span aria-hidden="true" class="eyebrow-m o-60">731</span><span aria-hidden="true" class="eyebrow-m o-60">854</span><span aria-hidden="true" class="eyebrow-m o-60">312</span></div><span aria-hidden="true" class="eyebrow-m o-60"> Tonnes mined</span>
                   </div>
-                  <div class="eyebrow-line"><span class="eyebrow-m o-60">[</span>
-                    <div class="eyebrow-slider"><span class="eyebrow-m is-o-60">2025</span><span class="eyebrow-m o-60">2024</span><span class="eyebrow-m o-60">2025</span><span class="eyebrow-m o-60">2023</span><span class="eyebrow-m o-60">2022</span></div><span class="eyebrow-m o-60">]</span>
+                  <div class="eyebrow-line"><span aria-hidden="true" class="eyebrow-m o-60">[</span>
+                    <div class="eyebrow-slider"><span aria-hidden="true" class="eyebrow-m is-o-60">2025</span><span aria-hidden="true" class="eyebrow-m o-60">2024</span><span aria-hidden="true" class="eyebrow-m o-60">2025</span><span aria-hidden="true" class="eyebrow-m o-60">2023</span><span aria-hidden="true" class="eyebrow-m o-60">2022</span></div><span aria-hidden="true" class="eyebrow-m o-60">]</span>
                   </div>
                 </div>
               </div>
@@ -1237,18 +1263,20 @@ html.wf-design-mode > body > .loader {
         <div class="intro p-top">
           <div class="eyebrows">
             <div class="is-eyebrow"><span class="eyebrow-s">S.04</span></div>
-            <div class="is-eyebrow is-black"><span class="eyebrow-s">Safety Policy</span></div>
+            <div class="is-eyebrow is-black">
+              <h2 class="eyebrow-s">Safety Policy</h2>
+            </div>
           </div>
           <p tr="1" class="body-xl is-black">At CoMinVi, we are convinced that all incidents and occupational illnesses are foreseeable, which is why we direct our efforts to make decisions and actions that reduce incidents of team members and our assets.</p>
         </div>
         <div class="content">
           <div class="content_column">
-            <div class="image-wrapper"><img src="images/home_02.avif" loading="lazy" sizes="(max-width: 1000px) 100vw, 1000px" srcset="images/home_02-p-500.avif 500w, images/home_02.avif 1000w" alt="" class="image-p is-square"></div>
+            <div class="image-wrapper"><img src="images/home_02.avif" loading="lazy" sizes="(max-width: 1000px) 100vw, 1000px" srcset="images/home_02-p-500.avif 500w, images/home_02.avif 1000w" alt="Miner in orange safety gear and helmet with a light, wearing a protective mask and holding a small notebook labeled IPERCC." class="image-p is-square"></div>
           </div>
           <div class="content_column align-r">
             <div class="text-cta h100">
               <p class="body-m">To this end, we are committed to providing our collaborators with a safe and healthy workplace.</p>
-              <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
+              <a aria-label="Read more about our safety policy" pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
                 <div class="button_inner">
                   <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
                       <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
@@ -1268,7 +1296,9 @@ html.wf-design-mode > body > .loader {
         <div class="intro">
           <div class="eyebrows">
             <div class="is-eyebrow"><span class="eyebrow-s">S.05</span></div>
-            <div class="is-eyebrow is-black"><span class="eyebrow-s">Technology</span></div>
+            <div class="is-eyebrow is-black">
+              <h2 class="eyebrow-s">Technology</h2>
+            </div>
           </div>
           <p tr="1" class="body-xl is-black">Our underground fleet features more than 360 specialized machines across key mining categories. Every unit is selected for durability, safety, and adaptability in confined, high-stakes environments.</p>
         </div>
@@ -1329,7 +1359,9 @@ html.wf-design-mode > body > .loader {
             <div class="w-layout-hflex is-text-mask is-1">
               <div class="mask-fill is-green"></div>
               <div class="w-layout-vflex display is-test">
-                <div class="svgtext-mask is-1 w-embed"><svg class="svg-text" viewbox="0 0 491 190" xmlns="http://www.w3.org/2000/svg">
+                <div class="svgtext-mask is-1 w-embed"><svg class="svg-text" viewbox="0 0 491 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="titleId descId">
+                    <title id="titleId">Over 360 Machines</title>
+                    <desc id="descId">List of our machines</desc>
                     <defs>
                       <!--  Mask  -->
                       <mask id="text-mask-2">
@@ -1368,7 +1400,7 @@ html.wf-design-mode > body > .loader {
           <div class="content_column">
             <div class="machines-grid"><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card_1Machine-card.avif 500w, images/Machine-card_1.avif 896w" alt="" class="image-p"></div>
+                  <div class="machine-card_bg"><img src="images/Machine-card_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card_1Machine-card.avif 500w, images/Machine-card_1.avif 896w" alt="Red heavy-duty mining loader vehicle with large black tires on a black background." class="image-p"></div>
                   <div class="machine-card_inner">
                     <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
                   </div>
@@ -1404,13 +1436,14 @@ html.wf-design-mode > body > .loader {
                 </div>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-1_1Machine-card-1.avif 500w, images/Machine-card-1_1.avif 896w" alt="" class="image-p"></div>
+                  <div class="machine-card_bg"><img src="images/Machine-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-1_1Machine-card-1.avif 500w, images/Machine-card-1_1.avif 896w" alt="Yellow Volvo construction motor grader against a black background." class="image-p"></div>
                   <div class="machine-card_inner">
                     <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Air Compressor</span>
+                  <div class="w-layout-hflex machines_label">
+                    <h3 class="body-m">Air Compressor</h3>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1440,13 +1473,14 @@ html.wf-design-mode > body > .loader {
                 </div>
               </button><button id="w-node-d0dd9a34-13c0-08d0-cd68-038ac5c3c87b-3e31b7cd" class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-2_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-2_1Machine-card-2.avif 500w, images/Machine-card-2_1.avif 896w" alt="" class="image-p"></div>
+                  <div class="machine-card_bg"><img src="images/Machine-card-2_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-2_1Machine-card-2.avif 500w, images/Machine-card-2_1.avif 896w" alt="Yellow mechanical drilling machine with hydraulic arms and hoses isolated on black background." class="image-p"></div>
                   <div class="machine-card_inner">
                     <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Telehandler</span>
+                  <div class="w-layout-hflex machines_label">
+                    <h3 class="body-m">Telehandler</h3>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1476,13 +1510,14 @@ html.wf-design-mode > body > .loader {
                 </div>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-3_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-3_1Machine-card-3.avif 500w, images/Machine-card-3_1.avif 896w" alt="" class="image-p"></div>
+                  <div class="machine-card_bg"><img src="images/Machine-card-3_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-3_1Machine-card-3.avif 500w, images/Machine-card-3_1.avif 896w" alt="Orange CASE tandem vibratory roller with operator in high-visibility clothing against a black background." class="image-p"></div>
                   <div class="machine-card_inner">
                     <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Compactor</span>
+                  <div class="w-layout-hflex machines_label">
+                    <h3 class="body-m">Compactor</h3>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1512,13 +1547,14 @@ html.wf-design-mode > body > .loader {
                 </div>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-4_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-4_1Machine-card-4.avif 500w, images/Machine-card-4_1.avif 896w" alt="" class="image-p"></div>
+                  <div class="machine-card_bg"><img src="images/Machine-card-4_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-4_1Machine-card-4.avif 500w, images/Machine-card-4_1.avif 896w" alt="Red industrial drilling machine with hydraulic components and two operators seated under a canopy." class="image-p"></div>
                   <div class="machine-card_inner">
                     <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Backhoe Loader with Basket</span>
+                  <div class="w-layout-hflex machines_label">
+                    <h3 class="body-m">Backhoe Loader with Basket</h3>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1548,13 +1584,14 @@ html.wf-design-mode > body > .loader {
                 </div>
               </button><button class="machine-card">
                 <div class="machine-card_content">
-                  <div class="machine-card_bg"><img src="images/Machine-card-5_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-5_1Machine-card-5.avif 500w, images/Machine-card-5_1.avif 896w" alt="" class="image-p"></div>
+                  <div class="machine-card_bg"><img src="images/Machine-card-5_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/Machine-card-5_1Machine-card-5.avif 500w, images/Machine-card-5_1.avif 896w" alt="Yellow heavy-duty drilling machine with open maintenance panel and extended drill arm on a black background." class="image-p"></div>
                   <div class="machine-card_inner">
                     <p class="body-s is-g-60">Lorem ipsum dolor sit amet consectetur. Nibh cras mattis lacus pulvinar neque. Sagittis adipiscing facilisi eleifend ipsum.</p>
                   </div>
                 </div>
                 <div class="w-layout-vflex machine-bottom-wrap">
-                  <div class="w-layout-hflex machines_label"><span class="body-m">Scissors Lift</span>
+                  <div class="w-layout-hflex machines_label">
+                    <h3 class="body-m">Scissors Lift</h3>
                     <div class="machine_button-wrap">
                       <div class="machine_button"><span class="machines_button-label body-xs">OPEN</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 10 10" fill="none" class="is-plus">
                           <g clip-path="url(#clip0_4895_136)">
@@ -1588,7 +1625,7 @@ html.wf-design-mode > body > .loader {
         <div class="w-layout-vflex text-button">
           <p tr="1" class="body-xl is-black is-center">We operate leading brands like Epiroc, Sandvik, Caterpillar, among others ensuring maximum uptime and productivity where it matters most.</p>
           <div class="button-wrap-md">
-            <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
+            <a aria-label="See more about our servies" pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
               <div class="button_inner">
                 <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
                     <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
@@ -1607,7 +1644,9 @@ html.wf-design-mode > body > .loader {
         <div class="intro">
           <div class="eyebrows">
             <div class="is-eyebrow"><span class="eyebrow-s">S.06</span></div>
-            <div class="is-eyebrow is-black"><span class="eyebrow-s">Our Team</span></div>
+            <div class="is-eyebrow is-black">
+              <h2 class="eyebrow-s">Our Team</h2>
+            </div>
           </div>
         </div>
         <div class="is-grid-12">
@@ -1630,32 +1669,42 @@ html.wf-design-mode > body > .loader {
         <div class="content">
           <div class="is-grid-3"><button data-lottie="6" class="team-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="4d96aaec-ece4-e37a-2966-66b543a06295" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-01.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.0166666666666666"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="4d96aaec-ece4-e37a-2966-66b543a06295" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-01.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.0166666666666666"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Operation</span></div>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Operation</h3>
+              </div>
             </button><button data-lottie="7" class="team-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="91ac3f58-7eb3-f0da-29ab-a9fc2b7cad05" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-02.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="91ac3f58-7eb3-f0da-29ab-a9fc2b7cad05" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-02.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Quality Processes</span></div>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Quality Processes</h3>
+              </div>
             </button><button data-lottie="8" class="team-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="3d8079e6-0a63-cf76-ed4d-adedd96d731c" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-03.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="3d8079e6-0a63-cf76-ed4d-adedd96d731c" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-03.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Security</span></div>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Security</h3>
+              </div>
             </button><button data-lottie="9" class="team-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="bcc4d647-bf0d-11ff-e7e8-c77c52172504" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-04-2.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="bcc4d647-bf0d-11ff-e7e8-c77c52172504" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-04-2.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Maintenance</span></div>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Maintenance</h3>
+              </div>
             </button><button data-lottie="10" class="team-card">
               <div class="service-icon">
-                <div class="service-icon_icon" data-w-id="630eec33-654c-f6d4-6f01-65fe49fdeb3c" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-05.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
+                <div aria-hidden="true" class="service-icon_icon" data-w-id="630eec33-654c-f6d4-6f01-65fe49fdeb3c" data-animation-type="lottie" data-src="documents/CoMinVi---Icon-05.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="0" data-duration="3.033333333333333"></div>
               </div>
-              <div class="w-layout-vflex card-inner"><span class="body-l">Administration &amp; ressources</span></div>
+              <div class="w-layout-vflex card-inner">
+                <h3 class="body-l">Administration &amp; ressources</h3>
+              </div>
             </button>
             <div class="services-viewer">
-              <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
+              <a aria-label="See more about our servies" pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
                 <div class="button_inner">
                   <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
                       <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
@@ -1666,7 +1715,7 @@ html.wf-design-mode > body > .loader {
                     </svg></div>
                 </div>
               </a>
-              <link rel="prefetch" href="/our-services"><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt="" class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt="" class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt="" class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt="" class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt="" class="service-image is-5">
+              <link rel="prefetch" href="/our-services"><img src="images/service-card-1_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-1_1service-card-1.avif 500w, images/service-card-1_1.avif 896w" alt="Two industrial workers wearing orange safety helmets and ear protection working on orange machinery inside a large factory." class="service-image is-1"><img src="images/service-card-2_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-2_1service-card-2.avif 500w, images/service-card-2_1.avif 896w" alt="Interior of a large industrial warehouse with machinery, shelves, and crates under a high ceiling with skylights." class="service-image is-2"><img src="images/service-card-3_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-3_1service-card-3.avif 500w, images/service-card-3_1.avif 896w" alt="Silhouette of a person wearing reflective gear and a headlamp standing in front of bright car headlights at night." class="service-image is-3"><img src="images/service-card_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card_1service-card.avif 500w, images/service-card_1.avif 896w" alt="Welder wearing protective gear and helmet welding a metal sheet with sparks flying." class="service-image is-4"><img src="images/service-card-5_1.avif" loading="lazy" sizes="(max-width: 896px) 100vw, 896px" srcset="images/service-card-5_1service-card-5.avif 500w, images/service-card-5_1.avif 896w" alt="Two explorers in orange suits inside a cave filled with large, translucent crystals." class="service-image is-5">
             </div>
           </div>
         </div>
@@ -1675,7 +1724,9 @@ html.wf-design-mode > body > .loader {
         <div class="intro p-top">
           <div class="eyebrows">
             <div class="is-eyebrow"><span class="eyebrow-s">S.07</span></div>
-            <div class="is-eyebrow is-black"><span class="eyebrow-s">Our Partners</span></div>
+            <div class="is-eyebrow is-black">
+              <h2 class="eyebrow-s">Our Partners</h2>
+            </div>
           </div>
           <p tr="1" class="body-xl is-black">Leading mining companies trust CoMinVi to carry out their underground operations with safety, precision, and proven results.</p>
         </div>
@@ -1684,7 +1735,7 @@ html.wf-design-mode > body > .loader {
             <div class="cylindar__text__wrapper-2">
               <div class="cylindar__text__item-2">
                 <div class="scroll-indicator_c">
-                  <div class="scroll-tick"></div>
+                  <div aria-hidden="true" class="scroll-tick"></div>
                 </div>
               </div>
             </div>
@@ -1707,7 +1758,7 @@ html.wf-design-mode > body > .loader {
             <div class="cylindar__text__wrapper-2">
               <div class="cylindar__text__item-2">
                 <div class="scroll-indicator_c">
-                  <div class="scroll-tick"></div>
+                  <div aria-hidden="true" class="scroll-tick"></div>
                 </div>
               </div>
             </div>
@@ -1764,7 +1815,7 @@ html.wf-design-mode > body > .loader {
           </div>
         </div>
         <div class="button-wrap-lg">
-          <a pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
+          <a aria-label="See more about our servies" pt-inner="" data-w-id="d4e79509-7df0-b73a-4404-95760e739ba5" href="our-services.html" class="button w-inline-block">
             <div class="button_inner">
               <div class="w-layout-hflex button-inner_content"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 34 34" fill="none" class="is-arrow-square is-left">
                   <rect x="0.0588379" width="34" height="34" rx="4" fill="currentColor" class="arrow-white-1_bg"></rect>
@@ -1801,7 +1852,7 @@ html.wf-design-mode > body > .loader {
           <link rel="prefetch" href="/our-services">
         </div>
         <div class="next_background-wrap">
-          <div class="next_background"><img src="images/services-hero.avif" loading="lazy" sizes="(max-width: 1760px) 100vw, 1760px" srcset="images/services-hero-p-500.avif 500w, images/services-hero-p-800.avif 800w, images/services-hero.avif 1760w" alt="" class="background"></div>
+          <div class="next_background"><img src="images/services-hero.avif" loading="lazy" sizes="(max-width: 1760px) 100vw, 1760px" srcset="images/services-hero-p-500.avif 500w, images/services-hero-p-800.avif 800w, images/services-hero.avif 1760w" alt="Two miners wearing helmets with headlamps and protective gear inside a dark underground mine tunnel, one examining a sample." class="background"></div>
         </div>
       </div>
       <div class="footer">
@@ -1817,10 +1868,10 @@ html.wf-design-mode > body > .loader {
               <path d="M134.205 11.3398H131.782V26.2427H134.205V11.3398Z" fill="#151515"></path>
             </svg>
             <div class="footer_socials">
-              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 26 26" fill="none" class="social-logo is-footer">
+              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 26 26" fill="none" aria-label="LinkedIn Logo" class="social-logo is-footer">
                   <path d="M19.9805 0.734375H5.98047C3.21947 0.734375 0.980469 2.97338 0.980469 5.73438V19.7344C0.980469 22.4954 3.21947 24.7344 5.98047 24.7344H19.9805C22.7425 24.7344 24.9805 22.4954 24.9805 19.7344V5.73438C24.9805 2.97338 22.7425 0.734375 19.9805 0.734375ZM8.98047 19.7344H5.98047V8.73438H8.98047V19.7344ZM7.48047 7.46637C6.51447 7.46637 5.73047 6.67637 5.73047 5.70237C5.73047 4.72837 6.51447 3.93837 7.48047 3.93837C8.44647 3.93837 9.23047 4.72837 9.23047 5.70237C9.23047 6.67637 8.44747 7.46637 7.48047 7.46637ZM20.9805 19.7344H17.9805V14.1304C17.9805 10.7624 13.9805 11.0174 13.9805 14.1304V19.7344H10.9805V8.73438H13.9805V10.4994C15.3765 7.91338 20.9805 7.72238 20.9805 12.9754V19.7344Z" fill="#1E1E1E"></path>
                 </svg></a>
-              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 26 26" fill="none" class="social-logo is-footer">
+              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 26 26" fill="none" aria-label="Instagram logo" class="social-logo is-footer">
                   <g clip-path="url(#clip0_4667_20925)">
                     <path d="M12.9805 2.89738C16.1845 2.89738 16.5645 2.90937 17.8305 2.96738C21.0825 3.11538 22.6015 4.65838 22.7495 7.88637C22.8075 9.15137 22.8185 9.53138 22.8185 12.7354C22.8185 15.9404 22.8065 16.3194 22.7495 17.5844C22.6005 20.8094 21.0855 22.3554 17.8305 22.5034C16.5645 22.5614 16.1865 22.5734 12.9805 22.5734C9.77647 22.5734 9.39647 22.5614 8.13147 22.5034C4.87147 22.3544 3.36047 20.8044 3.21247 17.5834C3.15447 16.3184 3.14247 15.9394 3.14247 12.7344C3.14247 9.53037 3.15547 9.15137 3.21247 7.88538C3.36147 4.65838 4.87647 3.11438 8.13147 2.96638C9.39747 2.90938 9.77647 2.89738 12.9805 2.89738ZM12.9805 0.734375C9.72147 0.734375 9.31347 0.748375 8.03347 0.806375C3.67547 1.00638 1.25347 3.42438 1.05347 7.78638C0.994469 9.06738 0.980469 9.47538 0.980469 12.7344C0.980469 15.9934 0.994469 16.4024 1.05247 17.6824C1.25247 22.0404 3.67047 24.4624 8.03247 24.6624C9.31347 24.7204 9.72147 24.7344 12.9805 24.7344C16.2395 24.7344 16.6485 24.7204 17.9285 24.6624C22.2825 24.4624 24.7105 22.0444 24.9075 17.6824C24.9665 16.4024 24.9805 15.9934 24.9805 12.7344C24.9805 9.47538 24.9665 9.06738 24.9085 7.78737C24.7125 3.43337 22.2915 1.00738 17.9295 0.807375C16.6485 0.748375 16.2395 0.734375 12.9805 0.734375ZM12.9805 6.57237C9.57747 6.57237 6.81847 9.33138 6.81847 12.7344C6.81847 16.1374 9.57747 18.8974 12.9805 18.8974C16.3835 18.8974 19.1425 16.1384 19.1425 12.7344C19.1425 9.33138 16.3835 6.57237 12.9805 6.57237ZM12.9805 16.7344C10.7715 16.7344 8.98047 14.9444 8.98047 12.7344C8.98047 10.5254 10.7715 8.73438 12.9805 8.73438C15.1895 8.73438 16.9805 10.5254 16.9805 12.7344C16.9805 14.9444 15.1895 16.7344 12.9805 16.7344ZM19.3865 4.88938C18.5905 4.88938 17.9455 5.53437 17.9455 6.32937C17.9455 7.12437 18.5905 7.76937 19.3865 7.76937C20.1815 7.76937 20.8255 7.12437 20.8255 6.32937C20.8255 5.53437 20.1815 4.88938 19.3865 4.88938Z" fill="#1E1E1E"></path>
                   </g>
@@ -1830,7 +1881,7 @@ html.wf-design-mode > body > .loader {
                     </clippath>
                   </defs>
                 </svg></a>
-              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 24 25" fill="none" class="social-logo is-footer">
+              <a href="#" class="footer_social-link w-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewbox="0 0 24 25" fill="none" aria-label="Facebook logo" class="social-logo is-footer">
                   <rect y="0.5" width="24" height="24" rx="6" fill="#151515"></rect>
                   <path d="M16.2401 13.6789L16.791 10.679H13.5843V9.61799C13.5843 8.03265 14.2063 7.42293 15.816 7.42293C16.316 7.42293 16.7184 7.4351 16.9501 7.45949V4.74003C16.5111 4.61806 15.438 4.49609 14.816 4.49609C11.5356 4.49609 10.0234 6.04488 10.0234 9.38631V10.679H7.99902V13.6789H10.0234V20.207C10.783 20.3954 11.5772 20.4961 12.395 20.4961C12.7976 20.4961 13.1944 20.4713 13.5843 20.4242V13.6789H16.2401Z" fill="white"></path>
                 </svg></a>
@@ -1896,14 +1947,13 @@ html.wf-design-mode > body > .loader {
           <p class="footer-p">2022 CoMinVi - Diseñado y desarrollado por Bambú Mobile</p>
         </div>
       </div>
-    </div>
+    </main>
   </div>
   <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=6899a2f3f7995d5e3e31b7c6" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="js/webflow.js" type="text/javascript"></script>
-  <script type="module" src="http://localhost:3000/@vite/client"></script>
-  <script type="module" src="http://localhost:3000/src/main.js"></script>
-  <!-- 
-<script src="https://precious-hotteok-8da21f.netlify.app/main.js"></script>
+  <script src="js/webflow.js" type="text/javascript"></script><!-- 
+<script type="module" src="http://localhost:3000/@vite/client"></script>
+<script type="module" src="http://localhost:3000/src/main.js"></script>
  -->
+  <script src="https://precious-hotteok-8da21f.netlify.app/main.js"></script>
 </body>
 </html>

@@ -560,7 +560,7 @@ export function initServiceCards(root = document) {
     __svcResizeBound = true
   }
 
-  // Mobile: click a .machine-card to expand its .machine-bottom-wrap to reveal content
+  // Mobile & Tablet: click a .machine-card to expand its .machine-bottom-wrap to reveal content
   const isTabletOrBelowViewport = () => {
     try {
       return (
@@ -663,7 +663,22 @@ export function initServiceCards(root = document) {
           duration: 1.2,
           ease: gsap.parseEase('machinesStep') || ((t) => t),
           onComplete: () => {
-            bottomWrap.style.height = 'auto'
+            // Keep height in px and use ResizeObserver to adjust when content changes
+            if (!card.__contentObserver) {
+              const contentObserver = new ResizeObserver(() => {
+                if (card.classList.contains('is-open')) {
+                  bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
+                }
+              })
+              // Observe the inner content for size changes
+              const innerContent = bottomWrap.querySelector(
+                '.machine-card_inner, .machine-desc'
+              )
+              if (innerContent) {
+                contentObserver.observe(innerContent)
+              }
+              card.__contentObserver = contentObserver
+            }
           },
         })
         toggleButtons(true)

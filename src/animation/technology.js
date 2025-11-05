@@ -476,37 +476,56 @@ export function initTechnology(root = document) {
         // New logic: list->grid shows grid over list, grid->list just hides grid
         const ease = gsap.parseEase('machinesStep') || ((t) => t)
         if (currentMode === 'list' && isGrid) {
-          // List to Grid: show grid over list without modifying list
+          // List to Grid: background becomes white first, then grid items animate in
           try {
             if (modeTl) {
               modeTl.kill()
               modeTl = null
             }
-            gsap.killTweensOf(machinesGridWrapper)
+            gsap.killTweensOf([machinesGridWrapper, machinesWrapper])
             const tl = gsap.timeline()
             modeTl = tl
+            // Get grid items for the transformY animation
+            const gridItems = Array.from(
+              machinesGridWrapper.querySelectorAll('.machines-grid_item')
+            )
             tl.add(() => {
               try {
                 gsap.set(machinesGridWrapper, {
                   display: 'block',
-                  opacity: 0,
-                  y: '8em',
+                  opacity: 1,
                   position: 'absolute',
                   top: 0,
                   left: 0,
                   width: '100%',
                   zIndex: 2,
                 })
+                // Initialize grid items hidden before animation starts
+                gsap.set(gridItems, { y: '2em', opacity: 0 })
               } catch (e) {
                 // ignore
               }
             })
-              .to(machinesGridWrapper, {
-                opacity: 1,
-                y: '0em',
-                duration: 1.2,
-                ease,
-              })
+              .to(
+                machinesGridWrapper,
+                {
+                  backgroundColor: 'white',
+                  duration: 0.6,
+                  ease,
+                },
+                0
+              )
+              .to(
+                gridItems,
+                {
+                  y: '0em',
+                  opacity: 1,
+                  duration: 0.6,
+                  ease,
+                  stagger: 0.05,
+                },
+                0.2
+              )
               .add(() => {
                 try {
                   // Increase wrapper height to show full grid
@@ -556,6 +575,7 @@ export function initTechnology(root = document) {
             currentMode = mode
           } catch (e) {
             machinesGridWrapper.style.display = 'block'
+            machinesGridWrapper.style.backgroundColor = 'white'
             currentMode = mode
             try {
               if (
@@ -569,24 +589,88 @@ export function initTechnology(root = document) {
             }
           }
         } else if (currentMode === 'grid' && !isGrid) {
-          // Grid to List: simply hide grid and reset height
+          // Grid to List: grid items animate out first, then background becomes transparent
           try {
             if (modeTl) {
               modeTl.kill()
               modeTl = null
             }
-            gsap.killTweensOf(machinesGridWrapper)
-            machinesGridWrapper.style.display = 'none'
-            gsap.set(machinesGridWrapper, {
-              clearProps: 'opacity,transform',
+            gsap.killTweensOf([machinesGridWrapper, machinesWrapper])
+            const gridItems = Array.from(
+              machinesGridWrapper.querySelectorAll('.machines-grid_item')
+            )
+            const tl = gsap.timeline()
+            modeTl = tl
+            // Step 1: Animate grid items out with reverse transformY
+            tl.to(gridItems, {
+              y: '2em',
+              opacity: 0,
+              duration: 0.6,
+              ease,
+              stagger: 0.05,
             })
-            // Reset wrapper height back to auto
-            machinesWrapper.style.minHeight = ''
+              .to(
+                machinesGridWrapper,
+                {
+                  backgroundColor: 'transparent',
+                  duration: 0.6,
+                  ease,
+                },
+                0.2
+              )
+              .add(() => {
+                try {
+                  machinesGridWrapper.style.display = 'none'
+                  gsap.set(machinesGridWrapper, {
+                    clearProps: 'opacity,transform',
+                  })
+                  // Reset wrapper height back to auto
+                  machinesWrapper.style.minHeight = ''
+                } catch (e) {
+                  // ignore
+                }
+              })
+              .add(() => {
+                try {
+                  if (
+                    window.ScrollTrigger &&
+                    typeof window.ScrollTrigger.refresh === 'function'
+                  ) {
+                    window.ScrollTrigger.refresh()
+                  }
+                } catch (e) {
+                  // ignore
+                }
+                try {
+                  initNextBackgroundParallax(root)
+                } catch (e) {
+                  // ignore
+                }
+                try {
+                  initParallax(root)
+                } catch (e) {
+                  // ignore
+                }
+              })
+            tl.eventCallback('onComplete', () => {
+              modeTl = null
+            })
             currentMode = mode
           } catch (e) {
             machinesGridWrapper.style.display = 'none'
+            machinesGridWrapper.style.backgroundColor = 'transparent'
             machinesWrapper.style.minHeight = ''
             currentMode = mode
+            try {
+              if (
+                window.ScrollTrigger &&
+                typeof window.ScrollTrigger.refresh === 'function'
+              ) {
+                window.ScrollTrigger.refresh()
+              }
+            } catch (e2) {
+              // ignore
+            }
           }
         }
         // Re-init next section background parallax after switching views

@@ -701,6 +701,10 @@ button.maplibregl-ctrl-compass {
   .cylindar__text__item .body-xl.is-active {
     font-size: 1em;
   }
+
+  .minerals-inner > .col-3 {
+    order: 3;
+  }
 }
 
 /* Desktop & tablet: hide non-active slides visually (Swiper still manages them) */
@@ -730,6 +734,52 @@ button.maplibregl-ctrl-compass {
   .swiper.projects-wrapper {
     padding-left: 0 !important;
     padding-right: 0 !important;
+  }
+}
+
+/* Ensure machine card background fills its content container */
+.machine-card_content {
+  display: flex;
+  flex-direction: column;
+}
+
+.machine-card_bg {
+  flex: 1;
+  min-height: 100%;
+}
+
+/* Preserve original object-fit for machine card images (don't apply cover from parallax) */
+.machine-card_bg img {
+  object-fit: contain !important;
+}
+
+/* Enable machine card expand animation on tablet and mobile */
+@media screen and (max-width: 991px) {
+  .machines_label {
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .machine_button-wrap {
+    display: flex;
+    position: static;
+  }
+
+  .machine_button {
+    background-color: var(--white);
+    justify-content: space-between;
+  }
+
+  .machine-desc {
+    display: block;
+  }
+
+  .machine-bottom-wrap {
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+    height: 1.5em;
+    overflow: hidden;
   }
 }
 

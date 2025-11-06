@@ -777,6 +777,8 @@ export function initTechnology(root = document) {
       let descMaskSvgEl = null
       let descMaskHoleEl = null
       let descMaskUpdate = null
+      let syncOverlayDescRect = null
+      let finalOverlayDescRect = null
       // Close on user interactions while open
       let removeInteractionHandlers = null
       // Track opening timeline to handle mid-open closes safely
@@ -1182,7 +1184,6 @@ export function initTechnology(root = document) {
         try {
           const origDesc = item.querySelector('.machines-grid_desc')
           if (origDesc) {
-            const dr = origDesc.getBoundingClientRect()
             const NS = 'http://www.w3.org/2000/svg'
             const svg = document.createElementNS(NS, 'svg')
             const defs = document.createElementNS(NS, 'defs')
@@ -1236,16 +1237,66 @@ export function initTechnology(root = document) {
             overlayContainer.style.maskImage = `url(#${maskId})`
             const overlayDesc = origDesc.cloneNode(true)
             overlayContainer.appendChild(overlayDesc)
-            gsap.set(overlayDesc, {
-              position: 'absolute',
-              left: dr.left,
-              top: dr.top,
-              width: dr.width,
-              height: dr.height,
-              margin: 0,
-              opacity: 1,
-              pointerEvents: 'none',
-            })
+            // Measure final rect using a hidden full-screen clone to avoid visible movement on first open
+            const applyOverlayDescRect = (rect) => {
+              if (!rect) return
+              try {
+                gsap.set(overlayDesc, {
+                  position: 'absolute',
+                  left: rect.left,
+                  top: rect.top,
+                  width: rect.width,
+                  height: rect.height,
+                  margin: 0,
+                  opacity: 1,
+                  pointerEvents: 'none',
+                })
+              } catch (e) {
+                // ignore
+              }
+            }
+            const measureFinalDescRect = () => {
+              try {
+                const source = openClone || item
+                const temp = source.cloneNode(true)
+                document.body.appendChild(temp)
+                gsap.set(temp, {
+                  position: 'fixed',
+                  left: 0,
+                  top: 0,
+                  width: window.innerWidth,
+                  height: window.innerHeight,
+                  padding: '1em',
+                  visibility: 'hidden',
+                  margin: 0,
+                  zIndex: -1,
+                })
+                // Force layout to ensure correct measurements
+                void temp.offsetWidth
+                const tempDesc = temp.querySelector('.machines-grid_desc')
+                const rect = tempDesc ? tempDesc.getBoundingClientRect() : null
+                temp.remove()
+                return rect
+              } catch (e) {
+                return null
+              }
+            }
+            const initialFinal = measureFinalDescRect()
+            if (!initialFinal || !initialFinal.width || !initialFinal.height) {
+              requestAnimationFrame(() => {
+                finalOverlayDescRect = measureFinalDescRect()
+                applyOverlayDescRect(finalOverlayDescRect)
+              })
+            } else {
+              finalOverlayDescRect = initialFinal
+              applyOverlayDescRect(finalOverlayDescRect)
+            }
+            // Keep overlay description rect static during animation; only recompute on resize
+            syncOverlayDescRect = () => {
+              if (!overlayDesc) return
+              if (!finalOverlayDescRect) return
+              applyOverlayDescRect(finalOverlayDescRect)
+            }
             // Animate overlay description by lines from y 100% to 0%
             try {
               const overlayGridDesc = overlayDesc.querySelector('.is-grid-desc')
@@ -1543,7 +1594,18 @@ export function initTechnology(root = document) {
             }
             // Initial sync and hook into timeline updates
             descMaskUpdate()
-            tl.eventCallback('onUpdate', descMaskUpdate)
+            tl.eventCallback('onUpdate', () => {
+              try {
+                if (descMaskUpdate) descMaskUpdate()
+              } catch (e) {
+                // ignore
+              }
+              try {
+                if (syncOverlayDescRect) syncOverlayDescRect()
+              } catch (e) {
+                // ignore
+              }
+            })
           }
         } catch (ed) {
           // ignore
@@ -1588,6 +1650,42 @@ export function initTechnology(root = document) {
           }
           try {
             if (descMaskUpdate) descMaskUpdate()
+          } catch (e) {
+            // ignore
+          }
+          try {
+            // Recompute the final rect using hidden full-screen measurement clone
+            if (descOverlay) {
+              const measureFinalDescRect = () => {
+                try {
+                  const source = openClone || item
+                  const temp = source.cloneNode(true)
+                  document.body.appendChild(temp)
+                  gsap.set(temp, {
+                    position: 'fixed',
+                    left: 0,
+                    top: 0,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    padding: '1em',
+                    visibility: 'hidden',
+                    margin: 0,
+                    zIndex: -1,
+                  })
+                  void temp.offsetWidth
+                  const tempDesc = temp.querySelector('.machines-grid_desc')
+                  const rect = tempDesc
+                    ? tempDesc.getBoundingClientRect()
+                    : null
+                  temp.remove()
+                  return rect
+                } catch (e) {
+                  return null
+                }
+              }
+              finalOverlayDescRect = measureFinalDescRect()
+              if (syncOverlayDescRect) syncOverlayDescRect()
+            }
           } catch (e) {
             // ignore
           }

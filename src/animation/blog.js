@@ -208,8 +208,11 @@ export function initBlog(root = document) {
           const tail = match[3] || ''
           const abbreviated = firstWord.slice(0, 3)
           let result = prefix + abbreviated + tail
-          // Insert line break after first comma (match join-the-team behavior)
-          result = result.replace(/,\s*/, ',<br> ')
+          // Insert line break after first comma only for blog-date, not for blog-main_item
+          const isInMainItem = element.closest('.blog-main_item')
+          if (!isInMainItem) {
+            result = result.replace(/,\s*/, ',<br> ')
+          }
           element.innerHTML = result
           element.dataset.abbrevApplied = '1'
         } catch (e) {

@@ -178,6 +178,7 @@
 /* Ensure toggle indicator never blocks clicks on options */
 .toggle .toggle-indicator {
   pointer-events: none;
+  will-change: transform;
 }
 
 .workshops_left_top > .eyebrows {
@@ -212,6 +213,14 @@
 
 h1 > .is-h1-span-wrap:last-child > span {
   padding-bottom: 0.025em;
+}
+
+.hero-content_right .content_right-row:last-child {
+  margin-top: -0.125em;
+}
+
+.is-h1-span-wrap {
+  padding-bottom: 0.14em;
 }
 
 .workshops .toggle-option {
@@ -312,8 +321,17 @@ h1 > .is-h1-span-wrap:last-child > span {
   transform-origin: bottom left;
 }
 
-.machines-grid_item,
+.machines-grid_item {
+  cursor: pointer;
+}
+
 .machines .machines-list-item {
+  pointer-events: none;
+  cursor: auto;
+}
+
+.machines .machines-list-item.is-in-view {
+  pointer-events: all;
   cursor: pointer;
 }
 

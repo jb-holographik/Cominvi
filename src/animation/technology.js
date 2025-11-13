@@ -418,22 +418,56 @@ export function initTechnology(root = document) {
       const optList = gridToggle.querySelector('[data-toggle="list"]')
       let currentMode = null
       let modeTl = null
+
+      // Helper: get index for mode (grid=0, list=1)
+      const getModeIndex = (mode) => (mode === 'grid' ? 0 : 1)
+
+      // Animate indicator with GSAP smooth motion (like testimonials)
+      const animateIndicatorTo = (idx, duration = 0.3) => {
+        try {
+          if (indicator) {
+            const option = idx === 0 ? optGrid : optList
+            if (option) {
+              // Measure the option's position relative to toggle
+              const toggleRect = gridToggle.getBoundingClientRect()
+              const optionRect = option.getBoundingClientRect()
+              // Calculate relative position in em
+              const fs =
+                parseFloat(window.getComputedStyle(gridToggle).fontSize) || 16
+              const relativeLeft = (optionRect.left - toggleRect.left) / fs
+              gsap.to(indicator, {
+                duration,
+                left: `${relativeLeft}em`,
+                ease: gsap.parseEase('machinesStep') || 'power2.out',
+                overwrite: 'auto',
+              })
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
       const setMode = (mode) => {
         const isGrid = mode === 'grid'
+        const modeIdx = getModeIndex(mode)
+
         // Update toggle indicator and ids immediately
         try {
           const active = gridToggle.querySelector(
             `.toggle-option[data-toggle="${mode}"]`
           )
           if (indicator) {
-            if (isGrid) indicator.classList.remove('is-grid')
-            else indicator.classList.add('is-grid')
+            // Always remove .is-grid class - we manage position via xPercent transforms
+            indicator.classList.remove('is-grid')
           }
           gridToggle
             .querySelectorAll('.toggle-id')
             .forEach((el) => el.classList.remove('is-active'))
           const id = active ? active.querySelector('.toggle-id') : null
           if (id) id.classList.add('is-active')
+          // Animate indicator to new position
+          animateIndicatorTo(modeIdx, 0.3)
         } catch (err) {
           // ignore
         }
@@ -680,16 +714,49 @@ export function initTechnology(root = document) {
           // ignore
         }
       }
-      if (optGrid)
+      if (optGrid) {
+        optGrid.addEventListener('mouseenter', () => {
+          animateIndicatorTo(0, 0.3)
+          // Invert text colors on hover
+          const toggleIds = gridToggle.querySelectorAll('.toggle-id')
+          toggleIds.forEach((el) => el.classList.remove('is-active'))
+          const gridId = optGrid.querySelector('.toggle-id')
+          if (gridId) gridId.classList.add('is-active')
+        })
         optGrid.addEventListener('click', (e) => {
           e.preventDefault()
           setMode('grid')
         })
-      if (optList)
+      }
+      if (optList) {
+        optList.addEventListener('mouseenter', () => {
+          animateIndicatorTo(1, 0.3)
+          // Invert text colors on hover
+          const toggleIds = gridToggle.querySelectorAll('.toggle-id')
+          toggleIds.forEach((el) => el.classList.remove('is-active'))
+          const listId = optList.querySelector('.toggle-id')
+          if (listId) listId.classList.add('is-active')
+        })
         optList.addEventListener('click', (e) => {
           e.preventDefault()
           setMode('list')
         })
+      }
+      // Return indicator to active mode on mouse leave
+      gridToggle.addEventListener('mouseleave', () => {
+        if (currentMode) {
+          animateIndicatorTo(getModeIndex(currentMode), 0.3)
+          // Restore colors to active mode
+          const toggleIds = gridToggle.querySelectorAll('.toggle-id')
+          toggleIds.forEach((el) => el.classList.remove('is-active'))
+          const selector = `[data-toggle="${currentMode}"]`
+          const modeOption = gridToggle.querySelector(selector)
+          const modeId = modeOption
+            ? modeOption.querySelector('.toggle-id')
+            : null
+          if (modeId) modeId.classList.add('is-active')
+        }
+      })
       // initial state: list visible, grid hidden and indicator aligned to list
       machinesGridWrapper.style.display = 'none'
       setMode('list')
@@ -2422,6 +2489,135 @@ export function initTechnology(root = document) {
       // ignore
     }
   }
+  const updateInViewClasses = () => {
+    try {
+      const machinesRect = machines.getBoundingClientRect()
+      const machinesTop = machinesRect.top
+      const items = machines.querySelectorAll('.machines-list-item')
+      let nearestItem = null
+      let closestDistance = Infinity
+
+      items.forEach((el) => {
+        const itemRect = el.getBoundingClientRect()
+        if (itemRect.top >= machinesTop) {
+          const distance = itemRect.top - machinesTop
+          if (distance < closestDistance) {
+            closestDistance = distance
+            nearestItem = el
+          }
+        }
+      })
+
+      items.forEach((el) => {
+        if (el === nearestItem) {
+          el.classList.add('is-in-view')
+          attachMachineItemClick(el)
+        } else {
+          el.classList.remove('is-in-view')
+          detachMachineItemClick(el)
+        }
+      })
+    } catch (err) {
+      // ignore
+    }
+  }
+  const attachMachineItemClick = (item) => {
+    try {
+      if (item.__listOpenAttached) return
+      item.__listOpenAttached = true
+      item.addEventListener('click', handleMachineItemClick)
+      item.addEventListener('mouseenter', handleMachineItemHover)
+      item.addEventListener('mouseleave', handleMachineItemHoverEnd)
+    } catch (err) {
+      // ignore
+    }
+  }
+  const detachMachineItemClick = (item) => {
+    try {
+      item.removeEventListener('click', handleMachineItemClick)
+      item.removeEventListener('mouseenter', handleMachineItemHover)
+      item.removeEventListener('mouseleave', handleMachineItemHoverEnd)
+      item.__listOpenAttached = false
+    } catch (err) {
+      // ignore
+    }
+  }
+  const handleMachineItemHover = () => {
+    try {
+      const btnWrap = machines.querySelector('.machines_button-wrap')
+      if (btnWrap) {
+        const openBtn = btnWrap.querySelector('.machines_button:not(.is-close)')
+        if (openBtn) {
+          const fontSize = parseFloat(window.getComputedStyle(btnWrap).fontSize)
+          const offsetPx = -0.5 * fontSize
+          gsap.to(btnWrap, {
+            x: offsetPx,
+            duration: 0.2,
+            ease: 'power2.out',
+          })
+          gsap.to(openBtn, {
+            backgroundColor: 'var(--accent)',
+            duration: 0.2,
+            ease: 'power2.out',
+          })
+        }
+      }
+    } catch (err) {
+      // ignore
+    }
+  }
+  const handleMachineItemHoverEnd = () => {
+    try {
+      const isOpen =
+        imagesRoot && imagesRoot.classList
+          ? imagesRoot.classList.contains('is-open')
+          : false
+      const btnWrap = machines.querySelector('.machines_button-wrap')
+      if (btnWrap && !isOpen) {
+        const openBtn = btnWrap.querySelector('.machines_button:not(.is-close)')
+        if (openBtn) {
+          gsap.to(btnWrap, {
+            x: 0,
+            duration: 0.2,
+            ease: 'power2.out',
+          })
+          gsap.to(openBtn, {
+            backgroundColor: '',
+            duration: 0.2,
+            ease: 'power2.out',
+          })
+        }
+      }
+    } catch (err) {
+      // ignore
+    }
+  }
+  const handleMachineItemClick = (e) => {
+    try {
+      if (
+        e &&
+        e.target &&
+        e.target.closest &&
+        e.target.closest('.machines_button')
+      )
+        return
+      e.preventDefault()
+      e.stopPropagation()
+    } catch (er) {
+      // ignore
+    }
+    try {
+      const isOpen =
+        imagesRoot && imagesRoot.classList
+          ? imagesRoot.classList.contains('is-open')
+          : false
+      if (isOpen) machineClose()
+      else machineOpen()
+    } catch (toggleErr) {
+      // fallback open
+      machineOpen()
+    }
+  }
   const getPairForIndex = (index) => {
     const stickyItems = machines.querySelectorAll('.machines-list-item')
     const bottom =
@@ -2545,6 +2741,25 @@ export function initTechnology(root = document) {
     const index = getCurrentIndex()
     const pair = getPairForIndex(index)
     if (pair.length === 0) return
+    try {
+      const btnSelector = '.machines_button-wrap'
+      const btnWrap = machines.querySelector(btnSelector)
+      if (btnWrap) {
+        const easeFn = gsap.parseEase('machinesStep') || ((t) => t)
+        gsap.to(btnWrap, {
+          x: 0,
+          duration: 1.2,
+          ease: easeFn,
+        })
+        const btnOpenSelector = '.machines_button:not(.is-close)'
+        const openBtn = btnWrap.querySelector(btnOpenSelector)
+        if (openBtn) {
+          openBtn.classList.remove('is-hover')
+        }
+      }
+    } catch (err) {
+      // ignore
+    }
     const heightEm = closedItemEmHeight || 0
     try {
       if (heightEm > 0) {
@@ -2641,42 +2856,6 @@ export function initTechnology(root = document) {
       if (buttons[0]) buttons[0].addEventListener('click', machineOpen)
       if (buttons[1]) buttons[1].addEventListener('click', machineClose)
     }
-    // Also toggle open/close when clicking a list item (no extra behavior)
-    try {
-      const listItems = machines.querySelectorAll('.machines-list-item')
-      listItems.forEach((item) => {
-        if (item.__listOpenAttached) return
-        item.__listOpenAttached = true
-        item.addEventListener('click', (e) => {
-          try {
-            if (
-              e &&
-              e.target &&
-              e.target.closest &&
-              e.target.closest('.machines_button')
-            )
-              return
-            e.preventDefault()
-            e.stopPropagation()
-          } catch (er) {
-            // ignore
-          }
-          try {
-            const isOpen =
-              imagesRoot && imagesRoot.classList
-                ? imagesRoot.classList.contains('is-open')
-                : false
-            if (isOpen) machineClose()
-            else machineOpen()
-          } catch (toggleErr) {
-            // fallback open
-            machineOpen()
-          }
-        })
-      })
-    } catch (e) {
-      // ignore
-    }
   } catch (err) {
     // ignore
   }
@@ -2736,6 +2915,7 @@ export function initTechnology(root = document) {
         currentStep = Math.max(0, nearest)
         if (offsets.length > 0)
           gsap.set(content, { y: -Math.round(offsets[currentStep] || 0) })
+        updateInViewClasses()
       } else {
         wheelAccumulator = 0
       }
@@ -2751,6 +2931,7 @@ export function initTechnology(root = document) {
         // Update active image in real-time so the image under the line is marked
         const idx = getNearestStepForScroll(clamped)
         markActiveImage(idx)
+        updateInViewClasses()
       } catch (err) {
         // ignore
       }
@@ -2920,6 +3101,7 @@ export function initTechnology(root = document) {
         // ignore
       }
       detachContentSync = null
+      updateInViewClasses()
       // trigger queued steps if any
       if (pendingSteps > 0) {
         pendingSteps -= 1

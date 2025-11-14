@@ -29,8 +29,46 @@ export function initBlog(root = document) {
         'https://cdn.jsdelivr.net/npm/@finsweet/attributes@2/attributes.js'
       )
       s.setAttribute('fs-list', '')
+
+      // Debug: log load / error of the Finsweet script
+      try {
+        s.addEventListener('load', () => {
+          // eslint-disable-next-line no-console
+          console.log('[fs-list] Script Finsweet chargé (load)')
+        })
+        s.addEventListener('error', () => {
+          // eslint-disable-next-line no-console
+          console.error('[fs-list] Échec du chargement du script Finsweet')
+        })
+      } catch (err) {
+        // ignore
+      }
+
       const appendTarget = document.head || document.documentElement
       appendTarget.appendChild(s)
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('[fs-list] Script Finsweet déjà présent dans le DOM')
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  // Debug: hook sur fsAttributes.list pour vérifier que List Filter s'initialise
+  try {
+    if (typeof window !== 'undefined') {
+      window.fsAttributes = window.fsAttributes || []
+      window.fsAttributes.push([
+        'list',
+        (listInstances) => {
+          try {
+            // eslint-disable-next-line no-console
+            console.log('[fs-list][Blog] init List Filter', listInstances)
+          } catch (err) {
+            // ignore
+          }
+        },
+      ])
     }
   } catch (e) {
     // ignore
@@ -123,6 +161,225 @@ export function initBlog(root = document) {
         // ignore
       }
     }
+  } catch (e) {
+    // ignore
+  }
+
+  // Fallback manuel si Finsweet List Filter ne s'initialise pas
+  try {
+    const scopeForFallback = root && root.nodeType === 1 ? root : document
+    const setupManualListFilter = () => {
+      try {
+        const filtersForm = scopeForFallback.querySelector(
+          '[fs-list-element="filters"]'
+        )
+        const listEl = scopeForFallback.querySelector(
+          '[fs-list-element="list"]'
+        )
+        if (!filtersForm || !listEl) return
+
+        const allBtn = filtersForm.querySelector('#all')
+        const categoryLabels = Array.from(
+          filtersForm.querySelectorAll('.blog-category')
+        )
+        let items = Array.from(
+          listEl.querySelectorAll('.blog-main_item.w-dyn-item')
+        )
+        if (!items.length) return
+
+        const paginationWrapper = scopeForFallback.querySelector(
+          '.w-pagination-wrapper'
+        )
+        let loadMoreLink = paginationWrapper
+          ? paginationWrapper.querySelector(
+              '.w-pagination-next.button.load-more'
+            )
+          : null
+        const initialVisibleCount = loadMoreLink
+          ? Math.min(items.length, 4)
+          : items.length
+        let nextHref = loadMoreLink ? loadMoreLink.getAttribute('href') : null
+        let isLoadingMore = false
+        let hasMore = !!nextHref
+        let hasLoadedMore = !loadMoreLink
+        let activeValue = ''
+
+        const getItemCategory = (item) => {
+          const field = item.querySelector('[fs-list-field="Category"]')
+          return field && field.textContent ? field.textContent.trim() : ''
+        }
+
+        const applyFilter = (value) => {
+          try {
+            activeValue = (value && value.trim()) || ''
+
+            // Met à jour l'état visuel des catégories
+            if (allBtn) {
+              allBtn.classList.toggle('is-list-active', !activeValue)
+            }
+            categoryLabels.forEach((label) => {
+              const input = label.querySelector(
+                'input[fs-list-field="Category"]'
+              )
+              const v =
+                input && input.getAttribute('fs-list-value')
+                  ? input.getAttribute('fs-list-value').trim()
+                  : ''
+              const isActive = !!activeValue && v === activeValue
+              label.classList.toggle('is-list-active', isActive)
+            })
+
+            // Filtre les items
+            items.forEach((item, index) => {
+              const cat = getItemCategory(item)
+              const matchesCategory = !activeValue || cat === activeValue
+              const withinPagination =
+                hasLoadedMore || index < initialVisibleCount
+              const visible = matchesCategory && withinPagination
+              item.style.display = visible ? '' : 'none'
+            })
+          } catch (err) {
+            // ignore
+          }
+        }
+
+        // Change sur les radios
+        filtersForm.addEventListener('change', (ev) => {
+          try {
+            const target = ev.target
+            if (
+              !target ||
+              !target.matches ||
+              !target.matches('input[fs-list-field="Category"]')
+            ) {
+              return
+            }
+            const value =
+              target.getAttribute('fs-list-value') || target.value || ''
+            applyFilter(value)
+          } catch (err) {
+            // ignore
+          }
+        })
+
+        // Bouton "All"
+        if (allBtn) {
+          allBtn.addEventListener('click', (ev) => {
+            try {
+              ev.preventDefault()
+              const radios = filtersForm.querySelectorAll(
+                'input[name="Blog-category"]'
+              )
+              radios.forEach((r) => {
+                r.checked = false
+              })
+              applyFilter('')
+            } catch (err) {
+              // ignore
+            }
+          })
+        }
+
+        // Bouton "Load More" (fallback simple : on révèle tous les items)
+        if (loadMoreLink) {
+          loadMoreLink.addEventListener('click', (ev) => {
+            try {
+              ev.preventDefault()
+              if (isLoadingMore) return
+              if (!nextHref) {
+                if (paginationWrapper) paginationWrapper.style.display = 'none'
+                hasLoadedMore = true
+                applyFilter(activeValue)
+                return
+              }
+
+              isLoadingMore = true
+              const url = new URL(nextHref, window.location.href).toString()
+
+              fetch(url, { credentials: 'same-origin' })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error('Load More request failed')
+                  }
+                  return response.text()
+                })
+                .then((htmlText) => {
+                  const parser = new DOMParser()
+                  const doc = parser.parseFromString(htmlText, 'text/html')
+
+                  const newList = doc.querySelector('[fs-list-element="list"]')
+                  if (!newList) return
+
+                  const newItems = Array.from(
+                    newList.querySelectorAll('.blog-main_item.w-dyn-item')
+                  )
+                  if (!newItems.length) return
+
+                  newItems.forEach((el) => {
+                    listEl.appendChild(el)
+                    items.push(el)
+                  })
+
+                  const newPaginationWrapper = doc.querySelector(
+                    '.w-pagination-wrapper'
+                  )
+                  const newNext = newPaginationWrapper
+                    ? newPaginationWrapper.querySelector(
+                        '.w-pagination-next.button.load-more'
+                      )
+                    : null
+
+                  nextHref = newNext ? newNext.getAttribute('href') : null
+                  hasMore = !!nextHref
+
+                  if (!hasMore && paginationWrapper) {
+                    paginationWrapper.style.display = 'none'
+                  }
+
+                  hasLoadedMore = !hasMore
+                  applyFilter(activeValue)
+                })
+                .catch(() => {
+                  if (paginationWrapper) {
+                    paginationWrapper.style.display = 'none'
+                  }
+                  hasLoadedMore = true
+                  applyFilter(activeValue)
+                })
+                .finally(() => {
+                  isLoadingMore = false
+                })
+            } catch (err) {
+              // ignore
+            }
+          })
+        }
+
+        // État initial : "All" actif + pagination appliquée
+        applyFilter('')
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    // On laisse une petite fenêtre à Finsweet pour s'initialiser.
+    // Si après ce délai fsAttributes est toujours un tableau, on active le fallback.
+    setTimeout(() => {
+      try {
+        const fa = typeof window !== 'undefined' ? window.fsAttributes : null
+        const finsweetActive =
+          fa &&
+          fa.list &&
+          Array.isArray(fa.list.instances) &&
+          fa.list.instances.length > 0
+
+        if (!finsweetActive) {
+          setupManualListFilter()
+        }
+      } catch (err) {
+        // ignore
+      }
+    }, 1500)
   } catch (e) {
     // ignore
   }

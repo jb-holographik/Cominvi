@@ -70,8 +70,8 @@ export function initTechnology(root = document) {
 
   // Logos slider control
   try {
-    const control = root.querySelector('.logos-slider_control')
     const inner = root.querySelector('.logos-slider_inner')
+    const control = root.querySelector('.logos-slider_control')
     const toggle = control ? control.querySelector('.toggle.is-light') : null
     const options = toggle ? toggle.querySelectorAll('.toggle-option') : []
     const ids = toggle ? toggle.querySelectorAll('.toggle-id') : []
@@ -80,28 +80,26 @@ export function initTechnology(root = document) {
     const prevBtn = buttons && buttons.length ? buttons[0] : null
     const nextBtn = buttons && buttons.length > 1 ? buttons[1] : null
 
-    if (
-      control &&
-      inner &&
-      toggle &&
-      options &&
-      options.length >= 2 &&
-      ids &&
-      ids.length >= 2 &&
-      indicator &&
-      prevBtn &&
-      nextBtn
-    ) {
+    if (inner) {
       try {
         inner.style.willChange = 'transform'
       } catch (e) {
         // ignore
       }
-      // Collect logo sets (page 1 = default logos, page 2 = .is-2)
+      // Prépare les slots (6 cases max) et la liste complète des logos
+      const logoWraps = Array.from(
+        root.querySelectorAll('.logos-slider_logo-wrap')
+      )
+      const slots = logoWraps.slice(0, 6)
       const allLogos = Array.from(root.querySelectorAll('.logos-slider_logo'))
-      const logosSet1 = allLogos.filter((el) => !el.classList.contains('is-2'))
-      const logosSet2 = allLogos.filter((el) => el.classList.contains('is-2'))
+      const totalLogos = allLogos.length
+      if (!slots.length || !totalLogos) {
+        return
+      }
+      let currentConfig = [] // indices de logos affichés par slot
+      let currentPageIdx = 0
       const moveIndicator = (idx) => {
+        if (!indicator || !options || !options.length) return
         try {
           const baseLeft = options[0] ? options[0].offsetLeft : 0
           const targetLeft = options[idx] ? options[idx].offsetLeft : 0
@@ -116,6 +114,7 @@ export function initTechnology(root = document) {
       const setButtonsFor = (idx) => {
         // idx 0: Prev dim (is-o-30), Next active (is-white)
         // idx 1: Prev active (is-white), Next dim (is-o-30)
+        if (!prevBtn || !nextBtn) return
         const prevActive = idx === 1
         const nextActive = idx === 0
         prevBtn.classList.toggle('is-white', prevActive)
@@ -124,24 +123,111 @@ export function initTechnology(root = document) {
         nextBtn.classList.toggle('is-o-30', !nextActive)
       }
       const setIdsFor = (idx) => {
+        if (!ids || !ids.length) return
         ids.forEach((el, i) => {
           if (i === idx) el.classList.add('is-active')
           else el.classList.remove('is-active')
         })
       }
       let logosTl = null
-      const showLogosSet = (idx) => {
-        const i = Math.max(0, Math.min(1, idx))
+      const ensureEase = () => {
         try {
           if (!gsap.parseEase('wsEase'))
             CustomEase.create('wsEase', 'M0,0 C0.6,0 0,1 1,1')
         } catch (e) {
           // ignore
         }
+      }
+      const getRandomConfig = (prevConfig) => {
+        const slotCount = slots.length
+        if (!slotCount || totalLogos === 0) return []
+        const prev =
+          Array.isArray(prevConfig) && prevConfig.length === slotCount
+            ? prevConfig.slice()
+            : []
+        const indices = Array.from({ length: totalLogos }, (_, i) => i)
+        const maxAttempts = 20
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          const shuffled = indices.slice()
+          for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1))
+            const tmp = shuffled[i]
+            shuffled[i] = shuffled[j]
+            shuffled[j] = tmp
+          }
+          const candidate = shuffled.slice(0, slotCount)
+          if (!prev.length) return candidate
+          let hasSame = false
+          for (let i = 0; i < slotCount; i++) {
+            if (candidate[i] === prev[i]) {
+              hasSame = true
+              break
+            }
+          }
+          // On accepte seulement si aucun logo n'est resté dans le même slot
+          if (!hasSame) return candidate
+        }
+        if (!prev.length) {
+          return Array.from({ length: slots.length }, (_, i) => i % totalLogos)
+        }
+        // Fallback déterministe : même logos mais décalés d'un slot pour garantir le mouvement
+        return prev.map((idx, i) => {
+          const shifted = prev[(i + 1) % prev.length]
+          const baseIndex = typeof shifted === 'number' ? shifted : 0
+          return baseIndex % totalLogos
+        })
+      }
+      const applyConfig = (nextConfig, animate) => {
+        const slotCount = slots.length
+        if (!slotCount || !Array.isArray(nextConfig) || !nextConfig.length) {
+          return
+        }
+        const prev =
+          Array.isArray(currentConfig) && currentConfig.length === slotCount
+            ? currentConfig.slice()
+            : []
         const duration = 0.5
+        ensureEase()
         const ease = gsap.parseEase('wsEase') || ((t) => t)
-        const show = i === 0 ? logosSet1 : logosSet2
-        const hide = i === 0 ? logosSet2 : logosSet1
+        const show = []
+        const hide = []
+        for (let i = 0; i < slotCount; i++) {
+          const slot = slots[i]
+          const nextIdx = nextConfig[i]
+          const prevIdx = prev.length ? prev[i] : null
+          const nextLogo =
+            typeof nextIdx === 'number' && nextIdx >= 0 && nextIdx < totalLogos
+              ? allLogos[nextIdx]
+              : null
+          const prevLogo =
+            typeof prevIdx === 'number' && prevIdx >= 0 && prevIdx < totalLogos
+              ? allLogos[prevIdx]
+              : null
+          if (!slot || !nextLogo) continue
+          if (nextLogo.parentNode !== slot) {
+            slot.appendChild(nextLogo)
+          }
+          if (!animate || !prevLogo || prevLogo === nextLogo) {
+            try {
+              gsap.set(nextLogo, { opacity: 1, display: 'block' })
+            } catch (e) {
+              // ignore
+            }
+            continue
+          }
+          // Préparer le prochain logo : présent dans le slot mais invisible
+          try {
+            gsap.set(nextLogo, { opacity: 0, display: 'none' })
+          } catch (e) {
+            // ignore
+          }
+          hide.push(prevLogo)
+          show.push(nextLogo)
+        }
+        if (!animate || (!show.length && !hide.length)) {
+          currentConfig = nextConfig
+          return
+        }
         try {
           // Cancel any in-flight sequence
           if (logosTl) {
@@ -154,7 +240,7 @@ export function initTechnology(root = document) {
           tl.eventCallback('onComplete', () => {
             logosTl = null
           })
-          if (hide && hide.length) {
+          if (hide.length) {
             tl.to(hide, { opacity: 0 }).add(() => {
               try {
                 hide.forEach((el) => {
@@ -165,7 +251,7 @@ export function initTechnology(root = document) {
               }
             })
           }
-          if (show && show.length) {
+          if (show.length) {
             tl.add(() => {
               try {
                 show.forEach((el) => {
@@ -184,47 +270,57 @@ export function initTechnology(root = document) {
       }
       const setPage = (idx) => {
         const i = Math.max(0, Math.min(1, idx))
-        showLogosSet(i)
+        currentPageIdx = i
+        const nextConfig = getRandomConfig(currentConfig)
+        applyConfig(nextConfig, true)
+        currentConfig = nextConfig
         setIdsFor(i)
         moveIndicator(i)
         setButtonsFor(i)
       }
 
-      // Wire events
-      nextBtn.addEventListener('click', (e) => {
-        e.preventDefault()
-        setPage(1)
-      })
-      prevBtn.addEventListener('click', (e) => {
-        e.preventDefault()
-        setPage(0)
-      })
-      options[0].addEventListener('click', (e) => {
-        e.preventDefault()
-        setPage(0)
-      })
-      options[1].addEventListener('click', (e) => {
-        e.preventDefault()
-        setPage(1)
-      })
-      // Initial state
+      // Wire events (si les boutons existent encore)
+      if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+          e.preventDefault()
+          setPage(1)
+        })
+      }
+      if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
+          e.preventDefault()
+          setPage(0)
+        })
+      }
+      // Rotation automatique inspirée de temp.js (changement toutes les 3s)
       try {
-        // Ensure logos initial visibility: show default, hide .is-2
-        const allLogosInit = Array.from(
-          root.querySelectorAll('.logos-slider_logo')
-        )
-        const logos1Init = allLogosInit.filter(
-          (el) => !el.classList.contains('is-2')
-        )
-        const logos2Init = allLogosInit.filter((el) =>
-          el.classList.contains('is-2')
-        )
-        if (logos1Init.length) {
-          gsap.set(logos1Init, { opacity: 1, display: 'block' })
-        }
-        if (logos2Init.length) {
-          gsap.set(logos2Init, { opacity: 0, display: 'none' })
-        }
+        setInterval(() => {
+          try {
+            const next =
+              typeof currentPageIdx === 'number' && currentPageIdx === 0 ? 1 : 0
+            setPage(next)
+          } catch (e) {
+            // ignore
+          }
+        }, 4000)
+      } catch (e) {
+        // ignore
+      }
+      // État initial des logos : tout cacher puis générer une première config
+      try {
+        allLogos.forEach((el) => {
+          try {
+            gsap.set(el, { opacity: 0, display: 'none' })
+          } catch (e) {
+            // ignore
+          }
+        })
+        const initialConfig = getRandomConfig([])
+        applyConfig(initialConfig, false)
+        currentConfig = initialConfig
+        setIdsFor(0)
+        moveIndicator(0)
+        setButtonsFor(0)
       } catch (e) {
         try {
           // ignore
@@ -232,9 +328,6 @@ export function initTechnology(root = document) {
           // ignore
         }
       }
-      setIdsFor(0)
-      moveIndicator(0)
-      setButtonsFor(0)
     }
   } catch (err) {
     // ignore

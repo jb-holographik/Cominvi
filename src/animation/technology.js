@@ -70,12 +70,10 @@ export function initTechnology(root = document) {
 
   // Logos slider control
   try {
-    const inner = root.querySelector('.logos-slider_inner')
     const control = root.querySelector('.logos-slider_control')
-    const toggle = control ? control.querySelector('.toggle.is-light') : null
-    const options = toggle ? toggle.querySelectorAll('.toggle-option') : []
-    const ids = toggle ? toggle.querySelectorAll('.toggle-id') : []
-    const indicator = toggle ? toggle.querySelector('.toggle-indicator') : null
+    const inner =
+      root.querySelector('.logos-slider_inner') ||
+      root.querySelector('.logos-slider')
     const buttons = control ? control.querySelectorAll('button.body-m') : []
     const prevBtn = buttons && buttons.length ? buttons[0] : null
     const nextBtn = buttons && buttons.length > 1 ? buttons[1] : null
@@ -92,44 +90,38 @@ export function initTechnology(root = document) {
       )
       const slots = logoWraps.slice(0, 6)
       const allLogos = Array.from(root.querySelectorAll('.logos-slider_logo'))
-      const totalLogos = allLogos.length
-      if (!slots.length || !totalLogos) {
-        return
-      }
-      let currentConfig = [] // indices de logos affichés par slot
-      let currentPageIdx = 0
-      const moveIndicator = (idx) => {
-        if (!indicator || !options || !options.length) return
+      const seenKeys = new Set()
+      const logoTemplates = []
+      allLogos.forEach((el) => {
+        const key =
+          el.getAttribute('aria-label') ||
+          el.getAttribute('data-name') ||
+          el.getAttribute('alt') ||
+          el.outerHTML
+        if (seenKeys.has(key)) {
+          try {
+            el.parentNode && el.parentNode.removeChild(el)
+          } catch (e) {
+            // ignore
+          }
+          return
+        }
+        seenKeys.add(key)
+        logoTemplates.push({ key, html: el.outerHTML })
         try {
-          const baseLeft = options[0] ? options[0].offsetLeft : 0
-          const targetLeft = options[idx] ? options[idx].offsetLeft : 0
-          indicator.style.transform = `translate3d(${Math.max(
-            0,
-            targetLeft - baseLeft
-          )}px, 0, 0)`
+          el.parentNode && el.parentNode.removeChild(el)
         } catch (e) {
           // ignore
         }
+      })
+      const totalLogos = logoTemplates.length
+      if (!slots.length || totalLogos < slots.length) {
+        return
       }
-      const setButtonsFor = (idx) => {
-        // idx 0: Prev dim (is-o-30), Next active (is-white)
-        // idx 1: Prev active (is-white), Next dim (is-o-30)
-        if (!prevBtn || !nextBtn) return
-        const prevActive = idx === 1
-        const nextActive = idx === 0
-        prevBtn.classList.toggle('is-white', prevActive)
-        prevBtn.classList.toggle('is-o-30', !prevActive)
-        nextBtn.classList.toggle('is-white', nextActive)
-        nextBtn.classList.toggle('is-o-30', !nextActive)
-      }
-      const setIdsFor = (idx) => {
-        if (!ids || !ids.length) return
-        ids.forEach((el, i) => {
-          if (i === idx) el.classList.add('is-active')
-          else el.classList.remove('is-active')
-        })
-      }
+      let currentConfig = [] // indices de logos affichés par slot
+      const slotElements = slots.map(() => null) // DOM node actuellement affiché par slot
       let logosTl = null
+      let cycleTimeoutId = null
       const ensureEase = () => {
         try {
           if (!gsap.parseEase('wsEase'))
@@ -177,37 +169,71 @@ export function initTechnology(root = document) {
           return baseIndex % totalLogos
         })
       }
+      const createLogoElement = (idx) => {
+        try {
+          const template = logoTemplates[idx] ? logoTemplates[idx].html : ''
+          const wrapper = document.createElement('div')
+          wrapper.innerHTML = template
+          return wrapper.firstElementChild
+        } catch (e) {
+          return null
+        }
+      }
+      const clearCycleTimeout = () => {
+        if (cycleTimeoutId) {
+          clearTimeout(cycleTimeoutId)
+          cycleTimeoutId = null
+        }
+      }
+      const scheduleNextCycle = () => {
+        clearCycleTimeout()
+        try {
+          cycleTimeoutId = setTimeout(() => {
+            try {
+              setPage()
+            } catch (err) {
+              // ignore
+            }
+          }, 3000)
+        } catch (err) {
+          // ignore
+        }
+      }
       const applyConfig = (nextConfig, animate) => {
         const slotCount = slots.length
         if (!slotCount || !Array.isArray(nextConfig) || !nextConfig.length) {
           return
         }
-        const prev =
-          Array.isArray(currentConfig) && currentConfig.length === slotCount
-            ? currentConfig.slice()
-            : []
-        const duration = 0.5
         ensureEase()
-        const ease = gsap.parseEase('wsEase') || ((t) => t)
-        const show = []
-        const hide = []
+        const duration = 0.5
+        const delayBetweenSlots = 1 // 1 seconde entre chaque slot
+        try {
+          // Cancel any in-flight sequence
+          if (logosTl) {
+            logosTl.kill()
+            logosTl = null
+          }
+        } catch (e) {
+          // ignore
+        }
+        // Préparer tous les logos pour cette config et construire la timeline cascade
+        const slotAnimations = [] // { slotIndex, hide, show }
         for (let i = 0; i < slotCount; i++) {
           const slot = slots[i]
           const nextIdx = nextConfig[i]
-          const prevIdx = prev.length ? prev[i] : null
           const nextLogo =
             typeof nextIdx === 'number' && nextIdx >= 0 && nextIdx < totalLogos
-              ? allLogos[nextIdx]
+              ? createLogoElement(nextIdx)
               : null
-          const prevLogo =
-            typeof prevIdx === 'number' && prevIdx >= 0 && prevIdx < totalLogos
-              ? allLogos[prevIdx]
-              : null
+          const prevLogo = slotElements[i] || null
           if (!slot || !nextLogo) continue
-          if (nextLogo.parentNode !== slot) {
+          try {
             slot.appendChild(nextLogo)
+          } catch (e) {
+            // ignore
           }
-          if (!animate || !prevLogo || prevLogo === nextLogo) {
+          slotElements[i] = nextLogo
+          if (!animate || !prevLogo) {
             try {
               gsap.set(nextLogo, { opacity: 1, display: 'block' })
             } catch (e) {
@@ -221,90 +247,80 @@ export function initTechnology(root = document) {
           } catch (e) {
             // ignore
           }
-          hide.push(prevLogo)
-          show.push(nextLogo)
+          slotAnimations.push({
+            slotIndex: i,
+            hide: prevLogo,
+            show: nextLogo,
+          })
         }
-        if (!animate || (!show.length && !hide.length)) {
+        if (!animate) {
           currentConfig = nextConfig
           return
         }
         try {
-          // Cancel any in-flight sequence
-          if (logosTl) {
-            logosTl.kill()
-            logosTl = null
-          }
-          gsap.killTweensOf([show, hide])
-          const tl = gsap.timeline({ defaults: { ease, duration } })
+          const tl = gsap.timeline()
           logosTl = tl
           tl.eventCallback('onComplete', () => {
             logosTl = null
           })
-          if (hide.length) {
-            tl.to(hide, { opacity: 0 }).add(() => {
-              try {
-                hide.forEach((el) => {
-                  el.style.display = 'none'
-                })
-              } catch (e) {
-                // ignore
-              }
-            })
+          if (slotAnimations.length === 0) {
+            // Pas de slots à animer, rien à faire
+            currentConfig = nextConfig
+            return
           }
-          if (show.length) {
-            tl.add(() => {
-              try {
-                show.forEach((el) => {
-                  el.style.display = 'block'
-                })
-                gsap.set(show, { opacity: 0 })
-              } catch (e) {
-                // ignore
-              }
+          if (!slotAnimations.length) {
+            currentConfig = nextConfig
+            scheduleNextCycle()
+          } else {
+            // Créer une animation cascade : chaque slot s'anime avec délai
+            slotAnimations.forEach((anim, idx) => {
+              const delay = idx * delayBetweenSlots
+              tl.to(anim.hide, { opacity: 0, duration }, delay)
+              tl.add(() => {
+                try {
+                  anim.hide.style.display = 'none'
+                } catch (e) {
+                  // ignore
+                }
+              }, delay + duration)
+              tl.add(() => {
+                try {
+                  anim.show.style.display = 'block'
+                  gsap.set(anim.show, { opacity: 0 })
+                } catch (e) {
+                  // ignore
+                }
+              }, delay + duration)
+              tl.to(anim.show, { opacity: 1, duration }, delay + duration)
             })
-            tl.to(show, { opacity: 1 })
+            tl.eventCallback('onComplete', () => {
+              logosTl = null
+              currentConfig = nextConfig
+              scheduleNextCycle()
+            })
           }
         } catch (e) {
           // ignore
         }
       }
-      const setPage = (idx) => {
-        const i = Math.max(0, Math.min(1, idx))
-        currentPageIdx = i
+      const setPage = () => {
+        clearCycleTimeout()
         const nextConfig = getRandomConfig(currentConfig)
         applyConfig(nextConfig, true)
-        currentConfig = nextConfig
-        setIdsFor(i)
-        moveIndicator(i)
-        setButtonsFor(i)
       }
 
-      // Wire events (si les boutons existent encore)
+      // Wire events
       if (nextBtn) {
         nextBtn.addEventListener('click', (e) => {
           e.preventDefault()
-          setPage(1)
+          setPage()
         })
       }
       if (prevBtn) {
         prevBtn.addEventListener('click', (e) => {
           e.preventDefault()
-          setPage(0)
+          setPage()
         })
-      }
-      // Rotation automatique inspirée de temp.js (changement toutes les 3s)
-      try {
-        setInterval(() => {
-          try {
-            const next =
-              typeof currentPageIdx === 'number' && currentPageIdx === 0 ? 1 : 0
-            setPage(next)
-          } catch (e) {
-            // ignore
-          }
-        }, 4000)
-      } catch (e) {
-        // ignore
       }
       // État initial des logos : tout cacher puis générer une première config
       try {
@@ -316,17 +332,11 @@ export function initTechnology(root = document) {
           }
         })
         const initialConfig = getRandomConfig([])
-        applyConfig(initialConfig, false)
         currentConfig = initialConfig
-        setIdsFor(0)
-        moveIndicator(0)
-        setButtonsFor(0)
+        applyConfig(initialConfig, false)
+        scheduleNextCycle()
       } catch (e) {
-        try {
-          // ignore
-        } catch (err) {
-          // ignore
-        }
+        // ignore
       }
     }
   } catch (err) {

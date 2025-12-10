@@ -319,7 +319,53 @@ export function initServiceCards(root = document) {
   // Team card icon behaviors moved to service-icons.js
 
   // Apply same reveal behavior to technology machine cards
-  const machineCards = scope.querySelectorAll('.machine-card')
+  const machineCards = Array.from(scope.querySelectorAll('.machine-card'))
+
+  const ensureMachineCardBg = (card) => {
+    if (card.__machineCardBg !== undefined) return card.__machineCardBg
+    const bg = card.querySelector('.machine-card_bg') || null
+    if (bg && !bg.style.transition) {
+      bg.style.transition = 'opacity 0.4s cubic-bezier(0.5, 0, 0, 1)'
+    }
+    card.__machineCardBg = bg
+    return bg
+  }
+
+  const dimOtherMachineCardBgs = (activeCard) => {
+    machineCards.forEach((otherCard) => {
+      if (otherCard === activeCard) return
+      const bg = ensureMachineCardBg(otherCard)
+      if (bg) {
+        bg.style.opacity = '0.4'
+      }
+    })
+  }
+
+  const resetMachineCardBgs = () => {
+    machineCards.forEach((card) => {
+      const bg = ensureMachineCardBg(card)
+      if (bg) {
+        bg.style.opacity = '1'
+      }
+    })
+  }
+
+  const focusMachineCardBg = (card) => {
+    const bg = ensureMachineCardBg(card)
+    if (bg) {
+      bg.style.opacity = '1'
+    }
+    dimOtherMachineCardBgs(card)
+  }
+
+  const resetMachineBgsIfIdle = () => {
+    const hasHoveringCard =
+      !isTabletOrBelowNow() && scope.querySelector('.machine-card:hover')
+    if (hasHoveringCard) return
+    if (scope.querySelector('.machine-card.is-open')) return
+    resetMachineCardBgs()
+  }
+
   machineCards.forEach((card) => {
     if (card.__machineCardsBound) return
     const bloc = card.querySelector('.machine-card_inner')
@@ -386,19 +432,23 @@ export function initServiceCards(root = document) {
     card.addEventListener('mouseenter', () => {
       if (isTabletOrBelowNow()) return
       revealLines()
+      focusMachineCardBg(card)
     })
     card.addEventListener('mouseleave', () => {
       if (isTabletOrBelowNow()) return
       hideLines()
+      resetMachineBgsIfIdle()
     })
     // Pointer events for broader support
     card.addEventListener('pointerenter', () => {
       if (isTabletOrBelowNow()) return
       revealLines()
+      focusMachineCardBg(card)
     })
     card.addEventListener('pointerleave', () => {
       if (isTabletOrBelowNow()) return
       hideLines()
+      resetMachineBgsIfIdle()
     })
 
     card.__machineCardsBound = true
@@ -645,57 +695,76 @@ export function initServiceCards(root = document) {
 
     // No CSS transitionend handler needed when animating via GSAP
 
+    const openCard = () => {
+      focusMachineCardBg(card)
+      const collapsed = getCollapsedHeightPx()
+      const target = bottomWrap.scrollHeight
+      if (bottomWrap.style.height === 'auto') {
+        bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
+      }
+      bottomWrap.style.height = collapsed + 'px'
+      card.classList.add('is-open')
+      gsap.to(bottomWrap, {
+        height: target,
+        duration: 1.2,
+        ease: gsap.parseEase('machinesStep') || ((t) => t),
+        onComplete: () => {
+          if (!card.__contentObserver) {
+            const contentObserver = new ResizeObserver(() => {
+              if (card.classList.contains('is-open')) {
+                bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
+              }
+            })
+            const innerContent = bottomWrap.querySelector(
+              '.machine-card_inner, .machine-desc'
+            )
+            if (innerContent) {
+              contentObserver.observe(innerContent)
+            }
+            card.__contentObserver = contentObserver
+          }
+        },
+      })
+      toggleButtons(true)
+    }
+
+    const closeCard = () => {
+      const collapsed = getCollapsedHeightPx()
+      const currentAuto = bottomWrap.style.height === 'auto'
+      if (currentAuto) {
+        bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
+      }
+      card.classList.remove('is-open')
+      resetMachineBgsIfIdle()
+      gsap.to(bottomWrap, {
+        height: collapsed,
+        duration: 1.2,
+        ease: gsap.parseEase('machinesStep') || ((t) => t),
+        onComplete: () => {
+          resetMachineBgsIfIdle()
+        },
+      })
+      toggleButtons(false)
+    }
+
+    card.__closeMachineCard = closeCard
+
     const onClick = () => {
       if (!isTabletOrBelowViewport()) return
       const isOpen = card.classList.contains('is-open')
       if (!isOpen) {
-        // Opening: animate height with GSAP using Technology timings/ease
-        const collapsed = getCollapsedHeightPx()
-        const target = bottomWrap.scrollHeight
-        // Normalize start height
-        if (bottomWrap.style.height === 'auto') {
-          bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
-        }
-        bottomWrap.style.height = collapsed + 'px'
-        card.classList.add('is-open')
-        gsap.to(bottomWrap, {
-          height: target,
-          duration: 1.2,
-          ease: gsap.parseEase('machinesStep') || ((t) => t),
-          onComplete: () => {
-            // Keep height in px and use ResizeObserver to adjust when content changes
-            if (!card.__contentObserver) {
-              const contentObserver = new ResizeObserver(() => {
-                if (card.classList.contains('is-open')) {
-                  bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
-                }
-              })
-              // Observe the inner content for size changes
-              const innerContent = bottomWrap.querySelector(
-                '.machine-card_inner, .machine-desc'
-              )
-              if (innerContent) {
-                contentObserver.observe(innerContent)
-              }
-              card.__contentObserver = contentObserver
-            }
-          },
+        machineCardsForToggle.forEach((otherCard) => {
+          if (
+            otherCard !== card &&
+            otherCard.classList.contains('is-open') &&
+            typeof otherCard.__closeMachineCard === 'function'
+          ) {
+            otherCard.__closeMachineCard()
+          }
         })
-        toggleButtons(true)
+        openCard()
       } else {
-        // Closing: animate back to collapsed height with same timings/ease
-        const collapsed = getCollapsedHeightPx()
-        const currentAuto = bottomWrap.style.height === 'auto'
-        if (currentAuto) {
-          bottomWrap.style.height = bottomWrap.scrollHeight + 'px'
-        }
-        card.classList.remove('is-open')
-        gsap.to(bottomWrap, {
-          height: collapsed,
-          duration: 1.2,
-          ease: gsap.parseEase('machinesStep') || ((t) => t),
-        })
-        toggleButtons(false)
+        closeCard()
       }
     }
 

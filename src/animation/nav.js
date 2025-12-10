@@ -1199,7 +1199,6 @@ export function initializeNavbarScroll(root = document) {
         duration: 0.5,
         left: getNavbarBaseOffset(),
         right: getNavbarBaseOffset(),
-        pointerEvents: 'auto',
         overwrite: 'auto',
       })
     }
@@ -1364,7 +1363,6 @@ export function initializeNav2(root = document) {
           ease: CustomEase.create('custom', 'M0,0 C0.6,0 0,1 1,1 '),
           left: getNavbarBaseOffset(),
           right: getNavbarBaseOffset(),
-          pointerEvents: 'auto',
           overwrite: 'auto',
         })
       }

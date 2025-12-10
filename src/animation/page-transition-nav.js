@@ -194,7 +194,8 @@ export function initializePageTransitionNav() {
       const navbar =
         (scope.querySelector && scope.querySelector('.navbar')) ||
         document.querySelector('.navbar')
-      if (navbar) navbar.style.pointerEvents = 'auto'
+      if (!navbar) return
+      // Intentionnellement vide : nous n'imposons plus de pointer-events ici.
     } catch (e) {
       /* ignore */
     }

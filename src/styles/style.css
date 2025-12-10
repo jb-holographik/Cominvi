@@ -614,6 +614,15 @@ button.maplibregl-ctrl-compass {
   transition: opacity 0.2s ease-in-out;
 }
 
+.navlink-social{
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.link-item:has(.navlink-social:hover) .navlink-social:not(:hover) {
+  opacity: 0.8;
+}
+
 @media (min-width: 991px) {
   .processes .process:first-child .process-infos {
     padding-top: 0;

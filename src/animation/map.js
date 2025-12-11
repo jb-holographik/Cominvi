@@ -440,6 +440,19 @@ export function initMap(root = document) {
       return false
     }
   }
+
+  // Helper: treat mobile/tablet as touch or <=991px
+  const isTouchOrSmallNow = () => {
+    try {
+      if (typeof window === 'undefined' || !window.matchMedia) return false
+      return (
+        window.matchMedia('(pointer: coarse)').matches ||
+        window.matchMedia('(max-width: 991px)').matches
+      )
+    } catch (e) {
+      return false
+    }
+  }
   const resetMarkers = () => {
     markers.forEach((m) => {
       m.classList.remove('highlight')
@@ -639,6 +652,28 @@ export function initMap(root = document) {
       }
       // Initial sync to currently active slide
       syncFromActiveSlide(instance)
+
+      // Désactive la navigation manuelle hors mobile (desktop + tablette)
+      const syncPointerControls = () => {
+        try {
+          const disableMouseSlide = !isMobileOnlyNow()
+          instance.allowTouchMove = !disableMouseSlide
+          instance.params.simulateTouch = !disableMouseSlide
+          const wheelMethod = disableMouseSlide ? 'disable' : 'enable'
+          if (
+            instance.mousewheel &&
+            typeof instance.mousewheel[wheelMethod] === 'function'
+          ) {
+            instance.mousewheel[wheelMethod]()
+          } else if (instance.params.mousewheel) {
+            instance.params.mousewheel.enabled = !disableMouseSlide
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+      syncPointerControls()
+      window.addEventListener('resize', syncPointerControls)
     }
   } catch (e) {
     // ignore
@@ -732,19 +767,6 @@ export function initMap(root = document) {
       reapplyActiveMarker()
     })
   })
-
-  // Helper: treat mobile/tablet as touch or <=991px
-  const isTouchOrSmallNow = () => {
-    try {
-      if (typeof window === 'undefined' || !window.matchMedia) return false
-      return (
-        window.matchMedia('(pointer: coarse)').matches ||
-        window.matchMedia('(max-width: 991px)').matches
-      )
-    } catch (e) {
-      return false
-    }
-  }
 
   // On mobile/tablet, disable hover effects on project cards
   try {

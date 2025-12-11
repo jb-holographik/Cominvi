@@ -485,7 +485,7 @@ h1 > .is-h1-span-wrap:last-child > span {
 .projects-list.swiper-wrapper {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: flex-end;
   justify-content: flex-start !important;
 }
 .projects-list.swiper-wrapper .swiper-slide {
@@ -741,6 +741,15 @@ button.maplibregl-ctrl-compass {
     /* display: none; */
     pointer-events: none;
   }
+
+  .swiper.projects-wrapper .swiper-wrapper{
+    cursor: default;
+  }
+
+  .swiper.projects-wrapper .swiper-wrapper:active {
+    cursor: default;
+  }
+
   .swiper.projects-wrapper .swiper-slide.swiper-slide-active {
     opacity: 1;
     pointer-events: auto;

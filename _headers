@@ -1,0 +1,16 @@
+/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+  Access-Control-Allow-Headers: *
+
+/main.js
+  Content-Type: application/javascript; charset=utf-8
+
+/home-background.mp4
+  Access-Control-Allow-Origin: *
+
+/cave-scene/*
+  Access-Control-Allow-Origin: *
+
+/processes.mp4
+  Access-Control-Allow-Origin: *

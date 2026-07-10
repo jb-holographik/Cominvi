@@ -6,6 +6,7 @@
     "dynamicImports": [
       "src/animation/service-icons.js",
       "src/animation/button-hover.js",
+      "src/animation/cards-reveal.js",
       "src/animation/service-cards.js",
       "src/animation/text-reveal.js",
       "src/animation/minerals.js",
@@ -69,6 +70,14 @@
   "src/animation/button-hover.js": {
     "file": "assets/button-hover.js",
     "src": "src/animation/button-hover.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/animation/cards-reveal.js": {
+    "file": "assets/cards-reveal.js",
+    "src": "src/animation/cards-reveal.js",
     "isDynamicEntry": true,
     "imports": [
       "src/main.js"

@@ -1459,6 +1459,7 @@ function initializeLogoHover(root = document) {
 
 export function initializeNav2(root = document) {
   syncNavInnerCurrentLink(root)
+  syncLocaleSwitcherActive(root)
   initializeMenuClick({}, root)
   initializeNavbarScroll(root)
   initializeThemeController()
@@ -1537,6 +1538,72 @@ function normalizePathname(pathname) {
     return value.endsWith('/') && value.length > 1 ? value.slice(0, -1) : value
   } catch (e) {
     return '/'
+  }
+}
+
+function getLocaleFromPathname(pathname) {
+  try {
+    const match = String(pathname || '/').match(/^\/([a-z]{2})(?=\/?(?:$|\/))/i)
+    return match ? match[1].toLowerCase() : 'en'
+  } catch (e) {
+    return 'en'
+  }
+}
+
+function getPageLocale() {
+  try {
+    const lang = (document.documentElement.getAttribute('lang') || '')
+      .toLowerCase()
+      .split('-')[0]
+    if (lang) return lang
+  } catch (e) {
+    // ignore
+  }
+  return getLocaleFromPathname(
+    (window.location && window.location.pathname) || '/'
+  )
+}
+
+function getLinkLocale(link) {
+  try {
+    const href = link.getAttribute('href') || ''
+    if (!href || href.startsWith('#') || href.startsWith('javascript:')) {
+      return ''
+    }
+    const url = new URL(href, window.location.origin)
+    return getLocaleFromPathname(url.pathname)
+  } catch (e) {
+    return ''
+  }
+}
+
+function syncLocaleSwitcherActive(root = document) {
+  try {
+    const scope = root && root.querySelector ? root : document
+    const links = scope.querySelectorAll(
+      '.locale-switch .navlink-locale, .locales-list .navlink-locale, .w-locales-list .navlink-locale'
+    )
+    if (!links.length) return
+
+    const pageLocale = getPageLocale()
+
+    links.forEach((link) => {
+      try {
+        const linkLocale = getLinkLocale(link)
+        const isActive = !!linkLocale && linkLocale === pageLocale
+        link.classList.toggle('w--current', isActive)
+        link.classList.toggle('is-active', isActive)
+        if (isActive) {
+          link.setAttribute('aria-current', 'page')
+        } else {
+          link.removeAttribute('aria-current')
+        }
+      } catch (e) {
+        // ignore
+      }
+    })
+  } catch (e) {
+    // ignore
   }
 }
 

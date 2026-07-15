@@ -38,6 +38,28 @@
   opacity: 0.5;
 }
 
+/* Locale switch — couleurs explicites (le binding Webflow + .navlink_label blanc cassent l'héritage) */
+.nav-inner .locale-switch .navlink-locale,
+.nav-inner .locales-list .navlink-locale,
+.nav-inner .w-locales-list .navlink-locale {
+  color: #b55109;
+}
+
+.nav-inner .locale-switch .navlink-locale .navlink_label,
+.nav-inner .locales-list .navlink-locale .navlink_label,
+.nav-inner .w-locales-list .navlink-locale .navlink_label {
+  color: inherit;
+}
+
+.nav-inner .locale-switch .navlink-locale.w--current,
+.nav-inner .locale-switch .navlink-locale.is-active,
+.nav-inner .locales-list .navlink-locale.w--current,
+.nav-inner .locales-list .navlink-locale.is-active,
+.nav-inner .w-locales-list .navlink-locale.w--current,
+.nav-inner .w-locales-list .navlink-locale.is-active {
+  color: var(--primary);
+}
+
 .navbar a[aria-label='home'] {
   height: 1.75em;
 }

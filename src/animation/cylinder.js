@@ -437,6 +437,8 @@ export function initCylinder(root = document) {
   }
 
   // Highlight: enlarge ticks closest to viewport center (like scroll-list)
+  let lastTextHighlightIndex = -1
+  const lastTickHighlightIndexes = new WeakMap()
   const updateTickHighlight = () => {
     // Freeze highlighting when the menu is open to keep the current active item
     try {
@@ -465,21 +467,24 @@ export function initCylinder(root = document) {
             Math.round(rotationProgress * (textSpans.length - 1))
           )
         )
-        textSpans.forEach(
-          (s) => s && s.classList && s.classList.remove('is-active')
-        )
-        const active = textSpans[closestIdx]
-        if (active) {
-          active.classList.add('is-active')
-          // Remove dimming combos if present when active
-          active.classList.remove('is-o-15', 'is-o-20')
+        if (closestIdx !== lastTextHighlightIndex) {
+          lastTextHighlightIndex = closestIdx
+          textSpans.forEach(
+            (s) => s && s.classList && s.classList.remove('is-active')
+          )
+          const active = textSpans[closestIdx]
+          if (active) {
+            active.classList.add('is-active')
+            // Remove dimming combos if present when active
+            active.classList.remove('is-o-15', 'is-o-20')
+          }
+          // Re-apply dim class to non-active items
+          textSpans.forEach((s, idx) => {
+            if (!s || idx === closestIdx) return
+            s.classList.remove('is-active')
+            if (!s.classList.contains('is-o-20')) s.classList.add('is-o-20')
+          })
         }
-        // Re-apply dim class to non-active items
-        textSpans.forEach((s, idx) => {
-          if (!s || idx === closestIdx) return
-          s.classList.remove('is-active')
-          if (!s.classList.contains('is-o-20')) s.classList.add('is-o-20')
-        })
       }
     } catch (e) {
       // ignore
@@ -497,6 +502,17 @@ export function initCylinder(root = document) {
           Math.round(rotationProgress * (ticks.length - 1))
         )
       )
+      const previousHighlight = lastTickHighlightIndexes.get(indicator)
+      if (
+        previousHighlight?.index === closestIndex &&
+        previousHighlight?.firstTick === ticks[0]
+      ) {
+        return
+      }
+      lastTickHighlightIndexes.set(indicator, {
+        index: closestIndex,
+        firstTick: ticks[0],
+      })
       // Reset classes
       ticks.forEach((t) => {
         t.classList.remove('is-xxl', 'is-xl', 'is-l', 'is-m')
